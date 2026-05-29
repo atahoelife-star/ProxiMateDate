@@ -1,0 +1,350 @@
+@import "tailwindcss";
+
+/* ============================================
+   ProxiMate — Warm Romantic Elegant Theme
+   Soft rose pinks, warm golds, dark intimate backgrounds
+   ============================================ */
+
+:root {
+  /* Deep romantic dark backgrounds */
+  --bg: #0F0A0D;
+  --bg-elevated: #1A1418;
+  --bg-card: #221C21;
+  --bg-overlay: rgba(15, 10, 13, 0.85);
+
+  /* Soft rose pinks */
+  --rose: #E8A0B8;
+  --rose-light: #F5D0DC;
+  --rose-dark: #C77D9A;
+
+  /* Warm golds */
+  --gold: #C9A962;
+  --gold-light: #E8D5A3;
+  --gold-dark: #A88A4A;
+
+  /* Cream & warm neutrals */
+  --cream: #F8F4ED;
+  --text: #EDE4D9;
+  --text-muted: #A8988A;
+  --text-subtle: #7A6B5F;
+
+  /* Borders & accents */
+  --border: #3A2F36;
+  --border-gold: rgba(201, 169, 98, 0.3);
+
+  /* Shadows with romantic tint */
+  --shadow-soft: 0 10px 40px -10px rgba(0, 0, 0, 0.6);
+  --shadow-card: 0 8px 30px -8px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 0 1px rgba(201, 169, 98, 0.15);
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Elegant typography */
+h1, h2, h3 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+
+h1 {
+  font-size: 3.25rem;
+  line-height: 1.05;
+}
+
+h2 {
+  font-size: 2rem;
+  line-height: 1.1;
+}
+
+/* Beautiful buttons - the heart of the elegant UI */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.75rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  border-radius: 9999px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  border: 1px solid transparent;
+  text-decoration: none;
+}
+
+.btn-gold {
+  background: var(--gold);
+  color: var(--bg);
+  border-color: var(--gold);
+}
+
+.btn-gold:hover {
+  background: var(--gold-light);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px -5px rgba(201, 169, 98, 0.4);
+}
+
+.btn-rose {
+  background: var(--rose);
+  color: var(--bg);
+  border-color: var(--rose);
+}
+
+.btn-rose:hover {
+  background: var(--rose-light);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px -5px rgba(232, 160, 184, 0.4);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--cream);
+  border-color: var(--gold);
+}
+
+.btn-outline:hover {
+  background: rgba(201, 169, 98, 0.1);
+  border-color: var(--gold-light);
+  color: var(--gold-light);
+}
+
+.btn-ghost {
+  background: rgba(255,255,255,0.06);
+  color: var(--text);
+  border-color: var(--border);
+}
+
+.btn-ghost:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: var(--rose);
+}
+
+/* Elegant cards */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card:hover {
+  border-color: var(--border-gold);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-card);
+}
+
+/* Navigation */
+.nav-link {
+  position: relative;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  transition: color 0.2s ease;
+  border-radius: 8px;
+}
+
+.nav-link:hover {
+  color: var(--cream);
+}
+
+.nav-link.active {
+  color: var(--cream);
+}
+
+.nav-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 1rem;
+  right: 1rem;
+  height: 1px;
+  background: linear-gradient(to right, var(--gold), var(--rose));
+  border-radius: 1px;
+}
+
+/* Form inputs - romantic style */
+.input {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(201, 169, 98, 0.1);
+}
+
+.input::placeholder {
+  color: var(--text-subtle);
+}
+
+/* Chat bubbles */
+.chat-bubble {
+  max-width: 75%;
+  padding: 0.75rem 1.1rem;
+  border-radius: 18px;
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.chat-bubble.me {
+  background: var(--gold);
+  color: var(--bg);
+  border-bottom-right-radius: 4px;
+}
+
+.chat-bubble.date {
+  background: var(--bg-elevated);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-bottom-left-radius: 4px;
+}
+
+.chat-bubble.system {
+  background: rgba(201, 169, 98, 0.08);
+  color: #E8D5A3;
+  border: 1px solid rgba(201, 169, 98, 0.2);
+  font-size: 0.85rem;
+  max-width: 85%;
+}
+
+/* Video placeholder frames - Bigger, more romantic & premium */
+.video-frame {
+  position: relative;
+  background: #0a0809;
+  border-radius: 24px;
+  overflow: hidden;
+  border: 4px solid var(--gold);
+  box-shadow: 0 20px 60px -15px rgba(0, 0, 0, 0.8),
+              0 0 0 1px rgba(232, 160, 184, 0.15),
+              inset 0 0 0 1px rgba(255,255,255,0.08);
+  aspect-ratio: 16 / 9.5;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.video-frame:hover {
+  border-color: var(--rose);
+  box-shadow: 0 25px 70px -15px rgba(0, 0, 0, 0.85),
+              0 0 0 1px rgba(232, 160, 184, 0.25);
+  transform: translateY(-2px);
+}
+
+.video-frame .overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(15,10,13,0.1), rgba(15,10,13,0.65));
+}
+
+.video-label {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  background: rgba(15, 10, 13, 0.9);
+  padding: 6px 16px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  letter-spacing: 1.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(201, 169, 98, 0.4);
+  color: var(--cream);
+}
+
+.video-frame .live-dot {
+  width: 8px;
+  height: 8px;
+  background: #E8A0B8;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #E8A0B8;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+/* AI Companion personalities */
+.personality-btn {
+  padding: 0.65rem 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  color: var(--text);
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.personality-btn:hover {
+  border-color: var(--gold);
+  background: var(--bg-card);
+}
+
+.personality-btn.active {
+  border-color: var(--gold);
+  background: rgba(201, 169, 98, 0.12);
+  color: var(--gold-light);
+}
+
+/* Movie night cards */
+.movie-card {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.movie-card:hover {
+  transform: scale(1.02);
+}
+
+/* Romantic background soft lighting overlay for Date Room */
+.date-room-bg {
+  position: relative;
+}
+
+.date-room-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(circle at 30% 20%, rgba(232, 160, 184, 0.12) 0%, transparent 50%),
+    radial-gradient(circle at 70% 80%, rgba(201, 169, 98, 0.1) 0%, transparent 55%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Section dividers */
+.section-divider {
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--border), transparent);
+}
+
+/* Modal */
+.modal {
+  animation: modalEnter 0.2s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+@keyframes modalEnter {
+  from { opacity: 0; transform: translateY(20px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  h1 { font-size: 2.35rem; }
+  h2 { font-size: 1.65rem; }
+}
