@@ -2,7 +2,7 @@ import type { Course, OrderLine, RestaurantId } from './menus'
 
 export type WaiterClip = 'idle' | 'greet' | 'wine' | 'vegan' | 'steak' | 'champagne' | 'dessert'
 
-/** Evening atmosphere, earliest to latest. Greet shares the idle file (no waiter-greet.mp4 on disk). */
+/** Evening memory, earliest to latest. Visual idle is always the dining-room loop. */
 export const EVENING_STAGES: WaiterClip[] = ['idle', 'greet', 'wine', 'vegan', 'steak', 'champagne', 'dessert']
 
 export const WAITER_CLIPS: Record<
@@ -10,13 +10,13 @@ export const WAITER_CLIPS: Record<
   { src: string; label: string; presenceLabel: string }
 > = {
   idle: {
-    src: '/videos/waiter-idle.mp4',
-    label: 'At your table',
-    presenceLabel: 'At your table',
+    src: '/videos/restaurant-dining-room.mp4',
+    label: 'In the dining room',
+    presenceLabel: 'In the dining room',
   },
   greet: {
     src: '/videos/waiter-idle.mp4',
-    label: 'Arriving',
+    label: 'Coming to the table',
     presenceLabel: 'Ready for your order',
   },
   wine: {
@@ -46,9 +46,7 @@ export const WAITER_CLIPS: Record<
   },
 }
 
-export const RESTAURANT_OVERLOOK_SRC = '/videos/restaurant-overlook.mp4'
-
-/** Source clips are ~7–14s; hold service on that clip for this long (repeat/loop) before settling. */
+/** Source clips are ~7–14s; hold service on that clip for this long (repeat/loop) before returning to the dining room. */
 export const MIN_SERVICE_MS = 24_000
 
 const STEAK_ITEM_IDS = new Set([
@@ -68,23 +66,17 @@ export function laterStage(current: WaiterClip, incoming: WaiterClip): WaiterCli
   return stageIndex(incoming) > stageIndex(current) ? incoming : current
 }
 
-/**
- * Video to play for a call/order. Never visually rewind Call Waiter to the first
- * idle/greet loop. Food and drinks always play the matching serving clip.
- */
-export function clipToPlay(presence: WaiterClip, requested: WaiterClip): WaiterClip {
-  if (requested === 'idle' || requested === 'greet') {
-    return presence === 'idle' ? 'greet' : presence
-  }
+/** Serving / arrival clip to play. Idle requests become a greet. Food and drinks always play the matching serve. */
+export function clipToPlay(_presence: WaiterClip, requested: WaiterClip): WaiterClip {
+  if (requested === 'idle') return 'greet'
   return requested
 }
 
-/** After a serving beat, stay on what just played — never snap back to idle. */
+/** Evening memory after a serving beat. The LIVE tile returns to the dining-room loop separately. */
 export function presenceAfterService(presence: WaiterClip, played: WaiterClip): WaiterClip {
-  if (played === 'idle' || played === 'greet') {
-    return presence === 'idle' ? 'greet' : presence
-  }
-  return played
+  if (played === 'idle') return presence
+  if (played === 'greet') return presence === 'idle' ? 'greet' : presence
+  return laterStage(presence, played)
 }
 
 export function clipForOrder(line: {

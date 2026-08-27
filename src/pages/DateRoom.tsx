@@ -142,8 +142,9 @@ export function DateRoomPage() {
   const [waiterClip, setWaiterClip] = useState<WaiterClip>('idle')
   const [waiterServing, setWaiterServing] = useState(false)
   const [waiterPlayId, setWaiterPlayId] = useState(0)
-  const [waiterNote, setWaiterNote] = useState('Ready when you are')
+  const [waiterNote, setWaiterNote] = useState('In the dining room')
   const waiterPresenceRef = useRef<WaiterClip>('idle')
+  const [waiterStage, setWaiterStage] = useState<WaiterClip>('idle')
   const [initialVideoId] = useState(initialWatchId)
   const [watchingMovie, setWatchingMovie] = useState(Boolean(initialWatchId))
 
@@ -182,6 +183,7 @@ export function DateRoomPage() {
     const play = clipToPlay(waiterPresenceRef.current, requested)
     const next = presenceAfterService(waiterPresenceRef.current, play)
     waiterPresenceRef.current = next
+    setWaiterStage(next)
     setWaiterClip(play)
     setWaiterServing(true)
     setWaiterPlayId((id) => id + 1)
@@ -192,8 +194,9 @@ export function DateRoomPage() {
   const settleWaiter = (finished: WaiterClip) => {
     const next = presenceAfterService(waiterPresenceRef.current, finished)
     waiterPresenceRef.current = next
+    setWaiterStage(next)
     setWaiterServing(false)
-    setWaiterClip(next)
+    setWaiterClip('idle')
     setWaiterNote(WAITER_CLIPS[next].presenceLabel)
   }
 
@@ -236,7 +239,7 @@ export function DateRoomPage() {
 
   const chatMoment = chatMomentForEvening({
     watching: watchingMovie,
-    waiterClip,
+    waiterClip: waiterServing ? waiterClip : waiterStage,
     myMessageCount: chatMessages.filter((m) => m.sender === 'me').length,
   })
 

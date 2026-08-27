@@ -12,7 +12,6 @@ import {
   type WatchState,
 } from '../../lib/watchSync'
 import { parseYouTubeId, ROMANTIC_TRAILERS, youtubeWatchUrl, type YTPlayerHandle } from '../../lib/youtube'
-import { RESTAURANT_OVERLOOK_SRC } from '../../data/waiterClips'
 import { FloatingDateChat } from '../../lib/floatingChat'
 import type { ChatMoment } from '../../data/suggestedLines'
 
@@ -307,7 +306,7 @@ export function WatchStage({
         <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
           <div>
             <div className="text-xs tracking-[2px] text-[#C9A962]">YOUTUBE WATCH TOGETHER</div>
-            <div className="text-[#F8F4ED]">{state?.title ?? 'Overlook of the dining room'}</div>
+            <div className="text-[#F8F4ED]">{state?.title ?? 'Paste a YouTube link to watch together'}</div>
           </div>
           {state && (
             <div className="flex flex-wrap gap-2">
@@ -357,20 +356,13 @@ export function WatchStage({
         {embedBlocked && state && watchHref ? (
           <div className="mt-4 grid md:grid-cols-5 gap-4 flex-1 min-h-[280px]">
             <div className="md:col-span-3 video-frame video-frame-watch min-h-[220px]">
-              <video
-                src={RESTAURANT_OVERLOOK_SRC}
-                className="absolute inset-0 w-full h-full object-cover"
-                muted
-                loop
-                playsInline
-                autoPlay
-              />
               <button
                 type="button"
                 onClick={onPlayClick}
-                className="absolute inset-0 z-20 flex items-center justify-center bg-[#0F0A0D]/75 text-[#C9A962] underline px-4 text-center text-sm"
+                className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-[#0F0A0D] text-[#C9A962] px-4 text-center text-sm gap-2"
               >
-                Watch on YouTube
+                <span className="underline">Watch on YouTube</span>
+                <span className="text-[#A8988A] no-underline text-xs">Opens this same video. Chat stays in the date room.</span>
               </button>
             </div>
             <div className="md:col-span-2 min-h-[280px]">
@@ -406,14 +398,11 @@ export function WatchStage({
                 </div>
               </>
             ) : (
-              <video
-                src={RESTAURANT_OVERLOOK_SRC}
-                className="absolute inset-0 w-full h-full object-cover"
-                muted
-                loop
-                playsInline
-                autoPlay
-              />
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0F0A0D] px-6 text-center">
+                <div className="text-xs tracking-[2px] text-[#C9A962]">WATCH TOGETHER</div>
+                <p className="text-[#F8F4ED] mt-2 max-w-sm">Paste a YouTube link, then press Play.</p>
+                <p className="text-sm text-[#A8988A] mt-2 max-w-sm">The dining room is on the left. This box is for the movie.</p>
+              </div>
             )}
             {chatOverlay}
           </div>
