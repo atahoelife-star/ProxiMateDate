@@ -36,6 +36,8 @@ Paid plans: Dinner **$9.99**, Movie Night **$14.99**, Premium Romance **$24.99**
 3. In the [Vercel project](https://vercel.com) → Settings → Environment Variables, add:
    - `STRIPE_SECRET_KEY` = that secret
    - optional `PUBLIC_SITE_URL` = `https://www.proximatedate.com` (used for success/cancel URLs)
+
+   A `.env.example` file in this repo lists the same names. Do not put the secret in a `VITE_` variable or it would ship to the browser.
 4. Redeploy. Pricing CTAs `POST /api/create-checkout`, then redirect to Stripe-hosted Checkout.
 5. If the key is missing, the API returns 503 and the site collects a waitlist email instead. No card fields are rendered on proximatedate.com.
 

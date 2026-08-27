@@ -103,10 +103,10 @@ export function HomePage() {
         <div className="max-w-xl mx-auto text-center px-6">
           <Heart className="w-9 h-9 text-[#E8A0B8] mx-auto mb-6" />
           <h2 className="text-[#F8F4ED] mb-4">Your next date night is waiting.</h2>
-          <p className="text-lg text-[#A8988A] mb-8">Try the preview, or leave your email. No pressure. No fake checkout.</p>
+          <p className="text-lg text-[#A8988A] mb-8">Try the preview, or leave your email. Paid dates use Stripe Checkout — never a card form on this site.</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link to="/pricing" className="btn btn-rose text-base px-10 py-4">
-              See planned experiences
+              See pricing
             </Link>
             <Link to="/get-started" className="btn btn-outline text-base px-10 py-4">
               Get started

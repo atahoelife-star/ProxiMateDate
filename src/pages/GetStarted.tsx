@@ -6,7 +6,11 @@ export function GetStartedPage() {
   return (
     <PageShell kicker="GET STARTED" title="Join ProxiMateDate">
       <p>
-        Get Started does not jump to a fake checkout. It does not create a session. Tell us your email and we’ll invite you when the paid date night — and real sign-in — exist. You can still{' '}
+        Get Started does not create an account. The Date Room is free. Paid one-time dates on{' '}
+        <Link to="/pricing" className="text-[#C9A962] underline">
+          Pricing
+        </Link>{' '}
+        use Stripe Checkout when a secret key is configured — this page never asks for a card. You can still{' '}
         <Link to="/date-room" className="text-[#C9A962] underline">
           open the date-room preview
         </Link>{' '}
