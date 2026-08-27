@@ -28,6 +28,8 @@ export function WaiterVideoTile({ clip, serving, playId, onServiceEnded }: Waite
     el.loop = true
     el.muted = true
     el.playsInline = true
+    el.playbackRate = 1
+    el.defaultPlaybackRate = 1
     if (srcChanged || serving) {
       el.currentTime = 0
     }
