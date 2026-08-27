@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { Link as LinkIcon, Pause, Play, Volume2, VolumeX, X } from 'lucide-react'
 import { YoutubeEmbed } from './YoutubeEmbed'
+import { WatchChatOverlay, type RoomChatMsg } from './WatchChatOverlay'
 import {
   bootWatchState,
   emptyWatchState,
@@ -23,6 +24,12 @@ type WatchStageProps = {
   youStill: React.ReactNode
   partnerStill: React.ReactNode
   waiterTile: React.ReactNode
+  chat: {
+    messages: RoomChatMsg[]
+    input: string
+    onInputChange: (value: string) => void
+    onSend: () => void
+  }
 }
 
 export function WatchStage({
@@ -36,6 +43,7 @@ export function WatchStage({
   youStill,
   partnerStill,
   waiterTile,
+  chat,
 }: WatchStageProps) {
   const [link, setLink] = useState('')
   const [parseError, setParseError] = useState('')
@@ -223,6 +231,16 @@ export function WatchStage({
               onHostState={isFollower ? undefined : onHostState}
               onError={() => setEmbedBlocked(true)}
               watchUrl={embedBlocked ? youtubeWatchUrl(state.videoId) : null}
+              chatOverlay={
+                <WatchChatOverlay
+                  messages={chat.messages}
+                  input={chat.input}
+                  onInputChange={chat.onInputChange}
+                  onSend={chat.onSend}
+                  partnerName={partnerName}
+                  liftForControls={!embedBlocked}
+                />
+              }
             />
             <WatchSeat
               heading={isFollower ? `${partnerName.toUpperCase()} · ALSO FOLLOWS` : `${partnerName.toUpperCase()} · FOLLOWS YOU`}
@@ -368,6 +386,7 @@ function WatchSeat({
   role,
   muted,
   watchUrl,
+  chatOverlay,
   onReady,
   onHostState,
   onError,
@@ -378,6 +397,7 @@ function WatchSeat({
   role: 'host' | 'follower'
   muted: boolean
   watchUrl: string | null
+  chatOverlay?: React.ReactNode
   onReady: (player: YTPlayerHandle) => void
   onHostState?: (playing: boolean, time: number) => void
   onError: () => void
@@ -410,6 +430,7 @@ function WatchSeat({
             </div>
           </>
         )}
+        {chatOverlay}
       </div>
     </div>
   )

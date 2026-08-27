@@ -320,6 +320,12 @@ export function DateRoomPage() {
               pickerOpen={showMoviePicker}
               onPickerOpenChange={setShowMoviePicker}
               onRoomMessage={roomMessage}
+              chat={{
+                messages: chatMessages,
+                input: chatInput,
+                onInputChange: setChatInput,
+                onSend: sendChatMessage,
+              }}
               youStill={
                 <div>
                   <div className="flex items-center gap-2 mb-3 px-1">
