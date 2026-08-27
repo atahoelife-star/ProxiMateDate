@@ -34,6 +34,8 @@ import {
 } from '../data/waiterClips'
 import { newRoomId } from '../lib/watchSync'
 import { parseYouTubeId } from '../lib/youtube'
+import { chatMomentForEvening } from '../data/suggestedLines'
+import { SuggestedLines } from '../components/dateroom/SuggestedLines'
 
 type ChatMsg = { id: number; sender: 'me' | 'partner' | 'system'; text: string }
 
@@ -143,6 +145,7 @@ export function DateRoomPage() {
   const [waiterNote, setWaiterNote] = useState('Ready when you are')
   const waiterPresenceRef = useRef<WaiterClip>('idle')
   const [initialVideoId] = useState(initialWatchId)
+  const [watchingMovie, setWatchingMovie] = useState(Boolean(initialWatchId))
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -225,6 +228,17 @@ export function DateRoomPage() {
       setChatMessages((prev) => [...prev, { id: Date.now() + 1, sender: 'partner', text: reply }])
     }, 1100 + Math.random() * 700)
   }
+
+  const pickSuggestedLine = (line: string) => {
+    if (chatInput.trim() === line) sendChatMessage()
+    else setChatInput(line)
+  }
+
+  const chatMoment = chatMomentForEvening({
+    watching: watchingMovie,
+    waiterClip,
+    myMessageCount: chatMessages.filter((m) => m.sender === 'me').length,
+  })
 
   const sendAiMessage = () => {
     if (!aiInput.trim() || !activePersonality) return
@@ -352,6 +366,8 @@ export function DateRoomPage() {
               pickerOpen={showMoviePicker}
               onPickerOpenChange={setShowMoviePicker}
               onRoomMessage={roomMessage}
+              chatMoment={chatMoment}
+              onWatchingChange={setWatchingMovie}
               chat={{
                 messages: chatMessages,
                 input: chatInput,
@@ -389,17 +405,20 @@ export function DateRoomPage() {
                   </div>
                 ))}
               </div>
-              <div className="p-4 border-t border-[#3A2F36] bg-[#1A1418] flex gap-2">
-                <input
-                  value={chatInput}
-                  onChange={(e) => setChatInput(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && sendChatMessage()}
-                  placeholder={`Message ${partnerName}...`}
-                  className="input flex-1"
-                />
-                <button type="button" onClick={sendChatMessage} disabled={!chatInput.trim()} className="btn btn-gold px-6">
-                  <Send className="w-4 h-4" />
-                </button>
+              <div className="border-t border-[#3A2F36] bg-[#1A1418]">
+                <SuggestedLines moment={chatMoment} onPick={pickSuggestedLine} />
+                <div className="p-4 pt-2 flex gap-2">
+                  <input
+                    value={chatInput}
+                    onChange={(e) => setChatInput(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && sendChatMessage()}
+                    placeholder={`Message ${partnerName}...`}
+                    className="input flex-1"
+                  />
+                  <button type="button" onClick={sendChatMessage} disabled={!chatInput.trim()} className="btn btn-gold px-6">
+                    <Send className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
             </div>
           </div>

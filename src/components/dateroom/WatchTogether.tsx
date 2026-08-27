@@ -14,6 +14,7 @@ import {
 import { parseYouTubeId, ROMANTIC_TRAILERS, youtubeWatchUrl, type YTPlayerHandle } from '../../lib/youtube'
 import { RESTAURANT_OVERLOOK_SRC } from '../../data/waiterClips'
 import { FloatingDateChat } from '../../lib/floatingChat'
+import type { ChatMoment } from '../../data/suggestedLines'
 
 type WatchStageProps = {
   roomId: string
@@ -29,6 +30,8 @@ type WatchStageProps = {
     onInputChange: (value: string) => void
     onSend: () => void
   }
+  chatMoment: ChatMoment
+  onWatchingChange?: (watching: boolean) => void
 }
 
 export function WatchStage({
@@ -40,6 +43,8 @@ export function WatchStage({
   onPickerOpenChange,
   onRoomMessage,
   chat,
+  chatMoment,
+  onWatchingChange,
 }: WatchStageProps) {
   const [link, setLink] = useState('')
   const [parseError, setParseError] = useState('')
@@ -73,8 +78,9 @@ export function WatchStage({
       onInputChange: c.onInputChange,
       onSend: c.onSend,
       partnerName,
+      moment: chatMoment,
     })
-  }, [chat.messages, chat.input, partnerName, chat.onInputChange, chat.onSend])
+  }, [chat.messages, chat.input, partnerName, chat.onInputChange, chat.onSend, chatMoment])
 
   useEffect(() => {
     const floater = floaterRef.current
@@ -148,6 +154,10 @@ export function WatchStage({
     setState(written)
   }
 
+  useEffect(() => {
+    onWatchingChange?.(Boolean(state))
+  }, [state, onWatchingChange])
+
   const paintFloater = () => {
     const c = chatRef.current
     floaterRef.current.render({
@@ -156,6 +166,7 @@ export function WatchStage({
       onInputChange: c.onInputChange,
       onSend: c.onSend,
       partnerName,
+      moment: chatMoment,
     })
   }
 
@@ -286,6 +297,7 @@ export function WatchStage({
       onSend={chat.onSend}
       partnerName={partnerName}
       liftForControls={Boolean(state && !embedBlocked)}
+      moment={chatMoment}
     />
   )
 
@@ -369,6 +381,7 @@ export function WatchStage({
                 onInputChange={chat.onInputChange}
                 onSend={chat.onSend}
                 partnerName={partnerName}
+                moment={chatMoment}
               />
             </div>
           </div>

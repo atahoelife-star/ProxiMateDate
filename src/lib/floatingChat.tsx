@@ -2,6 +2,7 @@ import type { Root } from 'react-dom/client'
 import { createRoot } from 'react-dom/client'
 import { StrictMode } from 'react'
 import { WatchChatOverlay, type RoomChatMsg } from '../components/dateroom/WatchChatOverlay'
+import type { ChatMoment } from '../data/suggestedLines'
 
 export type FloatingChatProps = {
   messages: RoomChatMsg[]
@@ -9,6 +10,7 @@ export type FloatingChatProps = {
   onInputChange: (value: string) => void
   onSend: () => void
   partnerName: string
+  moment?: ChatMoment
 }
 
 type PipWindow = Window & {
@@ -98,6 +100,7 @@ export class FloatingDateChat {
           onInputChange={props.onInputChange}
           onSend={props.onSend}
           partnerName={props.partnerName}
+          moment={props.moment ?? 'movie'}
         />
       </StrictMode>,
     )
