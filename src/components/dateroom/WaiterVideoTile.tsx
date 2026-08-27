@@ -1,47 +1,68 @@
 import { useEffect, useRef } from 'react'
-import { WAITER_CLIPS, type WaiterClip } from '../../data/waiterClips'
+import { MIN_SERVICE_MS, WAITER_CLIPS, type WaiterClip } from '../../data/waiterClips'
 
 type WaiterVideoTileProps = {
   clip: WaiterClip
-  onServiceEnded: () => void
+  serving: boolean
+  playId: number
+  onServiceEnded: (clip: WaiterClip) => void
 }
 
-export function WaiterVideoTile({ clip, onServiceEnded }: WaiterVideoTileProps) {
+export function WaiterVideoTile({ clip, serving, playId, onServiceEnded }: WaiterVideoTileProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
+  const onEndedRef = useRef(onServiceEnded)
   const spec = WAITER_CLIPS[clip]
+  const caption = serving ? spec.label : spec.presenceLabel
+
+  useEffect(() => {
+    onEndedRef.current = onServiceEnded
+  }, [onServiceEnded])
 
   useEffect(() => {
     const el = videoRef.current
     if (!el) return
-    el.src = spec.src
-    el.loop = spec.loop
+    const srcChanged = el.getAttribute('src') !== spec.src
+    if (srcChanged) {
+      el.src = spec.src
+    }
+    el.loop = true
     el.muted = true
     el.playsInline = true
-    const play = () => {
-      el.play().catch(() => {
-        /* Autoplay can wait until the tile is in view; muted should still succeed. */
-      })
+    if (srcChanged || serving) {
+      el.currentTime = 0
     }
-    play()
-  }, [spec.src, spec.loop, clip])
+    el.play().catch(() => {
+      /* Autoplay can wait until the tile is in view; muted should still succeed. */
+    })
+  }, [spec.src, serving, playId])
+
+  useEffect(() => {
+    if (!serving) return
+    const held = clip
+    const timer = window.setTimeout(() => {
+      onEndedRef.current(held)
+    }, MIN_SERVICE_MS)
+    return () => window.clearTimeout(timer)
+  }, [serving, playId, clip])
 
   return (
     <div>
       <div className="flex items-center justify-between mb-3 px-1">
         <div className="text-[#C9A962] text-xs tracking-[2.5px]">WAITER</div>
-        <div className="text-[#A8988A] text-xs">{spec.label}</div>
+        <div className="text-[#A8988A] text-xs">{caption}</div>
       </div>
       <div className="video-frame">
         <video
-          key={spec.src + clip}
           ref={videoRef}
           className="absolute inset-0 w-full h-full object-cover"
           muted
           playsInline
           autoPlay
-          loop={spec.loop}
-          onEnded={() => {
-            if (!spec.loop) onServiceEnded()
+          loop
+          onEnded={(event) => {
+            const el = event.currentTarget
+            el.currentTime = 0
+            el.play().catch(() => {})
           }}
         />
         <div className="overlay pointer-events-none" />

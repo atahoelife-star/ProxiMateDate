@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { toast } from 'sonner'
@@ -24,7 +24,13 @@ import {
   type OrderLine,
   type RestaurantId,
 } from '../data/menus'
-import { clipForMenuCourse, type WaiterClip } from '../data/waiterClips'
+import {
+  clipForMenuCourse,
+  clipToPlay,
+  presenceAfterService,
+  WAITER_CLIPS,
+  type WaiterClip,
+} from '../data/waiterClips'
 import { newRoomId } from '../lib/watchSync'
 import { parseYouTubeId } from '../lib/youtube'
 
@@ -131,7 +137,10 @@ export function DateRoomPage() {
   const [partnerOrder, setPartnerOrder] = useState<OrderLine[]>([])
   const [tableOrder, setTableOrder] = useState<OrderLine[]>([])
   const [waiterClip, setWaiterClip] = useState<WaiterClip>('idle')
+  const [waiterServing, setWaiterServing] = useState(false)
+  const [waiterPlayId, setWaiterPlayId] = useState(0)
   const [waiterNote, setWaiterNote] = useState('Ready when you are')
+  const waiterPresenceRef = useRef<WaiterClip>('idle')
   const [initialVideoId] = useState(initialWatchId)
 
   useEffect(() => {
@@ -165,10 +174,23 @@ export function DateRoomPage() {
     setChatMessages((prev) => [...prev, { id: Date.now(), sender: 'system', text }])
   }
 
-  const playWaiter = (clip: WaiterClip, note: string, chat?: string) => {
-    setWaiterClip(clip)
+  const playWaiter = (requested: WaiterClip, note: string, chat?: string) => {
+    const play = clipToPlay(waiterPresenceRef.current, requested)
+    const next = presenceAfterService(waiterPresenceRef.current, play)
+    waiterPresenceRef.current = next
+    setWaiterClip(play)
+    setWaiterServing(true)
+    setWaiterPlayId((id) => id + 1)
     setWaiterNote(note)
     if (chat) roomMessage(chat)
+  }
+
+  const settleWaiter = (finished: WaiterClip) => {
+    const next = presenceAfterService(waiterPresenceRef.current, finished)
+    waiterPresenceRef.current = next
+    setWaiterServing(false)
+    setWaiterClip(next)
+    setWaiterNote(WAITER_CLIPS[next].presenceLabel)
   }
 
   const addOrderLine = (line: Omit<OrderLine, 'lineId'>) => {
@@ -373,7 +395,14 @@ export function DateRoomPage() {
                   <p className="text-[11px] text-[#7A6B5F] mt-2">Stock still — not a live partner feed.</p>
                 </div>
               }
-              waiterTile={<WaiterVideoTile clip={waiterClip} onServiceEnded={() => setWaiterClip('idle')} />}
+              waiterTile={
+                <WaiterVideoTile
+                  clip={waiterClip}
+                  serving={waiterServing}
+                  playId={waiterPlayId}
+                  onServiceEnded={settleWaiter}
+                />
+              }
             />
             <p className="text-center text-xs text-[#A8988A] mt-3">{waiterNote}</p>
 
