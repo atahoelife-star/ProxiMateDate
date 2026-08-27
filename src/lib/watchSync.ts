@@ -1,91 +1,94 @@
-import Peer, { type DataConnection } from 'peerjs'
+export type WatchState = {
+  videoId: string
+  title: string
+  playing: boolean
+  time: number
+  at: number
+  muted: boolean
+  seq: number
+}
 
-export type WatchEvent =
-  | { type: 'hello' }
-  | { type: 'request-state' }
-  | { type: 'video'; videoId: string; title: string }
-  | { type: 'play'; time: number; at: number }
-  | { type: 'pause'; time: number }
-  | { type: 'seek'; time: number; playing: boolean }
+const storageKey = (roomId: string) => `proximatedate-watch-${roomId}`
+
+export function emptyWatchState(videoId: string, title: string): WatchState {
+  return {
+    videoId,
+    title,
+    playing: false,
+    time: 0,
+    at: Date.now(),
+    muted: false,
+    seq: Date.now(),
+  }
+}
+
+export function expectedTime(state: WatchState, now = Date.now()): number {
+  if (!state.playing) return state.time
+  return Math.max(0, state.time + (now - state.at) / 1000)
+}
 
 export function newRoomId(): string {
   return Math.random().toString(36).slice(2, 8)
 }
 
-type SyncHandle = {
-  send: (event: WatchEvent) => void
-  destroy: () => void
+export function readWatchState(roomId: string): WatchState | null {
+  try {
+    const raw = localStorage.getItem(storageKey(roomId))
+    if (!raw) return null
+    const parsed = JSON.parse(raw) as WatchState
+    if (!parsed?.videoId) return null
+    return parsed
+  } catch {
+    return null
+  }
 }
 
-export function createWatchSync(roomId: string, onEvent: (event: WatchEvent) => void): SyncHandle {
-  const channel = new BroadcastChannel(`proximatedate-watch-${roomId}`)
-  const connections: DataConnection[] = []
-  const peers: Peer[] = []
-  let destroyed = false
+export function writeWatchState(roomId: string, state: WatchState) {
+  const next = { ...state, seq: Date.now() }
+  localStorage.setItem(storageKey(roomId), JSON.stringify(next))
+  try {
+    new BroadcastChannel(storageKey(roomId)).postMessage(next)
+  } catch {
+    /* BroadcastChannel missing */
+  }
+  return next
+}
 
-  const deliver = (event: WatchEvent) => {
-    if (destroyed) return
-    onEvent(event)
+export function subscribeWatchState(roomId: string, onState: (state: WatchState) => void): () => void {
+  const key = storageKey(roomId)
+  let lastSeq = 0
+
+  const ingest = (state: WatchState | null) => {
+    if (!state || state.seq <= lastSeq) return
+    lastSeq = state.seq
+    onState(state)
   }
 
-  channel.onmessage = (message: MessageEvent<WatchEvent>) => {
-    if (message.data?.type) deliver(message.data)
+  ingest(readWatchState(roomId))
+
+  let channel: BroadcastChannel | null = null
+  try {
+    channel = new BroadcastChannel(key)
+    channel.onmessage = (event: MessageEvent<WatchState>) => ingest(event.data)
+  } catch {
+    channel = null
   }
 
-  const send = (event: WatchEvent) => {
-    if (destroyed) return
+  const onStorage = (event: StorageEvent) => {
+    if (event.key !== key || !event.newValue) return
     try {
-      channel.postMessage(event)
+      ingest(JSON.parse(event.newValue) as WatchState)
     } catch {
       /* ignore */
     }
-    for (const conn of connections) {
-      if (conn.open) conn.send(event)
-    }
   }
+  window.addEventListener('storage', onStorage)
 
-  const attach = (conn: DataConnection) => {
-    connections.push(conn)
-    conn.on('data', (data) => {
-      if (data && typeof data === 'object' && 'type' in data) {
-        deliver(data as WatchEvent)
-      }
-    })
-    conn.on('open', () => {
-      conn.send({ type: 'hello' } satisfies WatchEvent)
-      conn.send({ type: 'request-state' } satisfies WatchEvent)
-    })
-  }
+  const poll = window.setInterval(() => ingest(readWatchState(roomId)), 400)
 
-  const hostId = `pmd-yt-${roomId}`
-
-  const startGuest = () => {
-    const guest = new Peer({ debug: 0 })
-    peers.push(guest)
-    guest.on('open', () => {
-      const conn = guest.connect(hostId, { reliable: true })
-      attach(conn)
-    })
-    guest.on('connection', attach)
-  }
-
-  const host = new Peer(hostId, { debug: 0 })
-  peers.push(host)
-  host.on('connection', attach)
-  host.on('error', (err: { type?: string }) => {
-    if (err.type === 'unavailable-id') {
-      host.destroy()
-      startGuest()
-    }
-  })
-
-  return {
-    send,
-    destroy: () => {
-      destroyed = true
-      channel.close()
-      for (const conn of connections) conn.close()
-      for (const peer of peers) peer.destroy()
-    },
+  return () => {
+    window.removeEventListener('storage', onStorage)
+    window.clearInterval(poll)
+    channel?.close()
   }
 }

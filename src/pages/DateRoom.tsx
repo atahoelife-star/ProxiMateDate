@@ -1,14 +1,12 @@
-import { useEffect, useRef, useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
-import YouTube from 'react-youtube'
 import { toast } from 'sonner'
 import {
   Clock,
   Heart,
   Link as LinkIcon,
   Mail,
-  Pause,
   Play,
   Send,
   Sparkles,
@@ -17,6 +15,8 @@ import {
 } from 'lucide-react'
 import { DinnerMenus } from '../components/dateroom/DinnerMenus'
 import { WaiterVideoTile } from '../components/dateroom/WaiterVideoTile'
+import { WatchStage } from '../components/dateroom/WatchTogether'
+import { CompanionMode } from '../components/dateroom/CompanionMode'
 import {
   formatPrice,
   getRestaurant,
@@ -25,15 +25,8 @@ import {
   type RestaurantId,
 } from '../data/menus'
 import { clipForMenuCourse, type WaiterClip } from '../data/waiterClips'
-import { createWatchSync, newRoomId, type WatchEvent } from '../lib/watchSync'
-
-type YTPlayer = {
-  playVideo: () => void
-  pauseVideo: () => void
-  seekTo: (seconds: number, allowSeekAhead: boolean) => void
-  getCurrentTime: () => number
-  getPlayerState: () => number
-}
+import { newRoomId } from '../lib/watchSync'
+import { parseYouTubeId } from '../lib/youtube'
 
 type ChatMsg = { id: number; sender: 'me' | 'partner' | 'system'; text: string }
 
@@ -93,25 +86,11 @@ const personalities = {
   },
 }
 
-const movies = [
-  { id: 1, title: 'Before Sunrise', year: '1995', mood: 'Deep & Romantic', duration: '101 min' },
-  { id: 2, title: 'La La Land', year: '2016', mood: 'Dreamy & Musical', duration: '128 min' },
-  { id: 3, title: 'Pride & Prejudice', year: '2005', mood: 'Tender & Elegant', duration: '129 min' },
-  { id: 4, title: 'The Notebook', year: '2004', mood: 'Passionate & Emotional', duration: '123 min' },
-]
-
-function movieFromWindow() {
+function initialWatchId() {
   if (typeof window === 'undefined') return null
   const watch = new URLSearchParams(window.location.search).get('watch')
-  if (watch && watch !== 'open' && /^[a-zA-Z0-9_-]{11}$/.test(watch)) {
-    return {
-      id: 'youtube-' + watch,
-      title: 'Watch together',
-      isYoutube: true,
-      youtubeId: watch,
-    }
-  }
-  return null
+  if (!watch || watch === 'open') return null
+  return parseYouTubeId(watch)
 }
 
 function roomFromWindow() {
@@ -120,8 +99,6 @@ function roomFromWindow() {
 }
 
 export function DateRoomPage() {
-  const [searchParams, setSearchParams] = useSearchParams()
-  const initialMovie = movieFromWindow()
   const [chatMessages, setChatMessages] = useState<ChatMsg[]>([
     { id: 1, sender: 'partner', text: 'I miss your face so much tonight... this feels really nice already ❤️' },
     { id: 2, sender: 'me', text: 'You look beautiful. I can’t stop smiling.' },
@@ -137,22 +114,10 @@ export function DateRoomPage() {
   const [showMoviePicker, setShowMoviePicker] = useState(
     () => typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('watch') === 'open',
   )
-  const [currentMovie, setCurrentMovie] = useState<{
-    id: string | number
-    title: string
-    isYoutube?: boolean
-    youtubeId?: string
-    year?: string
-    duration?: string
-    mood?: string
-  } | null>(initialMovie)
-  const [isMoviePlaying, setIsMoviePlaying] = useState(() => initialMovie !== null)
-  const [movieProgress, setMovieProgress] = useState(0)
-  const [youtubeInput, setYoutubeInput] = useState('')
   const [showInviteModal, setShowInviteModal] = useState(false)
   const [inviteStep, setInviteStep] = useState<'options' | 'success'>('options')
-  const [netflixOpen, setNetflixOpen] = useState(false)
-  const [netflixPlaying, setNetflixPlaying] = useState(false)
+  const [companionOpen, setCompanionOpen] = useState(false)
+  const [roomId] = useState(roomFromWindow)
 
   const [youRestaurant, setYouRestaurant] = useState<RestaurantId>('verdant-ember')
   const [partnerRestaurant, setPartnerRestaurant] = useState<RestaurantId>('silver-sage')
@@ -161,17 +126,7 @@ export function DateRoomPage() {
   const [tableOrder, setTableOrder] = useState<OrderLine[]>([])
   const [waiterClip, setWaiterClip] = useState<WaiterClip>('idle')
   const [waiterNote, setWaiterNote] = useState('Ready when you are')
-  const [watchStatus, setWatchStatus] = useState('Share the watch link so play/pause stays together')
-
-  const roomIdRef = useRef(roomFromWindow())
-  const playerRef = useRef<YTPlayer | null>(null)
-  const applyingRemote = useRef(false)
-  const syncRef = useRef<ReturnType<typeof createWatchSync> | null>(null)
-  const movieRef = useRef(currentMovie)
-
-  useEffect(() => {
-    movieRef.current = currentMovie
-  }, [currentMovie])
+  const [initialVideoId] = useState(initialWatchId)
 
   useEffect(() => {
     const startTime = Date.now()
@@ -183,94 +138,6 @@ export function DateRoomPage() {
     }, 1000)
     return () => clearInterval(interval)
   }, [])
-
-  useEffect(() => {
-    const applyRemote = (event: WatchEvent) => {
-      if (event.type === 'hello') setWatchStatus('Partner is in this watch room')
-      if (event.type === 'request-state') {
-        const movie = movieRef.current
-        const player = playerRef.current
-        if (movie?.youtubeId) {
-          syncRef.current?.send({ type: 'video', videoId: movie.youtubeId, title: movie.title })
-        }
-        if (player) {
-          const playing = player.getPlayerState() === 1
-          const time = player.getCurrentTime()
-          syncRef.current?.send(
-            playing ? { type: 'play', time, at: Date.now() } : { type: 'pause', time },
-          )
-        }
-        return
-      }
-      if (event.type === 'video' && event.videoId) {
-        setCurrentMovie({
-          id: 'youtube-' + event.videoId,
-          title: event.title || 'Watch together',
-          isYoutube: true,
-          youtubeId: event.videoId,
-        })
-        setIsMoviePlaying(true)
-        setShowMoviePicker(false)
-        return
-      }
-      const player = playerRef.current
-      if (!player) return
-      applyingRemote.current = true
-      if (event.type === 'play') {
-        const target = (event.time ?? 0) + (Date.now() - (event.at ?? Date.now())) / 1000
-        if (Math.abs(player.getCurrentTime() - target) > 1.75) player.seekTo(target, true)
-        player.playVideo()
-      }
-      if (event.type === 'pause') {
-        player.seekTo(event.time ?? 0, true)
-        player.pauseVideo()
-      }
-      if (event.type === 'seek') {
-        player.seekTo(event.time, true)
-        if (event.playing) player.playVideo()
-        else player.pauseVideo()
-      }
-      window.setTimeout(() => {
-        applyingRemote.current = false
-      }, 500)
-    }
-
-    const sync = createWatchSync(roomIdRef.current, applyRemote)
-    syncRef.current = sync
-    return () => {
-      sync.destroy()
-      syncRef.current = null
-    }
-  }, [])
-
-  useEffect(() => {
-    const id = window.setInterval(() => {
-      const player = playerRef.current
-      if (!player || applyingRemote.current || player.getPlayerState() !== 1) return
-      syncRef.current?.send({ type: 'play', time: player.getCurrentTime(), at: Date.now() })
-    }, 2500)
-    return () => window.clearInterval(id)
-  }, [])
-
-  const watchTogetherUrl = () => {
-    const url = new URL(window.location.origin + '/date-room')
-    url.searchParams.set('room', roomIdRef.current)
-    const id = movieRef.current?.youtubeId
-    if (id) url.searchParams.set('watch', id)
-    return url.toString()
-  }
-
-  const copyWatchLink = () => {
-    navigator.clipboard.writeText(watchTogetherUrl())
-    toast.success('Watch-together link copied', {
-      description: 'Open it on the other phone or laptop. Play/pause/seek sync over this room.',
-    })
-  }
-
-  const emitLocalWatch = (event: WatchEvent) => {
-    if (applyingRemote.current) return
-    syncRef.current?.send(event)
-  }
 
   const roomMessage = (text: string) => {
     setChatMessages((prev) => [...prev, { id: Date.now(), sender: 'system', text }])
@@ -325,53 +192,6 @@ export function DateRoomPage() {
       const aiReplyText = responses[Math.floor(Math.random() * responses.length)]
       setAiMessages((prev) => [...prev, { id: Date.now() + 1, sender: 'ai', text: aiReplyText }])
     }, 850)
-  }
-
-  const getYoutubeVideoId = (url: string): string | null => {
-    if (!url) return null
-    const trimmed = url.trim()
-    const shortMatch = trimmed.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/)
-    if (shortMatch) return shortMatch[1]
-    const watchMatch = trimmed.match(/[?&]v=([a-zA-Z0-9_-]{11})/)
-    if (watchMatch) return watchMatch[1]
-    const embedMatch = trimmed.match(/embed\/([a-zA-Z0-9_-]{11})/)
-    if (embedMatch) return embedMatch[1]
-    if (/^[a-zA-Z0-9_-]{11}$/.test(trimmed)) return trimmed
-    return null
-  }
-
-  const startYoutubeFromLink = (url: string, customTitle?: string) => {
-    const videoId = getYoutubeVideoId(url)
-    if (!videoId) {
-      toast.error('Invalid YouTube link', {
-        description: 'Paste a YouTube URL (youtu.be/... or youtube.com/watch?v=...)',
-      })
-      return
-    }
-    setCurrentMovie({
-      id: 'youtube-' + videoId,
-      title: customTitle || 'YouTube Video',
-      isYoutube: true,
-      youtubeId: videoId,
-      mood: 'Custom pick',
-    })
-    setShowMoviePicker(false)
-    setIsMoviePlaying(true)
-    setMovieProgress(0)
-    const next = new URLSearchParams(searchParams)
-    next.set('room', roomIdRef.current)
-    next.set('watch', videoId)
-    setSearchParams(next, { replace: true })
-    emitLocalWatch({ type: 'video', videoId, title: customTitle || 'YouTube Video' })
-    roomMessage('YouTube watch-together started. Copy the room link so both browsers stay in sync.')
-  }
-
-  const startMovie = (movie: (typeof movies)[number]) => {
-    setCurrentMovie(movie)
-    setShowMoviePicker(false)
-    setIsMoviePlaying(true)
-    setMovieProgress(0)
-    roomMessage(`Preview: you started watching "${movie.title}" together. Full films are not licensed here.`)
   }
 
   const sendTableToWaiter = () => {
@@ -470,54 +290,62 @@ export function DateRoomPage() {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pt-8 pb-16">
         <div className="grid lg:grid-cols-12 gap-6">
           <div className="lg:col-span-8">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div>
-                <div className="flex items-center gap-2 mb-3 px-1">
-                  <div className="text-[#C9A962] text-xs tracking-[2.5px]">ME</div>
-                  <div className="flex-1 h-px bg-[#3A2F36]" />
-                </div>
-                <div className="video-frame">
-                  <img src="/images/man-avatar.jpg" alt="You (preview still)" className="absolute inset-0 w-full h-full object-cover" />
-                  <div className="overlay" />
-                  <div className="video-label">
-                    <div className="live-dot" /> YOU
+            <WatchStage
+              roomId={roomId}
+              partnerName={partnerName}
+              initialVideoId={initialVideoId}
+              pickerOpen={showMoviePicker}
+              onPickerOpenChange={setShowMoviePicker}
+              onRoomMessage={roomMessage}
+              youStill={
+                <div>
+                  <div className="flex items-center gap-2 mb-3 px-1">
+                    <div className="text-[#C9A962] text-xs tracking-[2.5px]">ME</div>
+                    <div className="flex-1 h-px bg-[#3A2F36]" />
                   </div>
-                  <div className="absolute top-4 right-4 px-3 py-1 text-[10px] bg-black/70 rounded-full text-[#E8A0B8] tracking-[1.5px] border border-white/20">
-                    LIVE
+                  <div className="video-frame">
+                    <img src="/images/man-avatar.jpg" alt="You (preview still)" className="absolute inset-0 w-full h-full object-cover" />
+                    <div className="overlay" />
+                    <div className="video-label">
+                      <div className="live-dot" /> YOU
+                    </div>
+                    <div className="absolute top-4 right-4 px-3 py-1 text-[10px] bg-black/70 rounded-full text-[#E8A0B8] tracking-[1.5px] border border-white/20">
+                      LIVE
+                    </div>
                   </div>
+                  <p className="text-[11px] text-[#7A6B5F] mt-2">Stock still — not your webcam.</p>
                 </div>
-                <p className="text-[11px] text-[#7A6B5F] mt-2">Stock still — not your webcam.</p>
-              </div>
-
-              <div>
-                <div className="flex items-center justify-between mb-3 px-1">
-                  <div className="text-[#E8A0B8] text-xs tracking-[2.5px]">MY DATE</div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const next = window.prompt("What is your date's name tonight?", partnerName)
-                      if (next) setPartnerName(next)
-                    }}
-                    className="text-[#C9A962] text-xs underline hover:text-[#E8A0B8]"
-                  >
-                    edit name
-                  </button>
-                </div>
-                <div className="video-frame">
-                  <img src="/images/woman-avatar.jpg" alt={`${partnerName} (preview still)`} className="absolute inset-0 w-full h-full object-cover" />
-                  <div className="overlay" />
-                  <div className="video-label">
-                    <div className="live-dot" /> {partnerName.toUpperCase()}
+              }
+              partnerStill={
+                <div>
+                  <div className="flex items-center justify-between mb-3 px-1">
+                    <div className="text-[#E8A0B8] text-xs tracking-[2.5px]">MY DATE</div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const next = window.prompt("What is your date's name tonight?", partnerName)
+                        if (next) setPartnerName(next)
+                      }}
+                      className="text-[#C9A962] text-xs underline hover:text-[#E8A0B8]"
+                    >
+                      edit name
+                    </button>
                   </div>
-                  <div className="absolute top-4 right-4 px-3 py-1 text-[10px] bg-black/70 rounded-full text-[#E8A0B8] tracking-[1.5px] border border-white/20">
-                    LIVE
+                  <div className="video-frame">
+                    <img src="/images/woman-avatar.jpg" alt={`${partnerName} (preview still)`} className="absolute inset-0 w-full h-full object-cover" />
+                    <div className="overlay" />
+                    <div className="video-label">
+                      <div className="live-dot" /> {partnerName.toUpperCase()}
+                    </div>
+                    <div className="absolute top-4 right-4 px-3 py-1 text-[10px] bg-black/70 rounded-full text-[#E8A0B8] tracking-[1.5px] border border-white/20">
+                      LIVE
+                    </div>
                   </div>
+                  <p className="text-[11px] text-[#7A6B5F] mt-2">Stock still — not a live partner feed.</p>
                 </div>
-                <p className="text-[11px] text-[#7A6B5F] mt-2">Stock still — not a live partner feed.</p>
-              </div>
-
-              <WaiterVideoTile clip={waiterClip} onServiceEnded={() => setWaiterClip('idle')} />
-            </div>
+              }
+              waiterTile={<WaiterVideoTile clip={waiterClip} onServiceEnded={() => setWaiterClip('idle')} />}
+            />
             <p className="text-center text-xs text-[#A8988A] mt-3">{waiterNote}</p>
 
             <div className="mt-7 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -547,10 +375,10 @@ export function DateRoomPage() {
               </button>
               <button
                 type="button"
-                onClick={() => setNetflixOpen(true)}
+                onClick={() => setCompanionOpen(true)}
                 className="btn btn-outline py-[19px] text-[15px] flex items-center justify-center gap-3 border-[#E8A0B8] hover:bg-[#E8A0B8] hover:text-[#0F0A0D]"
               >
-                <Play className="w-5 h-5" /> Netflix companion
+                <Play className="w-5 h-5" /> Watch on your own apps
               </button>
             </div>
           </div>
@@ -734,218 +562,12 @@ export function DateRoomPage() {
         )}
       </AnimatePresence>
 
-      <AnimatePresence>
-        {currentMovie && (
-          <div
-            className="fixed inset-0 z-[130] flex items-center justify-center bg-black/95 p-4"
-            onClick={() => {
-              setCurrentMovie(null)
-              setIsMoviePlaying(false)
-            }}
-          >
-            <motion.div
-              className={`modal w-full bg-[#0F0A0D] border border-[#3A2F36] rounded-3xl overflow-hidden ${currentMovie.isYoutube ? 'max-w-6xl' : 'max-w-5xl'}`}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="bg-[#1A1418] px-6 py-4 flex items-center justify-between gap-3 border-b border-[#3A2F36]">
-                <div>
-                  <div className="text-[#C9A962] font-medium tracking-widest text-sm">
-                    {currentMovie.isYoutube ? 'YOUTUBE WATCH-TOGETHER' : 'MOVIE NIGHT PREVIEW'}
-                  </div>
-                  <div className="text-[#F8F4ED] font-medium">{currentMovie.title}</div>
-                  <div className="text-xs text-[#A8988A] mt-1">{watchStatus}</div>
-                </div>
-                <div className="flex items-center gap-2">
-                  {currentMovie.isYoutube && (
-                    <button type="button" className="btn btn-ghost text-xs px-3 py-2" onClick={copyWatchLink}>
-                      Copy sync link
-                    </button>
-                  )}
-                  <button type="button" onClick={() => { setCurrentMovie(null); setIsMoviePlaying(false); playerRef.current = null }} className="text-[#A8988A] hover:text-white">
-                    <X />
-                  </button>
-                </div>
-              </div>
-              <div className="relative bg-black">
-                {!isMoviePlaying ? (
-                  <div className="aspect-video flex flex-col items-center justify-center text-center p-8">
-                    <button type="button" onClick={() => setIsMoviePlaying(true)} className="btn btn-gold px-10 py-4 text-lg flex items-center gap-3">
-                      <Play className="w-6 h-6" /> Play
-                    </button>
-                  </div>
-                ) : currentMovie.isYoutube && currentMovie.youtubeId ? (
-                  <div className="aspect-video bg-black">
-                    <YouTube
-                      videoId={currentMovie.youtubeId}
-                      opts={{ width: '100%', height: '100%', playerVars: { autoplay: 1, modestbranding: 1, rel: 0, controls: 1 } }}
-                      className="w-full h-full"
-                      iframeClassName="w-full h-full"
-                      onReady={(event) => {
-                        playerRef.current = event.target
-                        event.target.playVideo()
-                      }}
-                      onPlay={() => {
-                        const player = playerRef.current
-                        emitLocalWatch({ type: 'play', time: player?.getCurrentTime() ?? 0, at: Date.now() })
-                      }}
-                      onPause={() => {
-                        const player = playerRef.current
-                        emitLocalWatch({ type: 'pause', time: player?.getCurrentTime() ?? 0 })
-                      }}
-                    />
-                  </div>
-                ) : (
-                  <div className="aspect-video flex flex-col">
-                    <div className="flex-1 flex items-center justify-center text-center px-8">
-                      <div>
-                        <div className="text-[#F8F4ED] text-4xl">{currentMovie.title}</div>
-                        <div className="text-[#A8988A] mt-3">Placeholder mood — we do not stream this film. Use YouTube for a real clip.</div>
-                      </div>
-                    </div>
-                    <div className="bg-[#111] p-4 flex items-center gap-4">
-                      <button type="button" onClick={() => setIsMoviePlaying(false)} className="text-[#E8A0B8]">
-                        <Pause className="w-6 h-6" />
-                      </button>
-                      <input
-                        type="range"
-                        min="0"
-                        max="100"
-                        value={movieProgress}
-                        onChange={(e) => setMovieProgress(Number(e.target.value))}
-                        className="w-full accent-[#C9A962]"
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {showMoviePicker && (
-          <div
-            className="fixed inset-0 z-[120] flex items-center justify-center bg-black/80 p-6"
-            onClick={() => {
-              setShowMoviePicker(false)
-              setYoutubeInput('')
-            }}
-          >
-            <div className="modal w-full max-w-3xl" onClick={(e) => e.stopPropagation()}>
-              <div className="card p-8">
-                <div className="flex items-start justify-between mb-6">
-                  <div>
-                    <div className="text-[#C9A962] text-xs tracking-[3px]">WATCH TOGETHER</div>
-                    <h3 className="text-[#F8F4ED] text-3xl mt-1">YouTube in this browser</h3>
-                    <p className="text-[#A8988A] text-sm mt-2">Play, pause, and seek sync across both browsers in this room. Netflix is companion-only and is not embedded.</p>
-                    <button type="button" className="btn btn-ghost text-xs mt-3 px-3 py-2" onClick={copyWatchLink}>
-                      Copy watch-together link
-                    </button>
-                  </div>
-                  <button type="button" onClick={() => { setShowMoviePicker(false); setYoutubeInput('') }}>
-                    <X />
-                  </button>
-                </div>
-                <div className="mb-8">
-                  <div className="text-sm text-[#A8988A] mb-2 tracking-widest">PASTE ANY YOUTUBE LINK</div>
-                  <div className="flex gap-3">
-                    <input
-                      type="text"
-                      value={youtubeInput}
-                      onChange={(e) => setYoutubeInput(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' && youtubeInput.trim()) startYoutubeFromLink(youtubeInput)
-                      }}
-                      placeholder="https://youtu.be/0pdqf4P9MB8"
-                      className="input flex-1"
-                    />
-                    <button type="button" onClick={() => youtubeInput.trim() && startYoutubeFromLink(youtubeInput)} className="btn btn-gold px-8" disabled={!youtubeInput.trim()}>
-                      Watch
-                    </button>
-                  </div>
-                  <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3">
-                    {[
-                      { label: 'La La Land', id: '0pdqf4P9MB8' },
-                      { label: 'The Notebook', id: 'yDJIcYE32NU' },
-                      { label: 'Pride & Prejudice', id: 'Ur_DIHsARJ4' },
-                      { label: 'Before Sunrise', id: '9vN6DHB6bJc' },
-                    ].map((trailer) => (
-                      <button
-                        key={trailer.id}
-                        type="button"
-                        onClick={() => startYoutubeFromLink(`https://www.youtube.com/watch?v=${trailer.id}`, trailer.label)}
-                        className="movie-card card p-4 text-left border border-[#3A2F36] hover:border-[#E8A0B8]"
-                      >
-                        <div className="text-[#F8F4ED]">{trailer.label}</div>
-                        <div className="text-[#C9A962] text-xs mt-3">PLAY TRAILER →</div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <div className="border-t border-[#3A2F36] pt-6">
-                  <div className="text-sm text-[#A8988A] mb-3 tracking-widest">MOOD CARDS (NOT THE FULL FILM)</div>
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    {movies.map((movie) => (
-                      <button key={movie.id} type="button" onClick={() => startMovie(movie)} className="movie-card card p-6 text-left border border-[#3A2F36] hover:border-[#C9A962]">
-                        <div className="text-[#C9A962] text-xs tracking-widest">{movie.year} • {movie.duration}</div>
-                        <div className="text-[#F8F4ED] text-2xl mt-2">{movie.title}</div>
-                        <div className="text-[#A8988A] mt-1 text-sm">{movie.mood}</div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {netflixOpen && (
-          <div className="fixed inset-0 z-[125] flex items-center justify-center bg-black/80 p-4" onClick={() => setNetflixOpen(false)}>
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="modal w-full max-w-lg bg-[#1A1418] border border-[#3A2F36] rounded-3xl p-8"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="flex justify-between items-start mb-4">
-                <h3 className="text-[#F8F4ED] text-2xl">Netflix companion mode</h3>
-                <button type="button" onClick={() => setNetflixOpen(false)}><X className="text-[#A8988A]" /></button>
-              </div>
-              <p className="text-[#A8988A] text-sm leading-relaxed mb-4">
-                Netflix is not embedded on this website. Each of you opens Netflix on your own account (another tab or the Netflix app). This date room stays open as the companion: chat, both restaurant menus, and the waiter tile remain here.
-              </p>
-              <p className="text-[#EDE4D9] text-sm mb-6">
-                Status: {netflixPlaying ? 'You marked the companion as playing.' : 'Paused / not started.'}
-              </p>
-              <div className="flex gap-3">
-                <button
-                  type="button"
-                  className="btn btn-gold flex-1"
-                  onClick={() => {
-                    setNetflixPlaying(true)
-                    roomMessage(`${partnerName} and you are watching on your own Netflix accounts. This page is the companion — we do not stream Netflix.`)
-                  }}
-                >
-                  We’re watching
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-outline flex-1"
-                  onClick={() => {
-                    setNetflixPlaying(false)
-                    roomMessage('Companion paused. Menus and waiter are still on this table.')
-                  }}
-                >
-                  Pause companion
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+      <CompanionMode
+        partnerName={partnerName}
+        open={companionOpen}
+        onClose={() => setCompanionOpen(false)}
+        onRoomMessage={roomMessage}
+      />
 
       <AnimatePresence>
         {showInviteModal && (
@@ -966,7 +588,7 @@ export function DateRoomPage() {
                     <button
                       type="button"
                       onClick={() => {
-                        const link = `${window.location.origin}/date-room`
+                        const link = `${window.location.origin}/date-room?room=${roomId}`
                         navigator.clipboard.writeText(link)
                         toast.success('Preview link copied', { description: 'Live invites are not sending. This opens the demo.' })
                       }}
