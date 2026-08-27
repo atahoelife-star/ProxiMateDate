@@ -47,23 +47,20 @@ function prepareDocument(win: Window) {
   return mount
 }
 
-async function requestChatWindow(): Promise<Window | null> {
+function requestChatWindow(): Promise<Window | null> {
   const width = 360
   const height = 520
   const pip = (window as PipWindow).documentPictureInPicture
   if (pip?.requestWindow) {
-    try {
-      return await pip.requestWindow({ width, height })
-    } catch {
-      /* user gesture missing, or already open */
-    }
+    // Invoke in the current turn so a click gesture still counts; do not window.open after this await.
+    return pip.requestWindow({ width, height }).catch(() => null)
   }
   const popup = window.open(
     '',
     'proximate-date-chat',
     `popup=yes,width=${width},height=${height},left=24,top=72,resizable=yes,scrollbars=yes`,
   )
-  return popup
+  return Promise.resolve(popup)
 }
 
 export class FloatingDateChat {

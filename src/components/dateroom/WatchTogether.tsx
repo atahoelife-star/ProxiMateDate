@@ -169,9 +169,17 @@ export function WatchStage({
     })
   }
 
-  const openFloater = async () => {
-    const ok = await floaterRef.current.open()
-    if (ok) paintFloater()
+  const openFloater = () => {
+    const pending = floaterRef.current.open()
+    void pending.then((ok) => {
+      if (ok) paintFloater()
+    })
+  }
+
+  /** YouTube tab + date chat must both start in this click. Awaiting first drops the gesture and the second window is blocked. */
+  const openYoutubeAndChat = (videoId: string) => {
+    window.open(youtubeWatchUrl(videoId), '_blank', 'noopener,noreferrer')
+    openFloater()
   }
 
   const startVideo = (raw: string, title?: string) => {
@@ -189,12 +197,13 @@ export function WatchStage({
     return true
   }
 
-  const beginWatch = async (raw: string, title?: string) => {
-    if (!parseYouTubeId(raw)) {
+  const beginWatch = (raw: string, title?: string) => {
+    const id = parseYouTubeId(raw)
+    if (!id) {
       startVideo(raw, title)
       return
     }
-    await openFloater()
+    openYoutubeAndChat(id)
     startVideo(raw, title)
   }
 
@@ -233,24 +242,21 @@ export function WatchStage({
   const openOnYouTube = Boolean(state && embedBlocked && (!pastedId || watchingThisPaste))
 
   const onPlayClick = () => {
-    void (async () => {
-      if (openOnYouTube && state) {
-        await openFloater()
-        window.open(youtubeWatchUrl(state.videoId), '_blank', 'noopener,noreferrer')
-        return
-      }
-      if (pastedId && (!state || pastedId !== state.videoId)) {
-        await beginWatch(link)
-        return
-      }
-      if (!state) {
-        setParseError('Paste a youtube.com or youtu.be link, then press Play.')
-        return
-      }
-      if (isFollower) return
-      if (!state.playing) await openFloater()
-      togglePlay()
-    })()
+    if (openOnYouTube && state) {
+      openYoutubeAndChat(state.videoId)
+      return
+    }
+    if (pastedId && (!state || pastedId !== state.videoId)) {
+      beginWatch(link)
+      return
+    }
+    if (!state) {
+      setParseError('Paste a youtube.com or youtu.be link, then press Play.')
+      return
+    }
+    if (isFollower) return
+    if (!state.playing) openFloater()
+    togglePlay()
   }
 
   const onSeek = (seconds: number) => {
@@ -455,12 +461,12 @@ export function WatchStage({
                   value={link}
                   onChange={(e) => setLink(e.target.value)}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter' && link.trim()) void beginWatch(link)
+                    if (e.key === 'Enter' && link.trim()) beginWatch(link)
                   }}
                   placeholder="https://youtu.be/… or youtube.com/watch?v=…"
                   className="input flex-1"
                 />
-                <button type="button" className="btn btn-gold px-8" disabled={!link.trim()} onClick={() => void beginWatch(link)}>
+                <button type="button" className="btn btn-gold px-8" disabled={!link.trim()} onClick={() => beginWatch(link)}>
                   Play
                 </button>
               </div>
@@ -471,7 +477,7 @@ export function WatchStage({
                   <button
                     key={trailer.id}
                     type="button"
-                    onClick={() => void beginWatch(trailer.id, trailer.label)}
+                    onClick={() => beginWatch(trailer.id, trailer.label)}
                     className="movie-card card p-4 text-left border border-[#3A2F36] hover:border-[#E8A0B8]"
                   >
                     <div className="text-[#F8F4ED]">{trailer.label}</div>
