@@ -12,6 +12,8 @@ import {
   type WatchState,
 } from '../../lib/watchSync'
 import { parseYouTubeId, ROMANTIC_TRAILERS, youtubeWatchUrl, type YTPlayerHandle } from '../../lib/youtube'
+import { RESTAURANT_OVERLOOK_SRC } from '../../data/waiterClips'
+import { FloatingDateChat } from '../../lib/floatingChat'
 
 type WatchStageProps = {
   roomId: string
@@ -50,10 +52,34 @@ export function WatchStage({
   const applying = useRef(false)
   const stateRef = useRef(state)
   const onRoomMessageRef = useRef(onRoomMessage)
+  const floaterRef = useRef(new FloatingDateChat())
+  const chatRef = useRef(chat)
+
+  useEffect(() => {
+    chatRef.current = chat
+  })
 
   useEffect(() => {
     onRoomMessageRef.current = onRoomMessage
   }, [onRoomMessage])
+
+  useEffect(() => {
+    const floater = floaterRef.current
+    if (!floater.isOpen()) return
+    const c = chatRef.current
+    floater.render({
+      messages: c.messages,
+      input: c.input,
+      onInputChange: c.onInputChange,
+      onSend: c.onSend,
+      partnerName,
+    })
+  }, [chat.messages, chat.input, partnerName, chat.onInputChange, chat.onSend])
+
+  useEffect(() => {
+    const floater = floaterRef.current
+    return () => floater.close()
+  }, [])
 
   useEffect(() => {
     stateRef.current = state
@@ -122,11 +148,27 @@ export function WatchStage({
     setState(written)
   }
 
+  const paintFloater = () => {
+    const c = chatRef.current
+    floaterRef.current.render({
+      messages: c.messages,
+      input: c.input,
+      onInputChange: c.onInputChange,
+      onSend: c.onSend,
+      partnerName,
+    })
+  }
+
+  const openFloater = async () => {
+    const ok = await floaterRef.current.open()
+    if (ok) paintFloater()
+  }
+
   const startVideo = (raw: string, title?: string) => {
     const id = parseYouTubeId(raw)
     if (!id) {
       setParseError('Paste a youtube.com or youtu.be link, then press Play.')
-      return
+      return false
     }
     setParseError('')
     setEmbedBlocked(false)
@@ -134,9 +176,20 @@ export function WatchStage({
     publish(emptyWatchState(id, title || 'YouTube'))
     onPickerOpenChange(false)
     onRoomMessageRef.current(`Watch together: ${title || id}.`)
+    return true
+  }
+
+  const beginWatch = async (raw: string, title?: string) => {
+    if (!parseYouTubeId(raw)) {
+      startVideo(raw, title)
+      return
+    }
+    await openFloater()
+    startVideo(raw, title)
   }
 
   const stopWatching = () => {
+    floaterRef.current.close()
     hostRef.current = null
     setState(null)
     setEmbedBlocked(false)
@@ -170,20 +223,24 @@ export function WatchStage({
   const openOnYouTube = Boolean(state && embedBlocked && (!pastedId || watchingThisPaste))
 
   const onPlayClick = () => {
-    if (openOnYouTube && state) {
-      window.open(youtubeWatchUrl(state.videoId), '_blank', 'noopener,noreferrer')
-      return
-    }
-    if (pastedId && (!state || pastedId !== state.videoId)) {
-      startVideo(link)
-      return
-    }
-    if (!state) {
-      setParseError('Paste a youtube.com or youtu.be link, then press Play.')
-      return
-    }
-    if (isFollower) return
-    togglePlay()
+    void (async () => {
+      if (openOnYouTube && state) {
+        await openFloater()
+        window.open(youtubeWatchUrl(state.videoId), '_blank', 'noopener,noreferrer')
+        return
+      }
+      if (pastedId && (!state || pastedId !== state.videoId)) {
+        await beginWatch(link)
+        return
+      }
+      if (!state) {
+        setParseError('Paste a youtube.com or youtu.be link, then press Play.')
+        return
+      }
+      if (isFollower) return
+      if (!state.playing) await openFloater()
+      togglePlay()
+    })()
   }
 
   const onSeek = (seconds: number) => {
@@ -238,7 +295,7 @@ export function WatchStage({
         <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
           <div>
             <div className="text-xs tracking-[2px] text-[#C9A962]">YOUTUBE WATCH TOGETHER</div>
-            <div className="text-[#F8F4ED]">{state?.title ?? 'Paste a link to begin'}</div>
+            <div className="text-[#F8F4ED]">{state?.title ?? 'Overlook of the dining room'}</div>
           </div>
           {state && (
             <div className="flex flex-wrap gap-2">
@@ -275,62 +332,79 @@ export function WatchStage({
             className="input flex-1"
             aria-label="YouTube link"
           />
-          {openOnYouTube && watchHref ? (
-            <a
-              href={watchHref}
-              target="_blank"
-              rel="noreferrer"
-              className="btn btn-gold px-6 py-2 shrink-0"
-            >
-              <ExternalLink className="w-4 h-4" /> Watch on YouTube
-            </a>
-          ) : (
-            <button type="button" className="btn btn-gold px-6 py-2 shrink-0" onClick={onPlayClick}>
-              {playLabel === 'Pause' ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-              {playLabel}
-            </button>
-          )}
+          <button type="button" className="btn btn-gold px-6 py-2 shrink-0" onClick={onPlayClick}>
+            {openOnYouTube ? <ExternalLink className="w-4 h-4" /> : playLabel === 'Pause' ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+            {playLabel}
+          </button>
         </div>
         <p className="text-xs text-[#A8988A] mt-2">
           Paste the link, then press Play. If it cannot play here, Play becomes Watch on YouTube for that same video.
         </p>
         {parseError && <p className="text-sm text-[#E8A0B8] mt-2">{parseError}</p>}
 
-        <div className="video-frame video-frame-watch mt-4 flex-1 min-h-[220px]">
-          {state && embedBlocked && watchHref ? (
-            <a
-              href={watchHref}
-              target="_blank"
-              rel="noreferrer"
-              className="absolute inset-0 z-20 flex items-center justify-center bg-[#0F0A0D] text-[#C9A962] underline px-4 text-center text-sm"
-            >
-              Watch on YouTube
-            </a>
-          ) : state ? (
-            <>
-              <YoutubeEmbed
-                videoId={state.videoId}
-                role={isFollower ? 'follower' : 'host'}
-                muted={state.muted || isFollower}
-                onReady={(player) => {
-                  hostRef.current = player
-                  if (state.muted || isFollower) player.mute()
-                  if (isFollower) applyToPlayer(player, state, true)
-                }}
-                onHostState={isFollower ? undefined : onHostState}
-                onError={() => setEmbedBlocked(true)}
+        {embedBlocked && state && watchHref ? (
+          <div className="mt-4 grid md:grid-cols-5 gap-4 flex-1 min-h-[280px]">
+            <div className="md:col-span-3 video-frame video-frame-watch min-h-[220px]">
+              <video
+                src={RESTAURANT_OVERLOOK_SRC}
+                className="absolute inset-0 w-full h-full object-cover"
+                muted
+                loop
+                playsInline
+                autoPlay
               />
-              <div className="video-label pointer-events-none">
-                <div className="live-dot" /> {isFollower ? 'FOLLOW' : 'WATCH'}
-              </div>
-            </>
-          ) : (
-            <div className="absolute inset-0 flex items-center justify-center text-[#A8988A] text-sm px-6 text-center">
-              Paste a YouTube link, then press Play.
+              <button
+                type="button"
+                onClick={onPlayClick}
+                className="absolute inset-0 z-20 flex items-center justify-center bg-[#0F0A0D]/75 text-[#C9A962] underline px-4 text-center text-sm"
+              >
+                Watch on YouTube
+              </button>
             </div>
-          )}
-          {chatOverlay}
-        </div>
+            <div className="md:col-span-2 min-h-[280px]">
+              <WatchChatOverlay
+                variant="panel"
+                messages={chat.messages}
+                input={chat.input}
+                onInputChange={chat.onInputChange}
+                onSend={chat.onSend}
+                partnerName={partnerName}
+              />
+            </div>
+          </div>
+        ) : (
+          <div className="video-frame video-frame-watch mt-4 flex-1 min-h-[220px]">
+            {state ? (
+              <>
+                <YoutubeEmbed
+                  videoId={state.videoId}
+                  role={isFollower ? 'follower' : 'host'}
+                  muted={state.muted || isFollower}
+                  onReady={(player) => {
+                    hostRef.current = player
+                    if (state.muted || isFollower) player.mute()
+                    if (isFollower) applyToPlayer(player, state, true)
+                  }}
+                  onHostState={isFollower ? undefined : onHostState}
+                  onError={() => setEmbedBlocked(true)}
+                />
+                <div className="video-label pointer-events-none">
+                  <div className="live-dot" /> {isFollower ? 'FOLLOW' : 'WATCH'}
+                </div>
+              </>
+            ) : (
+              <video
+                src={RESTAURANT_OVERLOOK_SRC}
+                className="absolute inset-0 w-full h-full object-cover"
+                muted
+                loop
+                playsInline
+                autoPlay
+              />
+            )}
+            {chatOverlay}
+          </div>
+        )}
 
         {state && !embedBlocked && !isFollower && (
           <div className="flex items-center gap-3 mt-4">
@@ -379,12 +453,12 @@ export function WatchStage({
                   value={link}
                   onChange={(e) => setLink(e.target.value)}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter' && link.trim()) startVideo(link)
+                    if (e.key === 'Enter' && link.trim()) void beginWatch(link)
                   }}
                   placeholder="https://youtu.be/… or youtube.com/watch?v=…"
                   className="input flex-1"
                 />
-                <button type="button" className="btn btn-gold px-8" disabled={!link.trim()} onClick={() => startVideo(link)}>
+                <button type="button" className="btn btn-gold px-8" disabled={!link.trim()} onClick={() => void beginWatch(link)}>
                   Play
                 </button>
               </div>
@@ -395,7 +469,7 @@ export function WatchStage({
                   <button
                     key={trailer.id}
                     type="button"
-                    onClick={() => startVideo(trailer.id, trailer.label)}
+                    onClick={() => void beginWatch(trailer.id, trailer.label)}
                     className="movie-card card p-4 text-left border border-[#3A2F36] hover:border-[#E8A0B8]"
                   >
                     <div className="text-[#F8F4ED]">{trailer.label}</div>

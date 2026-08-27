@@ -1,4 +1,8 @@
-Royalty-free waiter clips downloaded into this folder (not hotlinked).
+Royalty-free clips downloaded into this folder (not hotlinked).
+
+restaurant-overlook.mp4
+  Pexels #31631562 — gusat silviu, “Cozy Modern Restaurant Interior at Night”
+  https://www.pexels.com/video/cozy-modern-restaurant-interior-at-night-31631562/
 
 waiter-idle.mp4
   Pexels #6327644 — Tima Miroshnichenko, “Waitress Serving Order to Customer”
@@ -8,9 +12,19 @@ waiter-pour-wine.mp4
   Pexels #8764590 — Pavel Danilyuk, “Sommelier Pouring the Wine in a Glass”
   https://www.pexels.com/video/sommelier-pouring-the-wine-in-a-glass-8764590/
 
+waiter-vegan.mp4
+  Mixkit #2430 — “Gourmet dish and a waiter” (plated greens)
+  Mixkit Stock Video Free License
+  https://mixkit.co/free-stock-video/gourmet-dish-and-a-waiter-2430/
+
+waiter-steak.mp4
+  Pexels #35517076 — Nadin Sh, “Chef Serving Sliced Steak on Plate Indoors”
+  https://www.pexels.com/video/chef-serving-sliced-steak-on-plate-indoors-35517076/
+
 waiter-set-plate.mp4
   Pexels #5820011 — Denys Gromov, “Close up Waiter Hands Carrying Food”
   https://www.pexels.com/video/close-up-waiter-hands-carrying-food-5820011/
+  Kept on disk; dessert and steak no longer use this file.
 
 waiter-pour-champagne.mp4
   Mixkit #41264 — “Serving champagne in a glass in a very close shot”
@@ -18,6 +32,5 @@ waiter-pour-champagne.mp4
   https://mixkit.co/free-stock-video/serving-champagne-in-a-glass-in-a-very-close-shot-41264/
 
 waiter-dessert.mp4
-  Mixkit #2430 — “Gourmet dish and a waiter”
-  Mixkit Stock Video Free License
-  https://mixkit.co/free-stock-video/gourmet-dish-and-a-waiter-2430/
+  Pexels #31750575 — Dominik Zítka, “Crème Brûlée Caramelization with Torch”
+  https://www.pexels.com/video/creme-brulee-caramelization-with-torch-31750575/

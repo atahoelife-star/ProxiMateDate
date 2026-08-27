@@ -25,7 +25,8 @@ import {
   type RestaurantId,
 } from '../data/menus'
 import {
-  clipForMenuCourse,
+  clipForOrder,
+  clipForTable,
   clipToPlay,
   presenceAfterService,
   WAITER_CLIPS,
@@ -199,11 +200,11 @@ export function DateRoomPage() {
     else if (full.seat === 'partner') setPartnerOrder((prev) => [...prev, full])
     else setTableOrder((prev) => [...prev, full])
 
-    const clip = clipForMenuCourse(full.course)
+    const clip = clipForOrder(full)
     const who = full.seat === 'table' ? 'the table' : full.seat === 'you' ? 'you' : partnerName
     playWaiter(
       clip,
-      clip === 'dessert' ? 'Serving dessert' : 'Setting a plate',
+      WAITER_CLIPS[clip].label,
       `The waiter brings ${full.name} for ${who} (${full.restaurantName})${full.side ? ` with ${full.side}` : ''}. Demo only — nothing is cooked or charged.`,
     )
   }
@@ -244,8 +245,7 @@ export function DateRoomPage() {
       toast.message('Nothing to serve yet', { description: 'Add dishes from either menu first.' })
       return
     }
-    const dessertOnly = all.every((l) => l.course === 'dessert')
-    const clip: WaiterClip = dessertOnly ? 'dessert' : 'plate'
+    const clip = clipForTable(all)
     const summary = all
       .map((l) => `${l.name} (${l.restaurantName})`)
       .join('; ')
@@ -276,7 +276,7 @@ export function DateRoomPage() {
     {
       title: 'Set the plates from both kitchens',
       message: 'Plates from The Verdant Ember and The Silver Sage can land on the same table.',
-      clip: 'plate',
+      clip: 'vegan',
     },
     {
       title: 'Bring dessert',
@@ -480,7 +480,10 @@ export function DateRoomPage() {
                     key={action.title}
                     type="button"
                     onClick={() => {
-                      playWaiter(action.clip, action.title, action.message)
+                      const all = [...youOrder, ...partnerOrder, ...tableOrder]
+                      const clip =
+                        action.title.startsWith('Set the plates') && all.length > 0 ? clipForTable(all) : action.clip
+                      playWaiter(clip, action.title, action.message)
                       setShowWaiterMenu(false)
                     }}
                     className="text-left p-5 rounded-2xl border border-[#3A2F36] hover:border-[#E8A0B8] hover:bg-[#221C21] transition"
