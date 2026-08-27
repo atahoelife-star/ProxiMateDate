@@ -27,6 +27,8 @@ npm run dev
 
 `npm run build` type-checks and emits `dist/`. Local Vite has no `/api` routes, so paid Pricing buttons fall through to the email waitlist.
 
+Cloudflare Workers Git builds (if connected) need this Wrangler file and a dashboard **Build command** of `npm run build`. They serve the SPA only; Stripe Checkout is the Vercel function.
+
 ## Stripe Checkout (website only)
 
 Paid plans: Dinner **$9.99**, Movie Night **$14.99**, Premium Romance **$24.99**. Candlelight Chat stays free. The Date Room is not gated.
