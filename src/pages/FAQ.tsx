@@ -14,7 +14,7 @@ export function FaqPage() {
       </p>
       <h2 className="text-[#F8F4ED] text-xl">Do you take payment?</h2>
       <p>
-        Not yet. Paid tiers are a waitlist. We do not collect card numbers and we do not pretend to charge you. See <Link to="/pricing" className="text-[#C9A962] underline">Pricing</Link>.
+        The Date Room is free. Paid one-time amounts ($9.99 / $14.99 / $24.99) open Stripe Checkout when a <code className="text-[#C9A962]">STRIPE_SECRET_KEY</code> is set on Vercel. If that key is missing, Pricing collects a waitlist email instead. We never ask for raw card numbers on this website. See <Link to="/pricing" className="text-[#C9A962] underline">Pricing</Link>.
       </p>
       <h2 className="text-[#F8F4ED] text-xl">How do Sign In and Get Started work?</h2>
       <p>
@@ -22,7 +22,7 @@ export function FaqPage() {
       </p>
       <h2 className="text-[#F8F4ED] text-xl">YouTube and Netflix?</h2>
       <p>
-        YouTube watch-together uses Google’s official IFrame Player (youtube.com/iframe_api). Paste a link or pick a trailer. Play, pause, seek, and mute control the host tile; the partner tile follows on this screen (muted so you hear one soundtrack). If a video forbids embedding, we show an error — we will not pretend it plays. A shareable <code className="text-[#C9A962]">?room=&watch=</code> link loads the same video in another tab; two tabs on this computer stay roughly in sync via the room code. Lockstep across two different phones needs a realtime server we have not added yet.
+        YouTube watch-together uses Google’s official IFrame Player (youtube.com/iframe_api). Paste a link or pick a trailer. Play, pause, seek, and mute control the host tile; the partner tile follows on this screen (muted so you hear one soundtrack). If a video forbids embedding, we show an error — we will not pretend it plays. Copy a follower link (<code className="text-[#C9A962]">?room=&watch=&follow=1</code>) for a second tab on this computer. Lockstep across two different phones needs a realtime server we have not added yet.
       </p>
       <p>
         Netflix, Hulu, Disney+, and Prime Video are companion-only: a countdown and this date room. We do not embed or proxy those catalogs.

@@ -1,73 +1,42 @@
-# React + TypeScript + Vite
+# ProxiMateDate
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Website-only long-distance date night at [proximatedate.com](https://www.proximatedate.com). Vite + React. There is no iOS/Android app.
 
-Currently, two official plugins are available:
+## What ships in this preview
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Date Room (free):** both restaurant menus in one session, waiter serving videos, chat, YouTube Watch Together, Netflix-class companion countdown.
+- **Watch Together:** official YouTube IFrame Player (`youtube.com/iframe_api`). Paste a youtube.com / youtu.be link or pick a romantic trailer. Play / pause / seek / mute. Videos that disallow embedding show an error — we do not fake Netflix or other catalogs.
+- **Companion mode:** countdown + chat while each person uses their own Netflix / Hulu / Disney+ / Prime app. No unofficial stream URLs.
+- **Waitlist:** Sign In / Get Started / Contact post to FormSubmit (`atahoelife@gmail.com`, subject **ProxiMateDate waitlist**).
+- **Pricing:** paid one-time amounts use Stripe Checkout when a secret key is configured. This site never collects raw card numbers.
 
-## React Compiler
+### Watch Together sync (limitation)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+There is no websocket server yet.
 
-## Expanding the ESLint configuration
+- In one browser, YOU is the host player and the partner tile follows (muted so you hear one soundtrack).
+- Copy the room link (`?room=&watch=&follow=1`) to open a second tab on the **same computer**. That tab follows via `localStorage` + BroadcastChannel + a 400ms poll.
+- Two phones can open the same video from the URL; lockstep across devices needs a realtime backend we have not added.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Local development
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+`npm run build` type-checks and emits `dist/`. Local Vite has no `/api` routes, so paid Pricing buttons fall through to the email waitlist.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Stripe Checkout (website only)
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Paid plans: Dinner **$9.99**, Movie Night **$14.99**, Premium Romance **$24.99**. Candlelight Chat stays free. The Date Room is not gated.
+
+1. Create a Stripe account at [https://dashboard.stripe.com/register](https://dashboard.stripe.com/register).
+2. From Developers → API keys, copy the **Secret key** (`sk_test_…` for testing, `sk_live_…` for production). Never put this in the frontend repo.
+3. In the [Vercel project](https://vercel.com) → Settings → Environment Variables, add:
+   - `STRIPE_SECRET_KEY` = that secret
+   - optional `PUBLIC_SITE_URL` = `https://www.proximatedate.com` (used for success/cancel URLs)
+4. Redeploy. Pricing CTAs `POST /api/create-checkout`, then redirect to Stripe-hosted Checkout.
+5. If the key is missing, the API returns 503 and the site collects a waitlist email instead. No card fields are rendered on proximatedate.com.
+
+Checkout success returns to `/date-room?paid=1`. Success does not unlock features — the date room was already free.

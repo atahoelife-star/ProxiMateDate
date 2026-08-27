@@ -3,6 +3,7 @@ import { toast } from 'sonner'
 import { Link as LinkIcon, Pause, Play, Volume2, VolumeX, X } from 'lucide-react'
 import { YoutubeEmbed } from './YoutubeEmbed'
 import {
+  bootWatchState,
   emptyWatchState,
   expectedTime,
   subscribeWatchState,
@@ -15,6 +16,7 @@ type WatchStageProps = {
   roomId: string
   partnerName: string
   initialVideoId: string | null
+  isFollower: boolean
   pickerOpen: boolean
   onPickerOpenChange: (open: boolean) => void
   onRoomMessage: (text: string) => void
@@ -27,6 +29,7 @@ export function WatchStage({
   roomId,
   partnerName,
   initialVideoId,
+  isFollower,
   pickerOpen,
   onPickerOpenChange,
   onRoomMessage,
@@ -36,9 +39,7 @@ export function WatchStage({
 }: WatchStageProps) {
   const [link, setLink] = useState('')
   const [error, setError] = useState('')
-  const [state, setState] = useState<WatchState | null>(() =>
-    initialVideoId ? emptyWatchState(initialVideoId, 'Watch together') : null,
-  )
+  const [state, setState] = useState<WatchState | null>(() => bootWatchState(roomId, initialVideoId, isFollower))
   const [duration, setDuration] = useState(0)
   const [displayTime, setDisplayTime] = useState(0)
 
@@ -57,28 +58,38 @@ export function WatchStage({
   }, [state])
 
   useEffect(() => {
+    if (isFollower) return
+    const current = stateRef.current
+    if (!current) return
+    writeWatchState(roomId, current)
+  }, [roomId, isFollower])
+
+  useEffect(() => {
     if (!state) return
     const next = new URL(window.location.href)
     next.searchParams.set('room', roomId)
     next.searchParams.set('watch', state.videoId)
+    if (isFollower) next.searchParams.set('follow', '1')
     window.history.replaceState({}, '', `${next.pathname}${next.search}`)
-  }, [roomId, state])
+  }, [roomId, state, isFollower])
 
   useEffect(() => {
     return subscribeWatchState(roomId, (incoming) => {
       const current = stateRef.current
       if (current && incoming.seq <= current.seq) return
+      stateRef.current = incoming
       setState(incoming)
       applyToPlayer(followRef.current, incoming, true)
+      if (isFollower) applyToPlayer(hostRef.current, incoming, true)
     })
-  }, [roomId])
+  }, [roomId, isFollower])
 
   useEffect(() => {
     const id = window.setInterval(() => {
       const host = hostRef.current
       const current = stateRef.current
       if (!current) return
-      if (host && !applying.current) {
+      if (host && !applying.current && !isFollower) {
         try {
           const time = host.getCurrentTime()
           setDisplayTime(time)
@@ -95,11 +106,17 @@ export function WatchStage({
         setDisplayTime(expectedTime(current))
       }
       applyToPlayer(followRef.current, current, true)
+      if (isFollower) applyToPlayer(hostRef.current, current, true)
     }, 400)
     return () => window.clearInterval(id)
-  }, [roomId])
+  }, [roomId, isFollower])
 
   const publish = (next: WatchState) => {
+    if (isFollower) {
+      stateRef.current = next
+      setState(next)
+      return
+    }
     const written = writeWatchState(roomId, next)
     stateRef.current = written
     setState(written)
@@ -174,11 +191,12 @@ export function WatchStage({
   const copyRoomLink = () => {
     const url = new URL(`${window.location.origin}/date-room`)
     url.searchParams.set('room', roomId)
+    url.searchParams.set('follow', '1')
     if (state?.videoId) url.searchParams.set('watch', state.videoId)
     navigator.clipboard.writeText(url.toString())
-    toast.success('Room link copied', {
+    toast.success('Follower room link copied', {
       description:
-        'Second tab on this computer stays in sync. Two phones get the same YouTube video; device-to-device lockstep needs a realtime server we have not added yet.',
+        'Open it in a second tab on this computer to follow this host. Two phones get the same YouTube video; device-to-device lockstep needs a realtime server we have not added yet.',
     })
   }
 
@@ -188,20 +206,21 @@ export function WatchStage({
         {state ? (
           <>
             <WatchSeat
-              heading="ME · HOST"
+              heading={isFollower ? 'ME · FOLLOWS THE HOST' : 'ME · HOST'}
               label="YOU"
               videoId={state.videoId}
-              role="host"
-              muted={state.muted}
+              role={isFollower ? 'follower' : 'host'}
+              muted={state.muted || isFollower}
               onReady={(player) => {
                 hostRef.current = player
-                if (state.muted) player.mute()
+                if (state.muted || isFollower) player.mute()
+                if (isFollower) applyToPlayer(player, state, true)
               }}
-              onHostState={onHostState}
+              onHostState={isFollower ? undefined : onHostState}
               onError={setError}
             />
             <WatchSeat
-              heading={`${partnerName.toUpperCase()} · FOLLOWS YOU`}
+              heading={isFollower ? `${partnerName.toUpperCase()} · ALSO FOLLOWS` : `${partnerName.toUpperCase()} · FOLLOWS YOU`}
               label={partnerName.toUpperCase()}
               videoId={state.videoId}
               role="follower"
@@ -230,22 +249,32 @@ export function WatchStage({
               <div className="text-xs tracking-[2px] text-[#C9A962]">YOUTUBE WATCH TOGETHER</div>
               <div className="text-[#F8F4ED]">{state.title}</div>
               <div className="text-xs text-[#A8988A] mt-1">
-                Official youtube.com/iframe_api player. Partner tile is muted here. Room {roomId}.
+                Official youtube.com/iframe_api player.
+                {isFollower
+                  ? ' This tab follows the host. Room ' + roomId + '.'
+                  : ' Partner tile is muted here so you hear one soundtrack. Room ' + roomId + '.'}
               </div>
             </div>
             <div className="flex flex-wrap gap-2">
-              <button type="button" className="btn btn-ghost text-xs px-3 py-2" onClick={copyRoomLink}>
-                <LinkIcon className="w-3.5 h-3.5" /> Copy room link
-              </button>
-              <button type="button" className="btn btn-ghost text-xs px-3 py-2" onClick={() => onPickerOpenChange(true)}>
-                Change video
-              </button>
+              {!isFollower && (
+                <button type="button" className="btn btn-ghost text-xs px-3 py-2" onClick={copyRoomLink}>
+                  <LinkIcon className="w-3.5 h-3.5" /> Copy follower link
+                </button>
+              )}
+              {!isFollower && (
+                <button type="button" className="btn btn-ghost text-xs px-3 py-2" onClick={() => onPickerOpenChange(true)}>
+                  Change video
+                </button>
+              )}
               <button type="button" className="btn btn-ghost text-xs px-3 py-2" onClick={stopWatching}>
                 End watch
               </button>
             </div>
           </div>
           {error && <p className="text-sm text-[#E8A0B8] mb-3">{error}</p>}
+          {isFollower ? (
+            <p className="text-sm text-[#A8988A]">Play, pause, seek, and mute are on the host tab. This screen stays in sync.</p>
+          ) : (
           <div className="flex items-center gap-3">
             <button type="button" className="btn btn-gold px-4 py-2" onClick={togglePlay}>
               {state.playing ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
@@ -267,6 +296,7 @@ export function WatchStage({
               {fmt(displayTime)} / {fmt(duration)}
             </span>
           </div>
+          )}
         </div>
       )}
 

@@ -9,6 +9,7 @@ export type WatchState = {
 }
 
 const storageKey = (roomId: string) => `proximatedate-watch-${roomId}`
+const channels = new Map<string, BroadcastChannel>()
 
 export function emptyWatchState(videoId: string, title: string): WatchState {
   return {
@@ -43,15 +44,35 @@ export function readWatchState(roomId: string): WatchState | null {
   }
 }
 
+function channelFor(roomId: string): BroadcastChannel | null {
+  const key = storageKey(roomId)
+  const existing = channels.get(key)
+  if (existing) return existing
+  try {
+    const channel = new BroadcastChannel(key)
+    channels.set(key, channel)
+    return channel
+  } catch {
+    return null
+  }
+}
+
 export function writeWatchState(roomId: string, state: WatchState) {
   const next = { ...state, seq: Date.now() }
   localStorage.setItem(storageKey(roomId), JSON.stringify(next))
-  try {
-    new BroadcastChannel(storageKey(roomId)).postMessage(next)
-  } catch {
-    /* BroadcastChannel missing */
-  }
+  channelFor(roomId)?.postMessage(next)
   return next
+}
+
+export function bootWatchState(roomId: string, videoId: string | null, isFollower = false): WatchState | null {
+  const stored = readWatchState(roomId)
+  if (stored && (!videoId || stored.videoId === videoId)) return stored
+  if (videoId) {
+    const next = emptyWatchState(videoId, 'Watch together')
+    if (isFollower) next.seq = 0
+    return next
+  }
+  return null
 }
 
 export function subscribeWatchState(roomId: string, onState: (state: WatchState) => void): () => void {
@@ -66,13 +87,9 @@ export function subscribeWatchState(roomId: string, onState: (state: WatchState)
 
   ingest(readWatchState(roomId))
 
-  let channel: BroadcastChannel | null = null
-  try {
-    channel = new BroadcastChannel(key)
-    channel.onmessage = (event: MessageEvent<WatchState>) => ingest(event.data)
-  } catch {
-    channel = null
-  }
+  const channel = channelFor(roomId)
+  const onMessage = (event: MessageEvent<WatchState>) => ingest(event.data)
+  if (channel) channel.addEventListener('message', onMessage)
 
   const onStorage = (event: StorageEvent) => {
     if (event.key !== key || !event.newValue) return
@@ -89,6 +106,6 @@ export function subscribeWatchState(roomId: string, onState: (state: WatchState)
   return () => {
     window.removeEventListener('storage', onStorage)
     window.clearInterval(poll)
-    channel?.close()
+    if (channel) channel.removeEventListener('message', onMessage)
   }
 }

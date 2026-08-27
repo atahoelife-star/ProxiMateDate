@@ -98,6 +98,11 @@ function roomFromWindow() {
   return new URLSearchParams(window.location.search).get('room') || newRoomId()
 }
 
+function followFromWindow() {
+  if (typeof window === 'undefined') return false
+  return new URLSearchParams(window.location.search).get('follow') === '1'
+}
+
 export function DateRoomPage() {
   const [chatMessages, setChatMessages] = useState<ChatMsg[]>([
     { id: 1, sender: 'partner', text: 'I miss your face so much tonight... this feels really nice already ❤️' },
@@ -118,6 +123,7 @@ export function DateRoomPage() {
   const [inviteStep, setInviteStep] = useState<'options' | 'success'>('options')
   const [companionOpen, setCompanionOpen] = useState(false)
   const [roomId] = useState(roomFromWindow)
+  const [isFollower] = useState(followFromWindow)
 
   const [youRestaurant, setYouRestaurant] = useState<RestaurantId>('verdant-ember')
   const [partnerRestaurant, setPartnerRestaurant] = useState<RestaurantId>('silver-sage')
@@ -127,6 +133,22 @@ export function DateRoomPage() {
   const [waiterClip, setWaiterClip] = useState<WaiterClip>('idle')
   const [waiterNote, setWaiterNote] = useState('Ready when you are')
   const [initialVideoId] = useState(initialWatchId)
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('paid') === '1') {
+      toast.success('Stripe Checkout completed', {
+        description: 'Thank you. The date room stays open either way — nothing extra was unlocked.',
+      })
+      params.delete('paid')
+      const qs = params.toString()
+      window.history.replaceState({}, '', `${window.location.pathname}${qs ? `?${qs}` : ''}`)
+    }
+    if (!params.get('room')) {
+      params.set('room', roomId)
+      window.history.replaceState({}, '', `${window.location.pathname}?${params.toString()}`)
+    }
+  }, [roomId])
 
   useEffect(() => {
     const startTime = Date.now()
@@ -294,6 +316,7 @@ export function DateRoomPage() {
               roomId={roomId}
               partnerName={partnerName}
               initialVideoId={initialVideoId}
+              isFollower={isFollower}
               pickerOpen={showMoviePicker}
               onPickerOpenChange={setShowMoviePicker}
               onRoomMessage={roomMessage}
@@ -588,7 +611,7 @@ export function DateRoomPage() {
                     <button
                       type="button"
                       onClick={() => {
-                        const link = `${window.location.origin}/date-room?room=${roomId}`
+                        const link = `${window.location.origin}/date-room?room=${roomId}&follow=1`
                         navigator.clipboard.writeText(link)
                         toast.success('Preview link copied', { description: 'Live invites are not sending. This opens the demo.' })
                       }}

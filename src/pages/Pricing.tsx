@@ -1,16 +1,46 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Check } from 'lucide-react'
-import { PLANS } from '../data/plans'
+import { Check, X } from 'lucide-react'
+import { AnimatePresence, motion } from 'framer-motion'
+import { PLANS, type Plan } from '../data/plans'
 import { WaitlistForm } from '../components/WaitlistForm'
 
+async function startStripeCheckout(planId: string): Promise<'redirected' | 'waitlist'> {
+  try {
+    const response = await fetch('/api/create-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ plan: planId }),
+    })
+    if (response.status === 503 || response.status === 404) return 'waitlist'
+    if (!response.ok) return 'waitlist'
+    const data = (await response.json()) as { url?: string }
+    if (!data.url) return 'waitlist'
+    window.location.assign(data.url)
+    return 'redirected'
+  } catch {
+    return 'waitlist'
+  }
+}
+
 export function PricingPage() {
+  const [waitlistPlan, setWaitlistPlan] = useState<Plan | null>(null)
+  const [busy, setBusy] = useState<string | null>(null)
+
+  const onPaidCta = async (plan: Plan) => {
+    setBusy(plan.id)
+    const result = await startStripeCheckout(plan.id)
+    setBusy(null)
+    if (result === 'waitlist') setWaitlistPlan(plan)
+  }
+
   return (
     <div className="max-w-7xl mx-auto px-6 py-16">
       <div className="text-center mb-6">
-        <div className="text-[#C9A962] tracking-[3px] text-sm mb-3">NO PAYWALL</div>
-        <h1 className="text-[#F8F4ED]">The date night is open</h1>
+        <div className="text-[#C9A962] tracking-[3px] text-sm mb-3">DATE ROOM IS FREE</div>
+        <h1 className="text-[#F8F4ED]">Pricing</h1>
         <p className="mt-4 text-xl text-[#A8988A] max-w-xl mx-auto">
-          Date Room, both restaurant menus, waiter videos, and Watch Together are unlocked. There is no Stripe Checkout and nothing is gated on payment.
+          Menus, waiter videos, and Watch Together are open with no paywall. Paid one-time dates use Stripe Checkout when a secret key is configured on Vercel. This site never asks for raw card numbers.
         </p>
         <Link to="/date-room" className="btn btn-gold mt-8 px-10 py-4 text-base inline-flex">
           Enter the Date Room
@@ -29,7 +59,7 @@ export function PricingPage() {
             >
               {isPopular && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#C9A962] text-[#0F0A0D] text-xs tracking-[1.5px] font-medium px-5 py-1 rounded-full">
-                  START HERE
+                  MOST POPULAR
                 </div>
               )}
               <div className="mb-6">
@@ -50,24 +80,53 @@ export function PricingPage() {
                   </li>
                 ))}
               </ul>
-              <Link
-                to={plan.id === 'movie' ? '/date-room?watch=open' : '/date-room'}
-                className={`btn w-full py-3.5 text-sm ${isPopular ? 'btn-gold' : 'btn-outline'}`}
-              >
-                {plan.cta}
-              </Link>
+              {plan.id === 'free' ? (
+                <Link to="/date-room" className="btn btn-outline w-full py-3.5 text-sm">
+                  {plan.cta}
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  className={`btn w-full py-3.5 text-sm ${isPopular ? 'btn-gold' : 'btn-outline'}`}
+                  disabled={busy === plan.id}
+                  onClick={() => onPaidCta(plan)}
+                >
+                  {busy === plan.id ? 'Opening Stripe…' : plan.cta}
+                </button>
+              )}
             </div>
           )
         })}
       </div>
 
       <div className="card p-8 mt-16 max-w-xl mx-auto">
-        <h2 className="text-[#F8F4ED] text-2xl mb-2">Optional: email for later</h2>
+        <h2 className="text-[#F8F4ED] text-2xl mb-2">Email waitlist</h2>
         <p className="text-[#A8988A] text-sm mb-6">
-          If we add paid dates someday, we will not lock this preview behind them. Leave an email only if you want a note. No card.
+          If Stripe is not set up yet, paid buttons collect this email instead. Subject: ProxiMateDate waitlist.
         </p>
-        <WaitlistForm intent="pricing-optional" submitLabel="Notify me later" />
+        <WaitlistForm intent="pricing-optional" submitLabel="Join the waitlist" />
       </div>
+
+      <AnimatePresence>
+        {waitlistPlan && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4" onClick={() => setWaitlistPlan(null)}>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              className="modal w-full max-w-md bg-[#1A1418] border border-[#3A2F36] rounded-3xl p-8 relative"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button type="button" className="absolute top-6 right-6 text-[#A8988A]" onClick={() => setWaitlistPlan(null)} aria-label="Close">
+                <X className="w-5 h-5" />
+              </button>
+              <p className="text-[#A8988A] text-sm mb-4">
+                Stripe Checkout is not configured on this deploy. Leave an email for {waitlistPlan.name} ({waitlistPlan.price}). No card on this page.
+              </p>
+              <WaitlistForm intent="paid-plan-waitlist" plan={`${waitlistPlan.id}:${waitlistPlan.name}`} submitLabel="Join the waitlist" />
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
