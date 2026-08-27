@@ -5,7 +5,7 @@ Website-only long-distance date night at [proximatedate.com](https://www.proxima
 ## What ships in this preview
 
 - **Date Room (free):** both restaurant menus in one session, waiter serving videos, chat, YouTube Watch Together, Netflix-class companion countdown.
-- **Watch Together:** official YouTube IFrame Player (`youtube.com/iframe_api`). Paste a youtube.com / youtu.be link or pick a romantic trailer. Play / pause / seek / mute. Videos that disallow embedding show an error — we do not fake Netflix or other catalogs.
+- **Watch Together:** official YouTube IFrame Player (`youtube.com/iframe_api`). Paste a youtube.com / youtu.be link, then press Play. If the video cannot embed, Play becomes Watch on YouTube and opens that same video. No fake Netflix or other catalogs.
 - **Companion mode:** countdown + chat while each person uses their own Netflix / Hulu / Disney+ / Prime app. No unofficial stream URLs.
 - **Waitlist:** Sign In / Get Started / Contact post to FormSubmit (`atahoelife@gmail.com`, subject **ProxiMateDate waitlist**).
 - **Pricing:** paid one-time amounts use Stripe Checkout when a secret key is configured. This site never collects raw card numbers.
@@ -14,7 +14,7 @@ Website-only long-distance date night at [proximatedate.com](https://www.proxima
 
 There is no websocket server yet.
 
-- In one browser, YOU is the host player and the partner tile follows (muted so you hear one soundtrack).
+- In one browser there is a single movie player (the host). A follower tab stays in sync; there is no second partner video box on the same screen.
 - Copy the room link (`?room=&watch=&follow=1`) to open a second tab on the **same computer**. That tab follows via `localStorage` + BroadcastChannel + a 400ms poll.
 - Two phones can open the same video from the URL; lockstep across devices needs a realtime backend we have not added.
 

@@ -270,7 +270,7 @@ export function DateRoomPage() {
     },
     {
       title: 'Pop a bottle of champagne for us',
-      message: 'Champagne is poured. Watch the waiter tile, same chrome as YOU and your date.',
+      message: 'Champagne is poured. Watch the live waiter beside the movie.',
       clip: 'champagne',
     },
     {
@@ -332,8 +332,18 @@ export function DateRoomPage() {
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pt-8 pb-16">
-        <div className="grid lg:grid-cols-12 gap-6">
-          <div className="lg:col-span-8">
+        <div className="grid lg:grid-cols-12 gap-6 items-stretch">
+          <div className="lg:col-span-4 flex flex-col min-h-[520px]">
+            <WaiterVideoTile
+              clip={waiterClip}
+              serving={waiterServing}
+              playId={waiterPlayId}
+              onServiceEnded={settleWaiter}
+            />
+            <p className="text-center text-xs text-[#A8988A] mt-3">{waiterNote}</p>
+          </div>
+
+          <div className="lg:col-span-5 min-h-[520px]">
             <WatchStage
               roomId={roomId}
               partnerName={partnerName}
@@ -348,103 +358,25 @@ export function DateRoomPage() {
                 onInputChange: setChatInput,
                 onSend: sendChatMessage,
               }}
-              youStill={
-                <div>
-                  <div className="flex items-center gap-2 mb-3 px-1">
-                    <div className="text-[#C9A962] text-xs tracking-[2.5px]">ME</div>
-                    <div className="flex-1 h-px bg-[#3A2F36]" />
-                  </div>
-                  <div className="video-frame">
-                    <img src="/images/man-avatar.jpg" alt="You (preview still)" className="absolute inset-0 w-full h-full object-cover" />
-                    <div className="overlay" />
-                    <div className="video-label">
-                      <div className="live-dot" /> YOU
-                    </div>
-                    <div className="absolute top-4 right-4 px-3 py-1 text-[10px] bg-black/70 rounded-full text-[#E8A0B8] tracking-[1.5px] border border-white/20">
-                      LIVE
-                    </div>
-                  </div>
-                  <p className="text-[11px] text-[#7A6B5F] mt-2">Stock still — not your webcam.</p>
-                </div>
-              }
-              partnerStill={
-                <div>
-                  <div className="flex items-center justify-between mb-3 px-1">
-                    <div className="text-[#E8A0B8] text-xs tracking-[2.5px]">MY DATE</div>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const next = window.prompt("What is your date's name tonight?", partnerName)
-                        if (next) setPartnerName(next)
-                      }}
-                      className="text-[#C9A962] text-xs underline hover:text-[#E8A0B8]"
-                    >
-                      edit name
-                    </button>
-                  </div>
-                  <div className="video-frame">
-                    <img src="/images/woman-avatar.jpg" alt={`${partnerName} (preview still)`} className="absolute inset-0 w-full h-full object-cover" />
-                    <div className="overlay" />
-                    <div className="video-label">
-                      <div className="live-dot" /> {partnerName.toUpperCase()}
-                    </div>
-                    <div className="absolute top-4 right-4 px-3 py-1 text-[10px] bg-black/70 rounded-full text-[#E8A0B8] tracking-[1.5px] border border-white/20">
-                      LIVE
-                    </div>
-                  </div>
-                  <p className="text-[11px] text-[#7A6B5F] mt-2">Stock still — not a live partner feed.</p>
-                </div>
-              }
-              waiterTile={
-                <WaiterVideoTile
-                  clip={waiterClip}
-                  serving={waiterServing}
-                  playId={waiterPlayId}
-                  onServiceEnded={settleWaiter}
-                />
-              }
             />
-            <p className="text-center text-xs text-[#A8988A] mt-3">{waiterNote}</p>
-
-            <div className="mt-7 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <button
-                type="button"
-                onClick={() => {
-                  setShowWaiterMenu(true)
-                  playWaiter('greet', 'Waiter at the table', 'The waiter steps into frame.')
-                }}
-                className="btn btn-outline py-[19px] text-[15px] flex items-center justify-center gap-3 border-[#C9A962] hover:bg-[#C9A962] hover:text-[#0F0A0D]"
-              >
-                <Sparkles className="w-5 h-5" /> Call Waiter
-              </button>
-              <button
-                type="button"
-                onClick={() => setAiCompanionOpen(true)}
-                className="btn btn-gold py-[19px] text-[15px] flex items-center justify-center gap-3"
-              >
-                <Heart className="w-5 h-5" /> AI Companion
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowMoviePicker(true)}
-                className="btn btn-outline py-[19px] text-[15px] flex items-center justify-center gap-3 border-[#C9A962] hover:bg-[#C9A962] hover:text-[#0F0A0D]"
-              >
-                <Play className="w-5 h-5" /> YouTube together
-              </button>
-              <button
-                type="button"
-                onClick={() => setCompanionOpen(true)}
-                className="btn btn-outline py-[19px] text-[15px] flex items-center justify-center gap-3 border-[#E8A0B8] hover:bg-[#E8A0B8] hover:text-[#0F0A0D]"
-              >
-                <Play className="w-5 h-5" /> Watch on your own apps
-              </button>
-            </div>
           </div>
 
-          <div className="lg:col-span-4">
+          <div className="lg:col-span-3">
             <div className="card flex flex-col h-full" style={{ minHeight: '520px' }}>
               <div className="px-6 py-4 border-b border-[#3A2F36] bg-[#1A1418]">
-                <div className="text-[#F8F4ED] font-medium">Private Chat</div>
+                <div className="flex items-center justify-between gap-2">
+                  <div className="text-[#F8F4ED] font-medium">Private Chat</div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const next = window.prompt("What is your date's name tonight?", partnerName)
+                      if (next) setPartnerName(next)
+                    }}
+                    className="text-[#C9A962] text-xs underline hover:text-[#E8A0B8] shrink-0"
+                  >
+                    {partnerName}
+                  </button>
+                </div>
                 <div className="text-xs text-[#A8988A]">Demo replies are simulated. Not a live messenger.</div>
               </div>
               <div className="flex-1 p-5 overflow-y-auto space-y-4 text-[15px] bg-[#0F0A0D]/40" style={{ maxHeight: '360px' }}>
@@ -471,6 +403,40 @@ export function DateRoomPage() {
               </div>
             </div>
           </div>
+        </div>
+
+        <div className="mt-7 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <button
+            type="button"
+            onClick={() => {
+              setShowWaiterMenu(true)
+              playWaiter('greet', 'Waiter at the table', 'The waiter steps into frame.')
+            }}
+            className="btn btn-outline py-[19px] text-[15px] flex items-center justify-center gap-3 border-[#C9A962] hover:bg-[#C9A962] hover:text-[#0F0A0D]"
+          >
+            <Sparkles className="w-5 h-5" /> Call Waiter
+          </button>
+          <button
+            type="button"
+            onClick={() => setAiCompanionOpen(true)}
+            className="btn btn-gold py-[19px] text-[15px] flex items-center justify-center gap-3"
+          >
+            <Heart className="w-5 h-5" /> AI Companion
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowMoviePicker(true)}
+            className="btn btn-outline py-[19px] text-[15px] flex items-center justify-center gap-3 border-[#C9A962] hover:bg-[#C9A962] hover:text-[#0F0A0D]"
+          >
+            <Play className="w-5 h-5" /> YouTube together
+          </button>
+          <button
+            type="button"
+            onClick={() => setCompanionOpen(true)}
+            className="btn btn-outline py-[19px] text-[15px] flex items-center justify-center gap-3 border-[#E8A0B8] hover:bg-[#E8A0B8] hover:text-[#0F0A0D]"
+          >
+            <Play className="w-5 h-5" /> Watch on your own apps
+          </button>
         </div>
 
         <DinnerMenus

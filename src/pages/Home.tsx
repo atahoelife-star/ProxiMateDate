@@ -94,7 +94,7 @@ export function HomePage() {
             ProxiMateDate is a product in progress from A Tahoe Life / Gregory Barrett. We are not claiming a crowd of couples, and we are not quoting people who did not write in. If you miss dinner across a table — vegan on one side, steak on the other — this preview is for you.
           </p>
           <p className="text-[#A8988A] mt-6 leading-relaxed">
-            The date room uses stock photos and local demo chat. Orders do not go to a kitchen. When real accounts exist, we’ll say so on the Privacy page.
+            The date room has a live waiter clip, YouTube Watch Together, and local demo chat. Orders do not go to a kitchen. When real accounts exist, we’ll say so on the Privacy page.
           </p>
         </div>
       </div>

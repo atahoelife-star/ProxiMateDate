@@ -218,6 +218,24 @@ select.input option {
   border-color: var(--gold);
 }
 
+.video-frame.video-frame-live {
+  aspect-ratio: auto;
+  min-height: 520px;
+  height: 100%;
+}
+
+.video-frame-live:hover {
+  transform: none;
+}
+
+@media (max-width: 1023px) {
+  .video-frame.video-frame-live {
+    min-height: 420px;
+    aspect-ratio: 3 / 4;
+    height: auto;
+  }
+}
+
 .video-frame-watch .overlay {
   display: none;
 }

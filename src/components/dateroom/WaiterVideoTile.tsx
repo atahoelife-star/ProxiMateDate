@@ -46,12 +46,12 @@ export function WaiterVideoTile({ clip, serving, playId, onServiceEnded }: Waite
   }, [serving, playId, clip])
 
   return (
-    <div>
+    <div className="h-full flex flex-col">
       <div className="flex items-center justify-between mb-3 px-1">
         <div className="text-[#C9A962] text-xs tracking-[2.5px]">WAITER</div>
         <div className="text-[#A8988A] text-xs">{caption}</div>
       </div>
-      <div className="video-frame">
+      <div className="video-frame video-frame-live flex-1">
         <video
           ref={videoRef}
           className="absolute inset-0 w-full h-full object-cover"
