@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { embedErrorMessage, loadYouTubeIframeApi, type YTPlayerHandle } from '../../lib/youtube'
+import { loadYouTubeIframeApi, type YTPlayerHandle } from '../../lib/youtube'
 
 type YoutubeEmbedProps = {
   videoId: string
@@ -7,7 +7,7 @@ type YoutubeEmbedProps = {
   muted: boolean
   onReady?: (player: YTPlayerHandle) => void
   onHostState?: (playing: boolean, time: number) => void
-  onError?: (message: string) => void
+  onError?: () => void
 }
 
 export function YoutubeEmbed({ videoId, role, muted, onReady, onHostState, onError }: YoutubeEmbedProps) {
@@ -63,8 +63,8 @@ export function YoutubeEmbed({ videoId, role, muted, onReady, onHostState, onErr
             if (!playing && !paused) return
             onHostStateRef.current?.(playing, event.target.getCurrentTime())
           },
-          onError: (event: { data: number }) => {
-            onErrorRef.current?.(embedErrorMessage(event.data))
+          onError: () => {
+            onErrorRef.current?.()
           },
         },
       } as never)

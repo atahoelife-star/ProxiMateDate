@@ -90,15 +90,6 @@ export function loadYouTubeIframeApi(): Promise<void> {
   return apiPromise
 }
 
-export function embedErrorMessage(code: number): string {
-  if (code === 101 || code === 150) {
-    return 'This YouTube video does not allow embedding. Paste another link — trailers that allow embed work; many full movies do not.'
-  }
-  if (code === 100) return 'YouTube could not find that video. Check the link and try another.'
-  if (code === 2) return 'That YouTube link looks invalid. Use youtube.com or youtu.be.'
-  return 'YouTube could not play this video in the page. Try another embeddable link.'
-}
-
 export const ROMANTIC_TRAILERS = [
   { label: 'La La Land', id: '0pdqf4P9MB8', mood: 'Dreamy & Musical' },
   { label: 'The Notebook', id: 'yDJIcYE32NU', mood: 'Emotional Romance' },

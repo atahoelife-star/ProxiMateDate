@@ -22,7 +22,7 @@ export function FaqPage() {
       </p>
       <h2 className="text-[#F8F4ED] text-xl">YouTube and Netflix?</h2>
       <p>
-        YouTube watch-together uses Google’s official IFrame Player (youtube.com/iframe_api). Paste a link or pick a trailer. Play, pause, seek, and mute control the host tile; the partner tile follows on this screen (muted so you hear one soundtrack). If a video forbids embedding, we show an error — we will not pretend it plays. Copy a follower link (<code className="text-[#C9A962]">?room=&watch=&follow=1</code>) for a second tab on this computer. Lockstep across two different phones needs a realtime server we have not added yet.
+        YouTube watch-together uses Google’s official IFrame Player (youtube.com/iframe_api). Paste a link or pick a trailer. Play, pause, seek, and mute control the host tile; the partner tile follows on this screen (muted so you hear one soundtrack). If a video cannot play in the page (age-restricted or embed blocked), we show only a link to it on YouTube. Copy a follower link (<code className="text-[#C9A962]">?room=&watch=&follow=1</code>) for a second tab on this computer. Lockstep across two different phones needs a realtime server we have not added yet.
       </p>
       <p>
         Netflix, Hulu, Disney+, and Prime Video are companion-only: a countdown and this date room. We do not embed or proxy those catalogs.

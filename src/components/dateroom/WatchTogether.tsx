@@ -10,7 +10,7 @@ import {
   writeWatchState,
   type WatchState,
 } from '../../lib/watchSync'
-import { parseYouTubeId, ROMANTIC_TRAILERS, type YTPlayerHandle } from '../../lib/youtube'
+import { parseYouTubeId, ROMANTIC_TRAILERS, youtubeWatchUrl, type YTPlayerHandle } from '../../lib/youtube'
 
 type WatchStageProps = {
   roomId: string
@@ -38,7 +38,8 @@ export function WatchStage({
   waiterTile,
 }: WatchStageProps) {
   const [link, setLink] = useState('')
-  const [error, setError] = useState('')
+  const [parseError, setParseError] = useState('')
+  const [embedBlocked, setEmbedBlocked] = useState(false)
   const [state, setState] = useState<WatchState | null>(() => bootWatchState(roomId, initialVideoId, isFollower))
   const [duration, setDuration] = useState(0)
   const [displayTime, setDisplayTime] = useState(0)
@@ -125,10 +126,11 @@ export function WatchStage({
   const startVideo = (raw: string, title?: string) => {
     const id = parseYouTubeId(raw)
     if (!id) {
-      setError('Paste a youtube.com or youtu.be link (or an 11-character video ID).')
+      setParseError('Paste a youtube.com or youtu.be link (or an 11-character video ID).')
       return
     }
-    setError('')
+    setParseError('')
+    setEmbedBlocked(false)
     hostRef.current = null
     followRef.current = null
     publish(emptyWatchState(id, title || 'YouTube'))
@@ -142,6 +144,8 @@ export function WatchStage({
     hostRef.current = null
     followRef.current = null
     setState(null)
+    setEmbedBlocked(false)
+    setParseError('')
     onPickerOpenChange(false)
     const next = new URL(window.location.href)
     next.searchParams.delete('watch')
@@ -217,7 +221,8 @@ export function WatchStage({
                 if (isFollower) applyToPlayer(player, state, true)
               }}
               onHostState={isFollower ? undefined : onHostState}
-              onError={setError}
+              onError={() => setEmbedBlocked(true)}
+              watchUrl={embedBlocked ? youtubeWatchUrl(state.videoId) : null}
             />
             <WatchSeat
               heading={isFollower ? `${partnerName.toUpperCase()} · ALSO FOLLOWS` : `${partnerName.toUpperCase()} · FOLLOWS YOU`}
@@ -230,7 +235,8 @@ export function WatchStage({
                 player.mute()
                 applyToPlayer(player, state, true)
               }}
-              onError={setError}
+              onError={() => setEmbedBlocked(true)}
+              watchUrl={embedBlocked ? youtubeWatchUrl(state.videoId) : null}
             />
           </>
         ) : (
@@ -271,7 +277,6 @@ export function WatchStage({
               </button>
             </div>
           </div>
-          {error && <p className="text-sm text-[#E8A0B8] mb-3">{error}</p>}
           {isFollower ? (
             <p className="text-sm text-[#A8988A]">Play, pause, seek, and mute are on the host tab. This screen stays in sync.</p>
           ) : (
@@ -332,7 +337,7 @@ export function WatchStage({
                   Watch together
                 </button>
               </div>
-              {error && <p className="text-sm text-[#E8A0B8] mt-3">{error}</p>}
+              {parseError && <p className="text-sm text-[#E8A0B8] mt-3">{parseError}</p>}
               <div className="mt-6 text-xs text-[#7A6B5F] tracking-widest">ROMANTIC TRAILERS</div>
               <div className="mt-3 grid grid-cols-2 md:grid-cols-4 gap-3">
                 {ROMANTIC_TRAILERS.map((trailer) => (
@@ -362,6 +367,7 @@ function WatchSeat({
   videoId,
   role,
   muted,
+  watchUrl,
   onReady,
   onHostState,
   onError,
@@ -371,9 +377,10 @@ function WatchSeat({
   videoId: string
   role: 'host' | 'follower'
   muted: boolean
+  watchUrl: string | null
   onReady: (player: YTPlayerHandle) => void
   onHostState?: (playing: boolean, time: number) => void
-  onError: (message: string) => void
+  onError: () => void
 }) {
   return (
     <div>
@@ -381,13 +388,26 @@ function WatchSeat({
         <div className="text-[#C9A962] text-xs tracking-[2.5px]">{heading}</div>
       </div>
       <div className="video-frame video-frame-watch">
-        <YoutubeEmbed videoId={videoId} role={role} muted={muted} onReady={onReady} onHostState={onHostState} onError={onError} />
-        <div className="video-label pointer-events-none">
-          <div className="live-dot" /> {label}
-        </div>
-        <div className="absolute top-4 right-4 px-3 py-1 text-[10px] bg-black/70 rounded-full text-[#E8A0B8] tracking-[1.5px] border border-white/20 pointer-events-none">
-          {role === 'host' ? 'HOST' : 'FOLLOW'}
-        </div>
+        {watchUrl ? (
+          <a
+            href={watchUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="absolute inset-0 z-20 flex items-center justify-center bg-[#0F0A0D] text-[#C9A962] underline break-all px-4 text-center text-sm"
+          >
+            {watchUrl}
+          </a>
+        ) : (
+          <>
+            <YoutubeEmbed videoId={videoId} role={role} muted={muted} onReady={onReady} onHostState={onHostState} onError={onError} />
+            <div className="video-label pointer-events-none">
+              <div className="live-dot" /> {label}
+            </div>
+            <div className="absolute top-4 right-4 px-3 py-1 text-[10px] bg-black/70 rounded-full text-[#E8A0B8] tracking-[1.5px] border border-white/20 pointer-events-none">
+              {role === 'host' ? 'HOST' : 'FOLLOW'}
+            </div>
+          </>
+        )}
       </div>
     </div>
   )
