@@ -384,18 +384,20 @@ function WatchSeat({
 }) {
   return (
     <div>
-      <div className="flex items-center justify-between mb-3 px-1">
-        <div className="text-[#C9A962] text-xs tracking-[2.5px]">{heading}</div>
-      </div>
+      {!watchUrl && (
+        <div className="flex items-center justify-between mb-3 px-1">
+          <div className="text-[#C9A962] text-xs tracking-[2.5px]">{heading}</div>
+        </div>
+      )}
       <div className="video-frame video-frame-watch">
         {watchUrl ? (
           <a
             href={watchUrl}
             target="_blank"
             rel="noreferrer"
-            className="absolute inset-0 z-20 flex items-center justify-center bg-[#0F0A0D] text-[#C9A962] underline break-all px-4 text-center text-sm"
+            className="absolute inset-0 z-20 flex items-center justify-center bg-[#0F0A0D] text-[#C9A962] underline px-4 text-center text-sm"
           >
-            {watchUrl}
+            Watch on YouTube
           </a>
         ) : (
           <>
