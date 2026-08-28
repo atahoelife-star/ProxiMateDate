@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { ExternalLink, Link as LinkIcon, Pause, Play, Volume2, VolumeX, X } from 'lucide-react'
 import { YoutubeEmbed } from './YoutubeEmbed'
-import { WatchChatOverlay, type RoomChatMsg } from './WatchChatOverlay'
+import type { RoomChatMsg } from './WatchChatOverlay'
 import {
   bootWatchState,
   emptyWatchState,
@@ -294,18 +294,6 @@ export function WatchStage({
   const playLabel = openOnYouTube ? 'Watch on YouTube' : state?.playing && !embedBlocked ? 'Pause' : 'Play'
   const watchHref = state ? youtubeWatchUrl(state.videoId) : pastedId ? youtubeWatchUrl(pastedId) : null
 
-  const chatOverlay = (
-    <WatchChatOverlay
-      messages={chat.messages}
-      input={chat.input}
-      onInputChange={chat.onInputChange}
-      onSend={chat.onSend}
-      partnerName={partnerName}
-      liftForControls={Boolean(state && !embedBlocked)}
-      moment={chatMoment}
-    />
-  )
-
   return (
     <>
       <div className="card p-4 h-full flex flex-col">
@@ -360,28 +348,14 @@ export function WatchStage({
         {parseError && <p className="text-sm text-[#E8A0B8] mt-2">{parseError}</p>}
 
         {embedBlocked && state && watchHref ? (
-          <div className="mt-4 grid md:grid-cols-5 gap-4 flex-1 min-h-[280px]">
-            <div className="md:col-span-3 video-frame video-frame-watch min-h-[220px]">
-              <button
-                type="button"
-                onClick={onPlayClick}
-                className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-[#0F0A0D] text-[#C9A962] px-4 text-center text-sm gap-2"
-              >
-                <span className="underline">Watch on YouTube</span>
-                <span className="text-[#A8988A] no-underline text-xs">Opens this same video. Chat stays in the date room.</span>
-              </button>
-            </div>
-            <div className="md:col-span-2 min-h-[280px]">
-              <WatchChatOverlay
-                variant="panel"
-                messages={chat.messages}
-                input={chat.input}
-                onInputChange={chat.onInputChange}
-                onSend={chat.onSend}
-                partnerName={partnerName}
-                moment={chatMoment}
-              />
-            </div>
+          <div className="video-frame video-frame-watch mt-4 flex-1 min-h-[220px]">
+            <button
+              type="button"
+              onClick={onPlayClick}
+              className="absolute inset-0 z-20 flex items-center justify-center bg-[#0F0A0D] text-[#C9A962] underline px-4 text-center text-sm"
+            >
+              Watch on YouTube
+            </button>
           </div>
         ) : (
           <div className="video-frame video-frame-watch mt-4 flex-1 min-h-[220px]">
@@ -403,14 +377,7 @@ export function WatchStage({
                   <div className="live-dot" /> {isFollower ? 'FOLLOW' : 'WATCH'}
                 </div>
               </>
-            ) : (
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0F0A0D] px-6 text-center">
-                <div className="text-xs tracking-[2px] text-[#C9A962]">WATCH TOGETHER</div>
-                <p className="text-[#F8F4ED] mt-2 max-w-sm">Paste a YouTube link, then press Play.</p>
-                <p className="text-sm text-[#A8988A] mt-2 max-w-sm">The dining room is on the left. This box is for the movie.</p>
-              </div>
-            )}
-            {chatOverlay}
+            ) : null}
           </div>
         )}
 
