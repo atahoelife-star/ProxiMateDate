@@ -17,7 +17,7 @@ export function ContactPage() {
           showMessage
           submitLabel="Send"
           heading="Send a note"
-          description="Questions about the date room, the two Silver Springs menus, or the waitlist are welcome."
+          description="Questions about the rooms, the two Silver Springs menus, or the waitlist are welcome."
         />
       </div>
     </PageShell>

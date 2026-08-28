@@ -4,11 +4,18 @@ Website-only long-distance date night at [proximatedate.com](https://www.proxima
 
 ## What ships in this preview
 
-- **Date Room (free):** both restaurant menus in one session, waiter serving videos, chat, YouTube Watch Together, Netflix-class companion countdown.
-- **Watch Together:** official YouTube IFrame Player (`youtube.com/iframe_api`). Paste a youtube.com / youtu.be link, then press Play. If the video cannot embed, Play becomes Watch on YouTube and opens that same video. No fake Netflix or other catalogs.
-- **Companion mode:** countdown + chat while each person uses their own Netflix / Hulu / Disney+ / Prime app. No unofficial stream URLs.
+Three free rooms (no paywall):
+
+- **Restaurant** (`/restaurant`): short walk-in (host, tables, sit down), then dual menus (The Verdant Ember + The Silver Sage) and waiter serving videos. LIVE idle is a seated 1x dining room. Serving clips play on order only.
+- **Movie Night** (`/movie-night`): short walk-in (ticket booth, lobby, popcorn, seats), then Watch Together. Official YouTube IFrame Player (`youtube.com/iframe_api`). Paste a youtube.com / youtu.be link, then press Play. Floating chat opens with Play. No chat box inside the player. Netflix stays on your own accounts as companion mode.
+- **Free Date Night** (`/date-night`): simple chat / together time. No menus, no movie player.
+- **Dates chooser** (`/date-room`): picks a room. Old Watch Together follower links (`?watch=` / `?follow=1`) redirect to movie night.
+
+Other:
+
+- **Companion mode:** countdown + chat while each person uses their own Netflix / Hulu / Disney+ / Prime app. No unofficial stream URLs. We do not bypass YouTube age-restriction.
 - **Waitlist:** Sign In / Get Started / Contact post to FormSubmit (`atahoelife@gmail.com`, subject **ProxiMateDate waitlist**).
-- **Pricing:** paid one-time amounts use Stripe Checkout when a secret key is configured. This site never collects raw card numbers.
+- **Pricing:** paid one-time amounts use Stripe Checkout when a secret key is configured. This site never collects raw card numbers. Paying does not unlock rooms.
 
 ### Watch Together sync (limitation)
 
@@ -31,7 +38,7 @@ Cloudflare Workers Git builds (if connected) need this Wrangler file and a dashb
 
 ## Stripe Checkout (website only)
 
-Paid plans: Dinner **$9.99**, Movie Night **$14.99**, Premium Romance **$24.99**. Candlelight Chat stays free. The Date Room is not gated.
+Paid plans: Dinner **$9.99**, Movie Night **$14.99**, Premium Romance **$24.99**. Candlelight Chat stays free. The three rooms are not gated.
 
 1. Create a Stripe account at [https://dashboard.stripe.com/register](https://dashboard.stripe.com/register).
 2. From Developers → API keys, copy the **Secret key** (`sk_test_…` for testing, `sk_live_…` for production). Never put this in the frontend repo.
@@ -43,4 +50,4 @@ Paid plans: Dinner **$9.99**, Movie Night **$14.99**, Premium Romance **$24.99**
 4. Redeploy. Pricing CTAs `POST /api/create-checkout`, then redirect to Stripe-hosted Checkout.
 5. If the key is missing, the API returns 503 and the site collects a waitlist email instead. No card fields are rendered on proximatedate.com.
 
-Checkout success returns to `/date-room?paid=1`. Success does not unlock features — the date room was already free.
+Checkout success returns to the matching room (`/restaurant`, `/movie-night`, or `/date-room`) with `?paid=1`. Success does not unlock features — the rooms were already free.

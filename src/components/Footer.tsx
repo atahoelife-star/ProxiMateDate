@@ -1,6 +1,9 @@
 import { Link } from 'react-router-dom'
 
 const footerLinks = [
+  { to: '/restaurant', label: 'Restaurant' },
+  { to: '/movie-night', label: 'Movie Night' },
+  { to: '/date-night', label: 'Date Night' },
   { to: '/about', label: 'About' },
   { to: '/faq', label: 'FAQ' },
   { to: '/contact', label: 'Contact' },

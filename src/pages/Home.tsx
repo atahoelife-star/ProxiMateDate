@@ -1,5 +1,26 @@
 import { Link } from 'react-router-dom'
-import { ArrowRight, Calendar, Heart, Video, Users } from 'lucide-react'
+import { ArrowRight, Clapperboard, Heart, MessageCircle, UtensilsCrossed } from 'lucide-react'
+
+const rooms = [
+  {
+    to: '/restaurant',
+    icon: UtensilsCrossed,
+    title: 'Restaurant Date',
+    desc: 'Walk in past the host, find your table, sit down. Dual menus and a live 1x dining room.',
+  },
+  {
+    to: '/movie-night',
+    icon: Clapperboard,
+    title: 'Movie Night',
+    desc: 'Ticket booth, lobby, popcorn, seats. Then paste YouTube and press Play.',
+  },
+  {
+    to: '/date-night',
+    icon: MessageCircle,
+    title: 'Free Date Night',
+    desc: 'Simple together time. Just chat. No menus, no movie player.',
+  },
+]
 
 export function HomePage() {
   return (
@@ -26,16 +47,19 @@ export function HomePage() {
           </h1>
 
           <p className="max-w-xl mx-auto text-xl text-[#EDE4D9]/90 mb-10">
-            ProxiMateDate is a website for couples who miss sharing a table. Preview a candlelit date room, order from two restaurants at once, and watch something together in the browser.
+            Three rooms, no paywall: a restaurant walk-in, a movie-night theater, and a simple free date night.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/get-started" className="btn btn-gold text-base px-10 py-4 group">
-              Join the waitlist
+            <Link to="/restaurant" className="btn btn-gold text-base px-10 py-4 group">
+              Restaurant Date
               <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition" />
             </Link>
-            <Link to="/date-room" className="btn btn-outline text-base px-10 py-4">
-              <Video className="w-4 h-4" /> Enter the Date Room preview
+            <Link to="/movie-night" className="btn btn-outline text-base px-10 py-4">
+              Movie Night
+            </Link>
+            <Link to="/date-night" className="btn btn-outline text-base px-10 py-4">
+              Free Date Night
             </Link>
           </div>
 
@@ -49,35 +73,19 @@ export function HomePage() {
 
       <div id="how-it-works" className="max-w-6xl mx-auto px-6 py-20 scroll-mt-24">
         <div className="text-center mb-14">
-          <div className="text-[#C9A962] text-sm tracking-[3px] mb-3">THREE SIMPLE STEPS</div>
-          <h2 className="text-[#F8F4ED]">How ProxiMateDate Works</h2>
+          <div className="text-[#C9A962] text-sm tracking-[3px] mb-3">THREE ROOMS</div>
+          <h2 className="text-[#F8F4ED]">Pick the evening you want</h2>
         </div>
 
         <div className="grid md:grid-cols-3 gap-6">
-          {[
-            {
-              icon: Users,
-              title: 'Share an evening',
-              desc: 'Open the date room on the web. One of you can pick The Verdant Ember, the other The Silver Sage Steakhouse — mixed tables are the point.',
-            },
-            {
-              icon: Calendar,
-              title: 'Order and watch together',
-              desc: 'Call the waiter (serving videos at the table), keep chat open, and watch YouTube together. Netflix stays on your own accounts as a companion mode.',
-            },
-            {
-              icon: Video,
-              title: 'Stay for the real thing later',
-              desc: 'Live two-person video is not shipping in this preview. Join the email list and we’ll tell you when accounts and paid dates exist.',
-            },
-          ].map((step) => (
-            <div key={step.title} className="card p-8 text-center group">
+          {rooms.map((room) => (
+            <Link key={room.to} to={room.to} className="card p-8 text-center group hover:border-[#C9A962]/50 transition">
               <div className="mx-auto w-14 h-14 rounded-full bg-[#C9A962]/10 flex items-center justify-center mb-6 group-hover:bg-[#C9A962]/20 transition">
-                <step.icon className="w-7 h-7 text-[#C9A962]" />
+                <room.icon className="w-7 h-7 text-[#C9A962]" />
               </div>
-              <h3 className="text-[#F8F4ED] text-xl mb-4">{step.title}</h3>
-              <p className="text-[#A8988A] leading-relaxed">{step.desc}</p>
-            </div>
+              <h3 className="text-[#F8F4ED] text-xl mb-4">{room.title}</h3>
+              <p className="text-[#A8988A] leading-relaxed">{room.desc}</p>
+            </Link>
           ))}
         </div>
       </div>
@@ -91,10 +99,10 @@ export function HomePage() {
         </div>
         <div className="card p-8 md:p-12">
           <p className="text-[#EDE4D9] leading-relaxed text-lg">
-            ProxiMateDate is a product in progress from A Tahoe Life / Gregory Barrett. We are not claiming a crowd of couples, and we are not quoting people who did not write in. If you miss dinner across a table — vegan on one side, steak on the other — this preview is for you.
+            ProxiMateDate is a product in progress from A Tahoe Life / Gregory Barrett. We are not claiming a crowd of couples, and we are not quoting people who did not write in. If you miss dinner across a table — vegan on one side, steak on the other — the restaurant room is for you. Movie night is Watch Together. Free date night is just talking.
           </p>
           <p className="text-[#A8988A] mt-6 leading-relaxed">
-            The date room has a live waiter clip, YouTube Watch Together, and local demo chat. Orders do not go to a kitchen. When real accounts exist, we’ll say so on the Privacy page.
+            Orders do not go to a kitchen. YouTube uses Google’s official player. Netflix stays on your own apps. When real accounts exist, we’ll say so on the Privacy page.
           </p>
         </div>
       </div>
@@ -103,7 +111,7 @@ export function HomePage() {
         <div className="max-w-xl mx-auto text-center px-6">
           <Heart className="w-9 h-9 text-[#E8A0B8] mx-auto mb-6" />
           <h2 className="text-[#F8F4ED] mb-4">Your next date night is waiting.</h2>
-          <p className="text-lg text-[#A8988A] mb-8">Try the preview, or leave your email. Paid dates use Stripe Checkout — never a card form on this site.</p>
+          <p className="text-lg text-[#A8988A] mb-8">Try a room, or leave your email. Paid dates use Stripe Checkout — never a card form on this site. Rooms stay free either way.</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link to="/pricing" className="btn btn-rose text-base px-10 py-4">
               See pricing

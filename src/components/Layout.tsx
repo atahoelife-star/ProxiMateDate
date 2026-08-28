@@ -5,6 +5,7 @@ import { Footer } from './Footer'
 
 export function Layout() {
   const { pathname, hash } = useLocation()
+  const immersive = pathname === '/restaurant' || pathname === '/movie-night' || pathname === '/date-night'
 
   useEffect(() => {
     if (hash) {
@@ -24,7 +25,7 @@ export function Layout() {
       <main className="flex-1">
         <Outlet />
       </main>
-      <Footer />
+      {!immersive && <Footer />}
     </div>
   )
 }

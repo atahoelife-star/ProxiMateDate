@@ -45,7 +45,7 @@ export function CompanionMode({ partnerName, open, onClose, onRoomMessage }: Com
           </button>
         </div>
         <p className="text-[#A8988A] text-sm leading-relaxed mb-4">
-          We do not embed, scrape, or proxy {SERVICES.join(', ')}. There is no fake player. Each of you opens the real app on another screen. This date room stays: chat, both restaurant menus, waiter, and the preview tiles.
+          We do not embed, scrape, or proxy {SERVICES.join(', ')}. There is no fake player. Each of you opens the real app on another screen. Chat stays here. We do not put those catalogs in this page.
         </p>
         <label className="text-xs tracking-widest text-[#A8988A] block mb-1.5">SERVICE</label>
         <select className="input w-full mb-5" value={service} onChange={(e) => setService(e.target.value as (typeof SERVICES)[number])}>
@@ -71,7 +71,7 @@ export function CompanionMode({ partnerName, open, onClose, onRoomMessage }: Com
             onClick={() => {
               setWatching(false)
               setCountdown(null)
-              onRoomMessage('Companion paused. The date room is still here.')
+              onRoomMessage('Companion paused. Movie night is still here.')
             }}
           >
             Stop companion

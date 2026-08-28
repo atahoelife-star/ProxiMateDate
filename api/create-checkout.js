@@ -1,9 +1,9 @@
 import Stripe from 'stripe'
 
 const PLANS = {
-  dinner: { name: 'Virtual Dinner Date', amount: 999 },
-  movie: { name: 'Movie Night', amount: 1499 },
-  premium: { name: 'Premium Romance', amount: 2499 },
+  dinner: { name: 'Virtual Dinner Date', amount: 999, successPath: '/restaurant?paid=1' },
+  movie: { name: 'Movie Night', amount: 1499, successPath: '/movie-night?paid=1' },
+  premium: { name: 'Premium Romance', amount: 2499, successPath: '/date-room?paid=1' },
 }
 
 async function readBody(req) {
@@ -81,7 +81,7 @@ export default async function handler(req, res) {
           },
         },
       ],
-      success_url: `${origin}/date-room?paid=1`,
+      success_url: `${origin}${plan.successPath}`,
       cancel_url: `${origin}/pricing`,
     })
 

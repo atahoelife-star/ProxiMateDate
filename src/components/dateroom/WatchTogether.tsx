@@ -280,7 +280,7 @@ export function WatchStage({
   }
 
   const copyRoomLink = () => {
-    const url = new URL(`${window.location.origin}/date-room`)
+    const url = new URL(`${window.location.origin}${window.location.pathname}`)
     url.searchParams.set('room', roomId)
     url.searchParams.set('follow', '1')
     if (state?.videoId) url.searchParams.set('watch', state.videoId)
@@ -412,7 +412,7 @@ export function WatchStage({
               <div className="flex items-start justify-between mb-6">
                 <div>
                   <div className="text-[#C9A962] text-xs tracking-[3px]">WATCH TOGETHER</div>
-                  <h3 className="text-[#F8F4ED] text-3xl mt-1">YouTube in this date room</h3>
+                  <h3 className="text-[#F8F4ED] text-3xl mt-1">YouTube for movie night</h3>
                   <p className="text-[#A8988A] text-sm mt-2 max-w-xl">
                     Paste a link in the Watch Together panel, then press Play. Netflix, Hulu, Disney+, and Prime cannot be played inside this website — use “Watch on your own apps.”
                   </p>

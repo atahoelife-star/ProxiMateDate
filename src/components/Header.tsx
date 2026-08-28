@@ -5,9 +5,13 @@ import { Heart, Menu, X } from 'lucide-react'
 const navItems = [
   { to: '/', label: 'Home', end: true },
   { to: '/#how-it-works', label: 'How it works', end: false },
-  { to: '/date-room', label: 'Date Room', end: false },
+  { to: '/date-room', label: 'Dates', end: false },
   { to: '/pricing', label: 'Pricing', end: false },
 ]
+
+function isDatesPath(pathname: string) {
+  return ['/date-room', '/restaurant', '/movie-night', '/date-night'].includes(pathname)
+}
 
 function linkClass(isActive: boolean) {
   return `nav-link ${isActive ? 'active' : ''}`
@@ -47,7 +51,13 @@ export function Header() {
               to={item.to}
               end={item.end}
               className={({ isActive }) =>
-                linkClass(item.to.startsWith('/#') ? location.hash === '#how-it-works' && location.pathname === '/' : isActive)
+                linkClass(
+                  item.to.startsWith('/#')
+                    ? location.hash === '#how-it-works' && location.pathname === '/'
+                    : item.to === '/date-room'
+                      ? isDatesPath(location.pathname)
+                      : isActive,
+                )
               }
             >
               {item.label}
@@ -91,9 +101,13 @@ export function Header() {
                     ? location.hash === '#how-it-works' && location.pathname === '/'
                       ? 'active'
                       : ''
-                    : isActive
-                      ? 'active'
-                      : ''
+                    : item.to === '/date-room'
+                      ? isDatesPath(location.pathname)
+                        ? 'active'
+                        : ''
+                      : isActive
+                        ? 'active'
+                        : ''
                 }`
               }
             >

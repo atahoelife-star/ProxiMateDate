@@ -37,14 +37,22 @@ export function PricingPage() {
   return (
     <div className="max-w-7xl mx-auto px-6 py-16">
       <div className="text-center mb-6">
-        <div className="text-[#C9A962] tracking-[3px] text-sm mb-3">DATE ROOM IS FREE</div>
+        <div className="text-[#C9A962] tracking-[3px] text-sm mb-3">ROOMS ARE FREE</div>
         <h1 className="text-[#F8F4ED]">Pricing</h1>
         <p className="mt-4 text-xl text-[#A8988A] max-w-xl mx-auto">
-          Menus, waiter videos, and Watch Together are open with no paywall. Paid one-time dates use Stripe Checkout when a secret key is configured on Vercel. This site never asks for raw card numbers.
+          Restaurant, movie night, and free date night are open with no paywall. Paid one-time dates use Stripe Checkout when a secret key is configured on Vercel. This site never asks for raw card numbers.
         </p>
-        <Link to="/date-room" className="btn btn-gold mt-8 px-10 py-4 text-base inline-flex">
-          Enter the Date Room
-        </Link>
+        <div className="flex flex-col sm:flex-row gap-3 justify-center mt-8">
+          <Link to="/restaurant" className="btn btn-gold px-8 py-3 text-sm">
+            Restaurant
+          </Link>
+          <Link to="/movie-night" className="btn btn-outline px-8 py-3 text-sm">
+            Movie Night
+          </Link>
+          <Link to="/date-night" className="btn btn-outline px-8 py-3 text-sm">
+            Free Date Night
+          </Link>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-14">
@@ -81,18 +89,23 @@ export function PricingPage() {
                 ))}
               </ul>
               {plan.id === 'free' ? (
-                <Link to="/date-room" className="btn btn-outline w-full py-3.5 text-sm">
+                <Link to={plan.roomPath} className="btn btn-outline w-full py-3.5 text-sm">
                   {plan.cta}
                 </Link>
               ) : (
-                <button
-                  type="button"
-                  className={`btn w-full py-3.5 text-sm ${isPopular ? 'btn-gold' : 'btn-outline'}`}
-                  disabled={busy === plan.id}
-                  onClick={() => onPaidCta(plan)}
-                >
-                  {busy === plan.id ? 'Opening Stripe…' : plan.cta}
-                </button>
+                <div className="space-y-2">
+                  <button
+                    type="button"
+                    className={`btn w-full py-3.5 text-sm ${isPopular ? 'btn-gold' : 'btn-outline'}`}
+                    disabled={busy === plan.id}
+                    onClick={() => onPaidCta(plan)}
+                  >
+                    {busy === plan.id ? 'Opening Stripe…' : plan.cta}
+                  </button>
+                  <Link to={plan.roomPath} className="block text-center text-xs text-[#C9A962] underline py-1">
+                    {plan.roomCta} — no paywall
+                  </Link>
+                </div>
               )}
             </div>
           )

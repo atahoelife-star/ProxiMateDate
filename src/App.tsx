@@ -3,6 +3,9 @@ import { Layout } from './components/Layout'
 import { HomePage } from './pages/Home'
 import { PricingPage } from './pages/Pricing'
 import { DateRoomPage } from './pages/DateRoom'
+import { RestaurantDatePage } from './pages/RestaurantDate'
+import { MovieNightPage } from './pages/MovieNight'
+import { FreeDateNightPage } from './pages/FreeDateNight'
 import { AboutPage } from './pages/About'
 import { FaqPage } from './pages/FAQ'
 import { ContactPage } from './pages/Contact'
@@ -20,6 +23,9 @@ function App() {
           <Route path="/pricing" element={<PricingPage />} />
           <Route path="/date-room" element={<DateRoomPage />} />
           <Route path="/dateroom" element={<Navigate to="/date-room" replace />} />
+          <Route path="/restaurant" element={<RestaurantDatePage />} />
+          <Route path="/movie-night" element={<MovieNightPage />} />
+          <Route path="/date-night" element={<FreeDateNightPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/faq" element={<FaqPage />} />
           <Route path="/contact" element={<ContactPage />} />
