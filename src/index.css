@@ -880,6 +880,54 @@ select.input option {
     linear-gradient(180deg, rgba(8, 5, 4, 0.28), transparent 18%, transparent 82%, rgba(8, 5, 4, 0.5));
 }
 
+/* Optional you + date thumbs in chat only (40–48px). Not player/scene tiles. */
+.us-photos {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.us-photo {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border-radius: 9999px;
+  overflow: hidden;
+  border: 1.5px solid rgba(201, 169, 98, 0.65);
+  background: #1a1418;
+  color: #ede4d9;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.us-photos-compact .us-photo {
+  width: 40px;
+  height: 40px;
+  font-size: 11px;
+}
+
+.us-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.us-photo input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
 @media (max-width: 768px) {
   .ge-arch {
     width: min(88vw, 560px);

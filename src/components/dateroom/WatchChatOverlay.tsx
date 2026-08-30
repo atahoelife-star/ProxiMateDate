@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import { Send } from 'lucide-react'
 import type { ChatMoment } from '../../data/suggestedLines'
 import { SuggestedLines } from './SuggestedLines'
+import { UsPhotos } from './UsPhotos'
 
 export type RoomChatMsg = { id: number; sender: 'me' | 'partner' | 'system'; text: string }
 
@@ -80,8 +81,13 @@ export function WatchChatOverlay({
     return (
       <div className="h-full min-h-[280px] flex flex-col rounded-2xl bg-[#1A1418] border border-[#3A2F36]">
         <div className="px-4 py-3 border-b border-[#3A2F36]">
-          <div className="text-[#F8F4ED] font-medium">Date chat</div>
-          <div className="text-xs text-[#A8988A]">{caption ?? 'Keep talking here in the date room.'}</div>
+          <div className="flex items-center gap-3">
+            <UsPhotos partnerName={partnerName} />
+            <div className="min-w-0">
+              <div className="text-[#F8F4ED] font-medium">Date chat</div>
+              <div className="text-xs text-[#A8988A]">{caption ?? 'Keep talking here in the date room.'}</div>
+            </div>
+          </div>
         </div>
         {thread}
         {composer}
@@ -95,6 +101,9 @@ export function WatchChatOverlay({
       onClick={(e) => e.stopPropagation()}
       onMouseDown={(e) => e.stopPropagation()}
     >
+      <div className="px-2.5 pt-2 pb-1 flex items-center">
+        <UsPhotos partnerName={partnerName} compact />
+      </div>
       {thread}
       {composer}
     </div>

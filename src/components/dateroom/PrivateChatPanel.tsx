@@ -2,6 +2,7 @@ import { Send } from 'lucide-react'
 import type { ChatMsg } from '../../lib/demoChat'
 import type { ChatMoment } from '../../data/suggestedLines'
 import { SuggestedLines } from './SuggestedLines'
+import { UsPhotos } from './UsPhotos'
 
 type PrivateChatPanelProps = {
   partnerName: string
@@ -29,13 +30,18 @@ export function PrivateChatPanel({
   return (
     <div className="card flex flex-col h-full" style={{ minHeight }}>
       <div className="px-6 py-4 border-b border-[#3A2F36] bg-[#1A1418]">
-        <div className="flex items-center justify-between gap-2">
-          <div className="text-[#F8F4ED] font-medium">Private Chat</div>
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <UsPhotos partnerName={partnerName} />
+            <div className="min-w-0">
+              <div className="text-[#F8F4ED] font-medium">Private Chat</div>
+              <div className="text-xs text-[#A8988A]">Demo replies are simulated. Not a live messenger.</div>
+            </div>
+          </div>
           <button type="button" onClick={onRename} className="text-[#C9A962] text-xs underline hover:text-[#E8A0B8] shrink-0">
             {partnerName}
           </button>
         </div>
-        <div className="text-xs text-[#A8988A]">Demo replies are simulated. Not a live messenger.</div>
       </div>
       <div className="flex-1 p-5 overflow-y-auto space-y-4 text-[15px] bg-[#0F0A0D]/40" style={{ maxHeight: '360px' }}>
         {messages.map((msg) => (
