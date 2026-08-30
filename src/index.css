@@ -880,41 +880,56 @@ select.input option {
     linear-gradient(180deg, rgba(8, 5, 4, 0.28), transparent 18%, transparent 82%, rgba(8, 5, 4, 0.5));
 }
 
-/* Optional you + date thumbs in chat only (40–48px). Not player/scene tiles. */
+/* Size lock: you + date are 48px circles (40–60px dime-to-quarter). Never tiles or a banner. */
 .us-photos {
   display: flex;
   align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
+  gap: 4px;
+  flex: 0 0 auto;
+  width: auto;
+  height: 48px;
 }
 
 .us-photo {
+  appearance: none;
+  -webkit-appearance: none;
   position: relative;
+  box-sizing: border-box;
   width: 48px;
   height: 48px;
+  min-width: 48px;
+  max-width: 48px;
+  min-height: 48px;
+  max-height: 48px;
+  flex: 0 0 48px;
   padding: 0;
+  margin: 0;
+  aspect-ratio: 1 / 1;
   border-radius: 9999px;
   overflow: hidden;
   border: 1.5px solid rgba(201, 169, 98, 0.65);
   background: #1a1418;
   color: #ede4d9;
-  font-size: 12px;
+  font-size: 11px;
   letter-spacing: 0.04em;
+  line-height: 1;
   cursor: pointer;
-  flex-shrink: 0;
+  transform: none;
 }
 
-.us-photos-compact .us-photo {
-  width: 40px;
-  height: 40px;
-  font-size: 11px;
+.us-photo:hover,
+.us-photo:focus {
+  transform: none;
 }
 
 .us-photo img {
-  width: 100%;
-  height: 100%;
+  width: 48px;
+  height: 48px;
+  max-width: 48px;
+  max-height: 48px;
   object-fit: cover;
   display: block;
+  pointer-events: none;
 }
 
 .us-photo input {

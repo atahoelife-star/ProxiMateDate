@@ -3,7 +3,6 @@ import { fileToPhotoDataUrl, useUsPhotos } from '../../lib/datePhotos'
 
 type UsPhotosProps = {
   partnerName: string
-  compact?: boolean
 }
 
 function Circle({
@@ -44,7 +43,7 @@ function Circle({
 }
 
 /** Optional you + date circles in chat. Never a scene/player tile. */
-export function UsPhotos({ partnerName, compact = false }: UsPhotosProps) {
+export function UsPhotos({ partnerName }: UsPhotosProps) {
   const { photos, setPhoto } = useUsPhotos()
   const dateInitial = (partnerName.trim()[0] || 'D').toUpperCase()
 
@@ -55,7 +54,7 @@ export function UsPhotos({ partnerName, compact = false }: UsPhotosProps) {
   }
 
   return (
-    <div className={`us-photos${compact ? ' us-photos-compact' : ''}`} aria-label="You and your date">
+    <div className="us-photos" aria-label="You and your date">
       <Circle src={photos.you} label="Y" hint="Add your photo (optional)" onPick={pick('you')} />
       <Circle src={photos.date} label={dateInitial} hint={`Add ${partnerName}'s photo (optional)`} onPick={pick('date')} />
     </div>
