@@ -4,9 +4,9 @@ import { lookBackdrop, lookThumb } from '../../lib/restaurantLook'
 import { playHostVoice, stopHostVoice } from '../../lib/hostVoice'
 
 /** Grand hotel double doors — never waiter/service swinging doors. */
-const DOOR_OPEN_AFTER_MS = 90
-const HOST_AFTER_MS = 1100
-const DONE_MS = 5600
+const DOOR_OPEN_AFTER_MS = 480
+const HOST_AFTER_MS = 1550
+const DONE_MS = 6200
 const REDUCED_DONE_MS = 1400
 
 type HostLeadInProps = {
