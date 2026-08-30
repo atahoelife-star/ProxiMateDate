@@ -32,6 +32,7 @@ import { roomFromWindow, useRoomQuerySync } from '../lib/roomSession'
 import { usePaidRoom } from '../lib/roomAccess'
 import { applyRemotePaidClock, usePaidDateSession } from '../lib/dateSession'
 import { readSeatName, seatFromWindow, useLiveChat, writeSeatName } from '../lib/liveRoom'
+import { useUsPhotos } from '../lib/datePhotos'
 import { RoomPaywall } from '../components/dateroom/RoomPaywall'
 
 export function RestaurantDatePage() {
@@ -47,8 +48,10 @@ function RestaurantDateSession() {
   const [roomId] = useState(roomFromWindow)
   const seat = seatFromWindow()
   const [myName, setMyName] = useState(() => readSeatName(roomId, seat))
+  const photoScope = `${roomId}-${seat}`
+  const { photos } = useUsPhotos(photoScope)
   const session = usePaidDateSession('dinner', roomId, phase === 'room')
-  const live = useLiveChat(roomId, seat, myName, { startedAt: session.startedAt, extraMs: 0 })
+  const live = useLiveChat(roomId, seat, myName, { startedAt: session.startedAt, extraMs: 0 }, photos.you)
   applyRemotePaidClock('dinner', roomId, live.remoteStartedAt)
   const dateName = live.partnerName || 'your date'
   const {
@@ -206,12 +209,14 @@ function RestaurantDateSession() {
         banner={
           session.expired
             ? 'This dinner has wrapped up. No extra charge — stay as long as you like, or end the date.'
-            : session.wrap
-              ? `A few minutes left in this ${session.budgetLabel} dinner.`
-              : `Preview restaurant — ${session.budgetLabel} after you sit. Orders stay in this browser. Waiter clips are serving videos, not a webcam.`
+            : session.waiting
+              ? `Preview restaurant — ${session.budgetLabel} starts when your date joins.`
+              : session.wrap
+                ? `A few minutes left in this ${session.budgetLabel} dinner.`
+                : `Preview restaurant — ${session.budgetLabel} left for both of you. Orders stay in this browser. Waiter clips are serving videos, not a webcam.`
         }
         roomTime={session.remainingLabel}
-        timeHint="left"
+        timeHint={session.waiting ? 'starts when they join' : 'left'}
         onInvite={() => {
           setInviteStep('options')
           setShowInviteModal(true)
@@ -255,7 +260,7 @@ function RestaurantDateSession() {
               onSend={sendChatMessage}
               moment={chatMoment}
               onPickLine={pickSuggestedLine}
-              photoScope={`${roomId}-${seat}`}
+              photoScope={photoScope}
               partnerPhoto={live.partnerPhoto}
               onYouPhoto={live.sendPhoto}
             />
@@ -356,6 +361,8 @@ function RestaurantDateSession() {
           writeSeatName(roomId, seat, name)
           setMyName(name)
         }}
+        photoScope={photoScope}
+        onYouPhoto={live.sendPhoto}
       />
       <InviteDateModal
         open={showInviteModal}

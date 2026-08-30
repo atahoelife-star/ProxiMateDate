@@ -1,11 +1,14 @@
 import { useState } from 'react'
+import { UsPhotos } from './UsPhotos'
 
 type JoinNameModalProps = {
   open: boolean
   onSave: (name: string) => void
+  photoScope?: string
+  onYouPhoto?: (dataUrl: string) => void
 }
 
-export function JoinNameModal({ open, onSave }: JoinNameModalProps) {
+export function JoinNameModal({ open, onSave, photoScope, onYouPhoto }: JoinNameModalProps) {
   const [name, setName] = useState('')
   if (!open) return null
 
@@ -20,7 +23,9 @@ export function JoinNameModal({ open, onSave }: JoinNameModalProps) {
         }}
       >
         <h3 className="text-[#F8F4ED] text-2xl mb-2">What should we call you?</h3>
-        <p className="text-[#A8988A] text-sm mb-5">This name is yours on this date. Your date picks their own — we don’t reuse one default for both of you.</p>
+        <p className="text-[#A8988A] text-sm mb-5">
+          This name is yours on this date. Your date picks their own — we don’t reuse one default for both of you.
+        </p>
         <input
           className="input w-full mb-5"
           value={name}
@@ -29,6 +34,14 @@ export function JoinNameModal({ open, onSave }: JoinNameModalProps) {
           autoFocus
           maxLength={32}
         />
+        <div className="mb-5 flex flex-col items-center gap-2">
+          <UsPhotos
+            partnerName="your date"
+            scope={photoScope}
+            onYouPhoto={onYouPhoto}
+          />
+          <p className="text-[11px] text-[#A8988A] text-center">Optional 48px photos. Tap a circle if you want one.</p>
+        </div>
         <button type="submit" className="btn btn-gold w-full py-3" disabled={!name.trim()}>
           Join this date
         </button>

@@ -10,6 +10,7 @@ import { chatMomentForEvening } from '../data/suggestedLines'
 import { roomFromWindow, useRoomQuerySync } from '../lib/roomSession'
 import { applyRemoteFreeClock, useFreeDateSession } from '../lib/dateSession'
 import { readSeatName, seatFromWindow, useLiveChat, writeSeatName } from '../lib/liveRoom'
+import { useUsPhotos } from '../lib/datePhotos'
 import { startStripeCheckout } from '../lib/stripeCheckout'
 
 export function FreeDateNightPage() {
@@ -17,8 +18,10 @@ export function FreeDateNightPage() {
   const [roomId] = useState(roomFromWindow)
   const seat = seatFromWindow()
   const [myName, setMyName] = useState(() => readSeatName(roomId, seat))
+  const photoScope = `${roomId}-${seat}`
+  const { photos } = useUsPhotos(photoScope)
   const session = useFreeDateSession(roomId)
-  const live = useLiveChat(roomId, seat, myName, { startedAt: session.startedAt, extraMs: session.extraMs })
+  const live = useLiveChat(roomId, seat, myName, { startedAt: session.startedAt, extraMs: session.extraMs }, photos.you)
   applyRemoteFreeClock(roomId, live.remoteStartedAt, live.remoteExtraMs)
   const dateName = live.partnerName || 'your date'
   const [showInviteModal, setShowInviteModal] = useState(false)
@@ -27,7 +30,7 @@ export function FreeDateNightPage() {
   const [waitlist, setWaitlist] = useState(false)
   const [dismissedExtraMs, setDismissedExtraMs] = useState<number | null>(null)
 
-  useRoomQuerySync(roomId, session.isHost ? { started: String(session.startedAt) } : undefined)
+  useRoomQuerySync(roomId, session.startedAt > 0 ? { started: String(session.startedAt) } : undefined)
 
   const chatMoment = chatMomentForEvening({
     watching: false,
@@ -42,9 +45,9 @@ export function FreeDateNightPage() {
     if (result === 'waitlist') setWaitlist(true)
   }
 
-  const showHostPay = session.isHost && (session.warn || session.expired)
+  const showHostPay = session.isHost && !session.waiting && (session.warn || session.expired)
   const showHostOffer =
-    session.isHost && session.warn && !session.expired && dismissedExtraMs !== session.extraMs
+    session.isHost && !session.waiting && session.warn && !session.expired && dismissedExtraMs !== session.extraMs
 
   const saveName = (name: string) => {
     writeSeatName(roomId, seat, name)
@@ -68,12 +71,14 @@ export function FreeDateNightPage() {
         banner={
           session.expired
             ? 'Free 30 minutes is up.'
-            : session.warn
-              ? `About ${session.remainingLabel} left in the free 30 minutes.`
-              : 'Free for 30 minutes. Remaining time is on the clock.'
+            : session.waiting
+              ? 'Free for 30 minutes. The clock starts when your date joins — not when you open the room.'
+              : session.warn
+                ? `About ${session.remainingLabel} left in the free 30 minutes.`
+                : 'Free for 30 minutes. Remaining time counts down for both of you.'
         }
         roomTime={session.remainingLabel}
-        timeHint="left"
+        timeHint={session.waiting ? 'starts when they join' : 'left'}
         onInvite={() => {
           setInviteStep('options')
           setShowInviteModal(true)
@@ -117,7 +122,10 @@ export function FreeDateNightPage() {
         <div className="relative z-10 max-w-xl mx-auto px-4 sm:px-6 pt-10 pb-16">
           <p className="text-center text-[#A8988A] mb-6 text-sm">
             {live.linked ? `You’re live with ${dateName}.` : 'Invite your date with the room link. Chat waits for them — not a bot.'}{' '}
-            Remaining time counts down for both of you.
+            {session.waiting
+              ? 'The 30:00 countdown waits until they open the invite.'
+              : 'Remaining time counts down for both of you.'}{' '}
+            Tap the You and Date circles to add optional photos.
           </p>
           <PrivateChatPanel
             partnerName={dateName}
@@ -133,7 +141,7 @@ export function FreeDateNightPage() {
             moment={chatMoment}
             onPickLine={live.pickSuggestedLine}
             minHeight="560px"
-            photoScope={`${roomId}-${seat}`}
+            photoScope={photoScope}
             partnerPhoto={live.partnerPhoto}
             onYouPhoto={live.sendPhoto}
           />
@@ -161,7 +169,12 @@ export function FreeDateNightPage() {
         </div>
       )}
 
-      <JoinNameModal open={!myName} onSave={saveName} />
+      <JoinNameModal
+        open={!myName}
+        onSave={saveName}
+        photoScope={photoScope}
+        onYouPhoto={live.sendPhoto}
+      />
 
       <InviteDateModal
         open={showInviteModal}
@@ -170,7 +183,7 @@ export function FreeDateNightPage() {
         roomId={roomId}
         invitePath="/date-night"
         follow
-        startedAt={session.startedAt}
+        startedAt={session.startedAt || undefined}
         step={inviteStep}
         onStep={setInviteStep}
       />

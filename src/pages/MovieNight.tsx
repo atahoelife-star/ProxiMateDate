@@ -19,6 +19,7 @@ import {
 import { usePaidRoom } from '../lib/roomAccess'
 import { applyRemotePaidClock, usePaidDateSession } from '../lib/dateSession'
 import { readSeatName, seatFromWindow, useLiveChat, writeSeatName } from '../lib/liveRoom'
+import { useUsPhotos } from '../lib/datePhotos'
 import { RoomPaywall } from '../components/dateroom/RoomPaywall'
 
 export function MovieNightPage() {
@@ -32,8 +33,10 @@ function MovieNightSession() {
   const [roomId] = useState(roomFromWindow)
   const seat = seatFromWindow()
   const [myName, setMyName] = useState(() => readSeatName(roomId, seat))
+  const photoScope = `${roomId}-${seat}`
+  const { photos } = useUsPhotos(photoScope)
   const session = usePaidDateSession('movie', roomId, arrived)
-  const live = useLiveChat(roomId, seat, myName, { startedAt: session.startedAt, extraMs: 0 })
+  const live = useLiveChat(roomId, seat, myName, { startedAt: session.startedAt, extraMs: 0 }, photos.you)
   applyRemotePaidClock('movie', roomId, live.remoteStartedAt)
   const dateName = live.partnerName || 'your date'
   const {
@@ -81,12 +84,14 @@ function MovieNightSession() {
         banner={
           session.expired
             ? 'This movie night has wrapped up. No extra charge — stay as long as you like, or end the date.'
-            : session.wrap
-              ? `A few minutes left in this ${session.budgetLabel} movie night.`
-              : `Preview theater — ${session.budgetLabel}. Paste a YouTube link and press Play. Chat floats when a video is playing. Netflix stays on your own apps.`
+            : session.waiting
+              ? `Preview theater — ${session.budgetLabel} starts when your date joins.`
+              : session.wrap
+                ? `A few minutes left in this ${session.budgetLabel} movie night.`
+                : `Preview theater — ${session.budgetLabel} left for both of you. Paste a YouTube link and press Play. Chat floats when a video is playing. Netflix stays on your own apps.`
         }
         roomTime={session.remainingLabel}
-        timeHint="left"
+        timeHint={session.waiting ? 'starts when they join' : 'left'}
         onInvite={() => {
           setInviteStep('options')
           setShowInviteModal(true)
@@ -131,7 +136,7 @@ function MovieNightSession() {
               onSend={sendChatMessage}
               moment={chatMoment}
               onPickLine={pickSuggestedLine}
-              photoScope={`${roomId}-${seat}`}
+              photoScope={photoScope}
               partnerPhoto={live.partnerPhoto}
               onYouPhoto={live.sendPhoto}
             />
@@ -152,6 +157,8 @@ function MovieNightSession() {
           writeSeatName(roomId, seat, name)
           setMyName(name)
         }}
+        photoScope={photoScope}
+        onYouPhoto={live.sendPhoto}
       />
       <InviteDateModal
         open={showInviteModal}

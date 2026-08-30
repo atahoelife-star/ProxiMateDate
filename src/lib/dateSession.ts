@@ -42,20 +42,35 @@ function startedFromQuery() {
   return Math.min(n, Date.now())
 }
 
-function ensureStart(key: string, fromQuery = 0) {
+/** Read an existing start. Never invent one — the guest joining starts the clock. */
+function peekStart(key: string, fromQuery = 0) {
   const existing = readNumber(key, 0)
   if (fromQuery > 0 && (existing === 0 || fromQuery < existing)) {
     writeNumber(key, fromQuery)
     return fromQuery
   }
+  return existing
+}
+
+function beginStart(key: string, fromQuery = 0) {
+  const existing = peekStart(key, fromQuery)
   if (existing > 0) return existing
   const now = Date.now()
   writeNumber(key, now)
   return now
 }
 
-export function ensureFreeSessionStart(roomId: string) {
-  return ensureStart(freeStartKey(roomId), startedFromQuery())
+function paidKey(kind: PaidSessionKind, roomId: string) {
+  if (hasPremiumAccess()) return PREMIUM_START_KEY
+  return kind === 'dinner' ? dinnerStartKey(roomId) : movieStartKey(roomId)
+}
+
+export function beginFreeSessionNow(roomId: string) {
+  return beginStart(freeStartKey(roomId), startedFromQuery())
+}
+
+export function beginPaidSessionNow(kind: PaidSessionKind, roomId: string) {
+  return beginStart(paidKey(kind, roomId), startedFromQuery())
 }
 
 export function grantFreeExtend(roomId: string) {
@@ -75,7 +90,7 @@ export function consumeFreeExtendReturn(roomId: string) {
 }
 
 export function applyRemoteFreeClock(roomId: string, startedAt: number, extraMs: number) {
-  if (startedAt > 0) ensureStart(freeStartKey(roomId), startedAt)
+  if (startedAt > 0) peekStart(freeStartKey(roomId), startedAt)
   if (extraMs > 0) {
     const have = readNumber(freeExtraKey(roomId), 0)
     if (extraMs > have) writeNumber(freeExtraKey(roomId), extraMs)
@@ -84,8 +99,7 @@ export function applyRemoteFreeClock(roomId: string, startedAt: number, extraMs:
 
 export function applyRemotePaidClock(kind: PaidSessionKind, roomId: string, startedAt: number) {
   if (startedAt <= 0) return
-  if (hasPremiumAccess()) ensureStart(PREMIUM_START_KEY, startedAt)
-  else ensureStart(kind === 'dinner' ? dinnerStartKey(roomId) : movieStartKey(roomId), startedAt)
+  peekStart(paidKey(kind, roomId), startedAt)
 }
 
 export function formatRemaining(ms: number) {
@@ -104,6 +118,7 @@ export type FreeSessionState = {
   remainingLabel: string
   expired: boolean
   warn: boolean
+  waiting: boolean
   isHost: boolean
   startedAt: number
   extraMs: number
@@ -113,23 +128,28 @@ export function useFreeDateSession(roomId: string): FreeSessionState {
   const isHost = !followFromWindow()
   const [now, setNow] = useState(() => {
     consumeFreeExtendReturn(roomId)
-    ensureFreeSessionStart(roomId)
     return Date.now()
   })
 
   useEffect(() => {
+    if (!isHost) {
+      beginFreeSessionNow(roomId)
+      setNow(Date.now())
+    }
     const id = window.setInterval(() => setNow(Date.now()), 250)
     return () => window.clearInterval(id)
-  }, [roomId])
+  }, [roomId, isHost])
 
-  const start = ensureFreeSessionStart(roomId)
+  const start = peekStart(freeStartKey(roomId), startedFromQuery())
   const extraMs = readNumber(freeExtraKey(roomId), 0)
-  const remainingMs = FREE_SESSION_MS + extraMs - (now - start)
+  const waiting = start <= 0
+  const remainingMs = waiting ? FREE_SESSION_MS + extraMs : FREE_SESSION_MS + extraMs - (now - start)
   return {
     remainingMs,
     remainingLabel: formatRemaining(remainingMs),
-    expired: remainingMs <= 0,
-    warn: remainingMs > 0 && remainingMs <= FREE_WARN_MS,
+    expired: !waiting && remainingMs <= 0,
+    warn: !waiting && remainingMs > 0 && remainingMs <= FREE_WARN_MS,
+    waiting,
     isHost,
     startedAt: start,
     extraMs,
@@ -143,6 +163,7 @@ export type PaidSessionState = {
   remainingLabel: string
   expired: boolean
   wrap: boolean
+  waiting: boolean
   isHost: boolean
   startedAt: number
   running: boolean
@@ -156,24 +177,26 @@ export function usePaidDateSession(kind: PaidSessionKind, roomId: string, runnin
   const [now, setNow] = useState(() => Date.now())
 
   useEffect(() => {
+    if (!isHost) {
+      beginPaidSessionNow(kind, roomId)
+      setNow(Date.now())
+    }
     const id = window.setInterval(() => setNow(Date.now()), 250)
     return () => window.clearInterval(id)
-  }, [])
+  }, [kind, roomId, isHost])
 
   const budget = combo ? PREMIUM_SESSION_MS : kind === 'dinner' ? DINNER_SESSION_MS : MOVIE_SESSION_MS
   const budgetLabel = combo ? '3 hours' : kind === 'dinner' ? '90 minutes' : '2.5 hours'
-  const start = running
-    ? combo
-      ? ensureStart(PREMIUM_START_KEY, startedFromQuery())
-      : ensureStart(kind === 'dinner' ? dinnerStartKey(roomId) : movieStartKey(roomId), startedFromQuery())
-    : 0
-  const remainingMs = !running || start === 0 ? budget : budget - (now - start)
+  const start = peekStart(paidKey(kind, roomId), startedFromQuery())
+  const waiting = start <= 0
+  const remainingMs = waiting ? budget : budget - (now - start)
 
   return {
     remainingMs,
     remainingLabel: formatRemaining(remainingMs),
-    expired: running && start > 0 && remainingMs <= 0,
-    wrap: running && start > 0 && remainingMs > 0 && remainingMs <= PAID_WRAP_MS,
+    expired: !waiting && remainingMs <= 0,
+    wrap: !waiting && remainingMs > 0 && remainingMs <= PAID_WRAP_MS,
+    waiting,
     isHost,
     startedAt: start,
     running,

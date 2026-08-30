@@ -37,8 +37,8 @@ export function PrivateChatPanel({
 }: PrivateChatPanelProps) {
   return (
     <div className="card flex flex-col h-full" style={{ minHeight }}>
-      <div className="px-4 py-2.5 border-b border-[#3A2F36] bg-[#1A1418]">
-        <div className="flex items-center gap-2.5">
+      <div className="px-4 py-3 border-b border-[#3A2F36] bg-[#1A1418]">
+        <div className="flex items-center gap-3">
           <UsPhotos
             partnerName={partnerName}
             scope={photoScope}
@@ -47,7 +47,7 @@ export function PrivateChatPanel({
           />
           <div className="min-w-0 flex-1">
             <div className="text-[#F8F4ED] font-medium leading-tight">Private Chat</div>
-            <div className="text-[11px] text-[#A8988A] leading-tight">Waits for your date. Not a bot.</div>
+            <div className="text-[11px] text-[#A8988A] leading-tight">Optional photos · waits for your date. Not a bot.</div>
           </div>
           <button type="button" onClick={onRename} className="text-[#C9A962] text-xs underline hover:text-[#E8A0B8] shrink-0">
             {myName || 'Your name'}

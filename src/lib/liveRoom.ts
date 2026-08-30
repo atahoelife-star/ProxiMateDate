@@ -74,7 +74,13 @@ function writeStored(roomId: string, messages: ChatMsg[]) {
   }
 }
 
-export function useLiveChat(roomId: string, seat: Seat, myName: string, session: { startedAt: number; extraMs: number }) {
+export function useLiveChat(
+  roomId: string,
+  seat: Seat,
+  myName: string,
+  session: { startedAt: number; extraMs: number },
+  youPhoto?: string | null,
+) {
   const [chatMessages, setChatMessages] = useState<ChatMsg[]>(() => readStored(roomId))
   const [chatInput, setChatInput] = useState('')
   const [partnerName, setPartnerName] = useState('')
@@ -86,11 +92,13 @@ export function useLiveChat(roomId: string, seat: Seat, myName: string, session:
   const myNameRef = useRef(myName)
   const sessionRef = useRef(session)
   const seatRef = useRef(seat)
+  const youPhotoRef = useRef(youPhoto)
 
   useEffect(() => {
     myNameRef.current = myName
     sessionRef.current = session
     seatRef.current = seat
+    youPhotoRef.current = youPhoto
   })
 
   const upsert = (msg: ChatMsg) => {
@@ -152,6 +160,7 @@ export function useLiveChat(roomId: string, seat: Seat, myName: string, session:
       name: myNameRef.current,
       startedAt: sessionRef.current.startedAt,
       extraMs: sessionRef.current.extraMs,
+      photo: youPhotoRef.current,
     })
 
     const attach = (conn: DataConnection) => {
@@ -219,9 +228,10 @@ export function useLiveChat(roomId: string, seat: Seat, myName: string, session:
       name: myName,
       startedAt: session.startedAt,
       extraMs: session.extraMs,
+      photo: youPhoto,
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [myName, session.startedAt, session.extraMs, roomId, seat])
+  }, [myName, session.startedAt, session.extraMs, youPhoto, roomId, seat])
 
   const sendChatMessage = () => {
     const text = chatInput.trim()
@@ -233,8 +243,10 @@ export function useLiveChat(roomId: string, seat: Seat, myName: string, session:
   }
 
   const pickSuggestedLine = (line: string) => {
-    if (chatInput.trim() === line) sendChatMessage()
-    else setChatInput(line)
+    const trimmed = line.trim()
+    if (!trimmed) return
+    if (chatInput.trim() === trimmed) sendChatMessage()
+    else setChatInput(trimmed)
   }
 
   const roomMessage = (text: string) => {
