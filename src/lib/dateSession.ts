@@ -1,15 +1,29 @@
 import { useEffect, useState } from 'react'
-import { followFromWindow } from './roomSession'
+import {
+  DINNER_SESSION_MS,
+  FREE_EXTEND_MS,
+  FREE_SESSION_MS,
+  FREE_WARN_MS,
+  MOVIE_SESSION_MS,
+  PAID_WRAP_MS,
+  PREMIUM_SESSION_MS,
+  earliestStart,
+  formatRemaining,
+  remainingFromStart,
+} from './dateClock'
 import { hasPremiumAccess } from './roomAccess'
+import { followFromWindow } from './roomSession'
 
-export const FREE_SESSION_MS = 30 * 60 * 1000
-export const FREE_EXTEND_MS = 30 * 60 * 1000
-export const FREE_WARN_MS = 3 * 60 * 1000
-
-export const DINNER_SESSION_MS = 90 * 60 * 1000
-export const MOVIE_SESSION_MS = Math.round(2.5 * 60 * 60 * 1000)
-export const PREMIUM_SESSION_MS = 3 * 60 * 60 * 1000
-export const PAID_WRAP_MS = 5 * 60 * 1000
+export {
+  DINNER_SESSION_MS,
+  FREE_EXTEND_MS,
+  FREE_SESSION_MS,
+  FREE_WARN_MS,
+  MOVIE_SESSION_MS,
+  PAID_WRAP_MS,
+  PREMIUM_SESSION_MS,
+  formatRemaining,
+}
 
 const freeStartKey = (roomId: string) => `pd-session-free-start:${roomId}`
 const freeExtraKey = (roomId: string) => `pd-session-free-extra:${roomId}`
@@ -42,22 +56,11 @@ function startedFromQuery() {
   return Math.min(n, Date.now())
 }
 
-/** Read an existing start. Never invent one — the guest joining starts the clock. */
 function peekStart(key: string, fromQuery = 0) {
   const existing = readNumber(key, 0)
-  if (fromQuery > 0 && (existing === 0 || fromQuery < existing)) {
-    writeNumber(key, fromQuery)
-    return fromQuery
-  }
-  return existing
-}
-
-function beginStart(key: string, fromQuery = 0) {
-  const existing = peekStart(key, fromQuery)
-  if (existing > 0) return existing
-  const now = Date.now()
-  writeNumber(key, now)
-  return now
+  const start = earliestStart(existing, fromQuery)
+  if (start > 0 && start !== existing) writeNumber(key, start)
+  return start
 }
 
 function paidKey(kind: PaidSessionKind, roomId: string) {
@@ -66,11 +69,19 @@ function paidKey(kind: PaidSessionKind, roomId: string) {
 }
 
 export function beginFreeSessionNow(roomId: string) {
-  return beginStart(freeStartKey(roomId), startedFromQuery())
+  const existing = peekStart(freeStartKey(roomId), startedFromQuery())
+  if (existing > 0) return existing
+  const now = Date.now()
+  writeNumber(freeStartKey(roomId), now)
+  return now
 }
 
 export function beginPaidSessionNow(kind: PaidSessionKind, roomId: string) {
-  return beginStart(paidKey(kind, roomId), startedFromQuery())
+  const existing = peekStart(paidKey(kind, roomId), startedFromQuery())
+  if (existing > 0) return existing
+  const now = Date.now()
+  writeNumber(paidKey(kind, roomId), now)
+  return now
 }
 
 export function grantFreeExtend(roomId: string) {
@@ -102,15 +113,10 @@ export function applyRemotePaidClock(kind: PaidSessionKind, roomId: string, star
   peekStart(paidKey(kind, roomId), startedAt)
 }
 
-export function formatRemaining(ms: number) {
-  const safe = Math.max(0, Math.ceil(ms / 1000))
-  const hours = Math.floor(safe / 3600)
-  const minutes = Math.floor((safe % 3600) / 60)
-  const seconds = safe % 60
-  if (hours > 0) {
-    return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
-  }
-  return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+type ClockOpts = {
+  isHost: boolean
+  remoteStartedAt?: number
+  remoteExtraMs?: number
 }
 
 export type FreeSessionState = {
@@ -124,11 +130,13 @@ export type FreeSessionState = {
   extraMs: number
 }
 
-export function useFreeDateSession(roomId: string): FreeSessionState {
-  const isHost = !followFromWindow()
+export function useFreeDateSession(roomId: string, opts?: ClockOpts): FreeSessionState {
+  const isHost = opts?.isHost ?? !followFromWindow()
+  const remoteStartedAt = opts?.remoteStartedAt ?? 0
+  const remoteExtraMs = opts?.remoteExtraMs ?? 0
   const [now, setNow] = useState(() => {
     consumeFreeExtendReturn(roomId)
-    if (!isHost) beginFreeSessionNow(roomId)
+    applyRemoteFreeClock(roomId, remoteStartedAt, remoteExtraMs)
     return Date.now()
   })
 
@@ -137,14 +145,16 @@ export function useFreeDateSession(roomId: string): FreeSessionState {
     return () => window.clearInterval(id)
   }, [roomId])
 
-  if (!isHost) beginFreeSessionNow(roomId)
-  const start = peekStart(freeStartKey(roomId), startedFromQuery())
-  const extraMs = readNumber(freeExtraKey(roomId), 0)
-  const waiting = start <= 0
-  const remainingMs = waiting ? FREE_SESSION_MS + extraMs : FREE_SESSION_MS + extraMs - (now - start)
+  useEffect(() => {
+    applyRemoteFreeClock(roomId, remoteStartedAt, remoteExtraMs)
+  }, [roomId, remoteStartedAt, remoteExtraMs])
+
+  const extraMs = Math.max(readNumber(freeExtraKey(roomId), 0), remoteExtraMs)
+  const start = earliestStart(peekStart(freeStartKey(roomId), startedFromQuery()), remoteStartedAt)
+  const { remainingMs, waiting } = remainingFromStart(FREE_SESSION_MS, start, now, extraMs)
   return {
     remainingMs,
-    remainingLabel: formatRemaining(remainingMs),
+    remainingLabel: formatRemaining(remainingMs, 'minutes'),
     expired: !waiting && remainingMs <= 0,
     warn: !waiting && remainingMs > 0 && remainingMs <= FREE_WARN_MS,
     waiting,
@@ -169,11 +179,17 @@ export type PaidSessionState = {
   combo: boolean
 }
 
-export function usePaidDateSession(kind: PaidSessionKind, roomId: string, running: boolean): PaidSessionState {
-  const isHost = !followFromWindow()
+export function usePaidDateSession(
+  kind: PaidSessionKind,
+  roomId: string,
+  running: boolean,
+  opts?: ClockOpts,
+): PaidSessionState {
+  const isHost = opts?.isHost ?? !followFromWindow()
+  const remoteStartedAt = opts?.remoteStartedAt ?? 0
   const combo = hasPremiumAccess()
   const [now, setNow] = useState(() => {
-    if (!isHost) beginPaidSessionNow(kind, roomId)
+    applyRemotePaidClock(kind, roomId, remoteStartedAt)
     return Date.now()
   })
 
@@ -182,16 +198,19 @@ export function usePaidDateSession(kind: PaidSessionKind, roomId: string, runnin
     return () => window.clearInterval(id)
   }, [])
 
+  useEffect(() => {
+    applyRemotePaidClock(kind, roomId, remoteStartedAt)
+  }, [kind, roomId, remoteStartedAt])
+
   const budget = combo ? PREMIUM_SESSION_MS : kind === 'dinner' ? DINNER_SESSION_MS : MOVIE_SESSION_MS
   const budgetLabel = combo ? '3 hours' : kind === 'dinner' ? '90 minutes' : '2.5 hours'
-  if (!isHost) beginPaidSessionNow(kind, roomId)
-  const start = peekStart(paidKey(kind, roomId), startedFromQuery())
-  const waiting = start <= 0
-  const remainingMs = waiting ? budget : budget - (now - start)
+  const start = earliestStart(peekStart(paidKey(kind, roomId), startedFromQuery()), remoteStartedAt)
+  const { remainingMs, waiting } = remainingFromStart(budget, start, now)
+  const labelMode = combo || kind === 'movie' ? 'hours' : 'minutes'
 
   return {
     remainingMs,
-    remainingLabel: formatRemaining(remainingMs),
+    remainingLabel: formatRemaining(remainingMs, labelMode),
     expired: !waiting && remainingMs <= 0,
     wrap: !waiting && remainingMs > 0 && remainingMs <= PAID_WRAP_MS,
     waiting,

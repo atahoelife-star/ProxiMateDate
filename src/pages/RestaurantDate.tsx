@@ -30,7 +30,7 @@ import {
 import { chatMomentForEvening } from '../data/suggestedLines'
 import { roomFromWindow, useRoomQuerySync } from '../lib/roomSession'
 import { usePaidRoom } from '../lib/roomAccess'
-import { applyRemotePaidClock, usePaidDateSession } from '../lib/dateSession'
+import { usePaidDateSession } from '../lib/dateSession'
 import { useLiveChat, useLiveSeat } from '../lib/liveRoom'
 import { useUsPhotos } from '../lib/datePhotos'
 import { RoomPaywall } from '../components/dateroom/RoomPaywall'
@@ -48,9 +48,11 @@ function RestaurantDateSession() {
   const [roomId] = useState(roomFromWindow)
   const { seat, myName, join, rename, photoScope } = useLiveSeat(roomId)
   const { photos } = useUsPhotos(photoScope)
-  const session = usePaidDateSession('dinner', roomId, phase === 'room')
-  const live = useLiveChat(roomId, seat, myName, { startedAt: session.startedAt, extraMs: 0 }, photos.you)
-  applyRemotePaidClock('dinner', roomId, live.remoteStartedAt)
+  const live = useLiveChat(roomId, seat, myName, photos.you, { armClock: seat === 'guest' && phase === 'room' })
+  const session = usePaidDateSession('dinner', roomId, phase === 'room', {
+    isHost: seat === 'host',
+    remoteStartedAt: live.remoteStartedAt,
+  })
   const dateName = live.partnerName || 'your date'
   const {
     chatMessages,

@@ -63,6 +63,10 @@ export function applyEvent(state, event) {
     const extraMs = Number(event.extraMs) || 0
     if (extraMs > next.extraMs) next.extraMs = extraMs
   }
+  if (kind === 'start') {
+    const startedAt = Number(event.startedAt) || Date.now()
+    if (startedAt > 0 && (next.startedAt === 0 || startedAt < next.startedAt)) next.startedAt = startedAt
+  }
   return next
 }
 

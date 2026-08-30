@@ -37,7 +37,9 @@ export function RoomChrome({
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-2 text-[#C9A962]">
             <Clock className="w-4 h-4" />
-            <span className="font-mono tracking-[3px] text-sm">{roomTime}</span>
+            <span className="font-mono tracking-[3px] text-sm" aria-label={timeHint === 'left' ? `${roomTime} remaining` : roomTime}>
+              {roomTime}
+            </span>
             {timeHint && <span className="text-[11px] tracking-normal text-[#A8988A] font-sans">{timeHint}</span>}
           </div>
           <div className="text-[#E8A0B8] text-sm">•</div>

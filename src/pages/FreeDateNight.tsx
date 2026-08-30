@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { RoomChrome } from '../components/dateroom/RoomChrome'
 import { PrivateChatPanel } from '../components/dateroom/PrivateChatPanel'
@@ -8,7 +8,7 @@ import { HostRibbon } from '../components/dateroom/HostRibbon'
 import { WaitlistForm } from '../components/WaitlistForm'
 import { chatMomentForEvening } from '../data/suggestedLines'
 import { roomFromWindow, useRoomQuerySync } from '../lib/roomSession'
-import { applyRemoteFreeClock, useFreeDateSession } from '../lib/dateSession'
+import { useFreeDateSession } from '../lib/dateSession'
 import { useLiveChat, useLiveSeat } from '../lib/liveRoom'
 import { useUsPhotos } from '../lib/datePhotos'
 import { startStripeCheckout } from '../lib/stripeCheckout'
@@ -18,9 +18,12 @@ export function FreeDateNightPage() {
   const [roomId] = useState(roomFromWindow)
   const { seat, myName, join, rename, photoScope } = useLiveSeat(roomId)
   const { photos } = useUsPhotos(photoScope)
-  const session = useFreeDateSession(roomId)
-  const live = useLiveChat(roomId, seat, myName, { startedAt: session.startedAt, extraMs: session.extraMs }, photos.you)
-  applyRemoteFreeClock(roomId, live.remoteStartedAt, live.remoteExtraMs)
+  const live = useLiveChat(roomId, seat, myName, photos.you, { armClock: seat === 'guest' })
+  const session = useFreeDateSession(roomId, {
+    isHost: seat === 'host',
+    remoteStartedAt: live.remoteStartedAt,
+    remoteExtraMs: live.remoteExtraMs,
+  })
   const dateName = live.partnerName || 'your date'
   const [showInviteModal, setShowInviteModal] = useState(false)
   const [inviteStep, setInviteStep] = useState<'options' | 'success'>('options')
@@ -29,6 +32,12 @@ export function FreeDateNightPage() {
   const [dismissedExtraMs, setDismissedExtraMs] = useState<number | null>(null)
 
   useRoomQuerySync(roomId, session.startedAt > 0 ? { started: String(session.startedAt) } : undefined)
+
+  useEffect(() => {
+    if (session.extraMs > 0) live.sendExtend(session.extraMs)
+    // extraMs is the shared extend; live identity changes every render
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session.extraMs])
 
   const chatMoment = chatMomentForEvening({
     watching: false,
