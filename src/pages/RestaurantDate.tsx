@@ -27,8 +27,16 @@ import {
 import { chatMomentForEvening } from '../data/suggestedLines'
 import { useDemoChat } from '../lib/demoChat'
 import { roomFromWindow, useRoomClock, useRoomQuerySync } from '../lib/roomSession'
+import { usePaidRoom } from '../lib/roomAccess'
+import { RoomPaywall } from '../components/dateroom/RoomPaywall'
 
 export function RestaurantDatePage() {
+  const allowed = usePaidRoom('dinner')
+  if (!allowed) return <RoomPaywall room="dinner" />
+  return <RestaurantDateSession />
+}
+
+function RestaurantDateSession() {
   const { phase, look, lookId, finishTour, pickLook, finishLead, changeRoom, stayHere } = useRestaurantEntry()
   const navigate = useNavigate()
   const { muted: diningMuted, toggleMute: toggleDiningMute, fadeOutAndStop } = useDiningAmbience(phase === 'room')
@@ -310,7 +318,7 @@ export function RestaurantDatePage() {
         partnerName={partnerName}
         roomId={roomId}
         invitePath="/restaurant"
-        follow={false}
+        follow
         step={inviteStep}
         onStep={setInviteStep}
       />

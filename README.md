@@ -4,18 +4,18 @@ Website-only long-distance date night at [proximatedate.com](https://www.proxima
 
 ## What ships in this preview
 
-Three free rooms (no paywall):
+Three rooms:
 
-- **Restaurant** (`/restaurant`): short walk-in (host, tables, sit down), then dual menus (The Verdant Ember + The Silver Sage) and waiter serving videos. LIVE idle is a seated 1x dining room. Serving clips play on order only.
-- **Movie Night** (`/movie-night`): short walk-in (ticket booth, lobby, popcorn, seats), then Watch Together. Official YouTube IFrame Player (`youtube.com/iframe_api`). Paste a youtube.com / youtu.be link, then press Play. Floating chat opens with Play. No chat box inside the player. Netflix stays on your own accounts as companion mode.
-- **Free Date Night** (`/date-night`): simple chat / together time. No menus, no movie player.
-- **Dates chooser** (`/date-room`): picks a room. Old Watch Together follower links (`?watch=` / `?follow=1`) redirect to movie night.
+- **Restaurant** (`/restaurant`): **$9.99** before the walk-in (host, tables, sit down), then dual menus and waiter serving videos. LIVE idle is a seated 1x dining room.
+- **Movie Night** (`/movie-night`): **$14.99** before the walk-in (ticket booth, lobby, popcorn, seats), then Watch Together. Official YouTube IFrame Player (`youtube.com/iframe_api`). Paste a youtube.com / youtu.be link, then press Play. Floating chat opens with Play. Netflix stays on your own accounts as companion mode.
+- **Free Date Night** (`/date-night`): **free**, no card, no lock. Simple chat / together time. No menus, no movie player.
+- **Dates chooser** (`/date-room`): picks a room. Old Watch Together follower links (`?watch=` / `?follow=1`) redirect to movie night. Guest `?follow=1` links skip a second payment.
 
 Other:
 
 - **Companion mode:** countdown + chat while each person uses their own Netflix / Hulu / Disney+ / Prime app. No unofficial stream URLs. We do not bypass YouTube age-restriction.
 - **Waitlist:** Sign In / Get Started / Contact post to FormSubmit (`atahoelife@gmail.com`, subject **ProxiMateDate waitlist**).
-- **Pricing:** paid one-time amounts use Stripe Checkout when a secret key is configured. This site never collects raw card numbers. Paying does not unlock rooms.
+- **Pricing:** Dinner **$9.99**, Movie Night **$14.99**, Premium Romance **$24.99** (both paid rooms). Candlelight Chat stays free. Paid rooms use Stripe Checkout when a secret key is configured. This site never collects raw card numbers and does not send people to PayPal, Venmo, or Cash App. If the key is missing, paid buttons collect a waitlist email.
 
 ### Watch Together sync (limitation)
 
@@ -38,7 +38,7 @@ Cloudflare Workers Git builds (if connected) need this Wrangler file and a dashb
 
 ## Stripe Checkout (website only)
 
-Paid plans: Dinner **$9.99**, Movie Night **$14.99**, Premium Romance **$24.99**. Candlelight Chat stays free. The three rooms are not gated.
+Paid plans: Dinner **$9.99**, Movie Night **$14.99**, Premium Romance **$24.99** (unlocks both). Candlelight Chat stays free. Restaurant and movie night are gated until Checkout succeeds in this browser (`?paid=1`).
 
 1. Create a Stripe account at [https://dashboard.stripe.com/register](https://dashboard.stripe.com/register).
 2. From Developers → API keys, copy the **Secret key** (`sk_test_…` for testing, `sk_live_…` for production). Never put this in the frontend repo.
@@ -50,4 +50,4 @@ Paid plans: Dinner **$9.99**, Movie Night **$14.99**, Premium Romance **$24.99**
 4. Redeploy. Pricing CTAs `POST /api/create-checkout`, then redirect to Stripe-hosted Checkout.
 5. If the key is missing, the API returns 503 and the site collects a waitlist email instead. No card fields are rendered on proximatedate.com.
 
-Checkout success returns to the matching room (`/restaurant`, `/movie-night`, or `/date-room`) with `?paid=1`. Success does not unlock features — the rooms were already free.
+Checkout success returns to the matching room (`/restaurant`, `/movie-night`, or `/date-room`) with `?paid=1&plan=…`, which unlocks that room (or both, for Premium) in this browser.

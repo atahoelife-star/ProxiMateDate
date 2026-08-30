@@ -15,8 +15,16 @@ import {
   useRoomClock,
   useRoomQuerySync,
 } from '../lib/roomSession'
+import { usePaidRoom } from '../lib/roomAccess'
+import { RoomPaywall } from '../components/dateroom/RoomPaywall'
 
 export function MovieNightPage() {
+  const allowed = usePaidRoom('movie')
+  if (!allowed) return <RoomPaywall room="movie" />
+  return <MovieNightSession />
+}
+
+function MovieNightSession() {
   const { arrived, markArrived } = useArrivalGate('pd-arrival-cinema')
   const { chatMessages, chatInput, setChatInput, sendChatMessage, pickSuggestedLine, roomMessage } = useDemoChat()
   const [partnerName, setPartnerName] = useState('Emma')

@@ -2,12 +2,13 @@ import { Link, Navigate, useSearchParams } from 'react-router-dom'
 import { Clapperboard, MessageCircle, UtensilsCrossed } from 'lucide-react'
 import { useEffect, useRef } from 'react'
 import { toast } from 'sonner'
+import { consumeChooserPaidReturn } from '../lib/roomAccess'
 
 const rooms = [
   {
     to: '/restaurant',
     icon: UtensilsCrossed,
-    kicker: 'DINNER',
+    kicker: '$9.99',
     title: 'Restaurant Date',
     desc: 'Walk in, sit down, order from The Verdant Ember and The Silver Sage at one table. Live waiter clips. No movie player.',
   },
@@ -38,8 +39,9 @@ export function DateRoomPage() {
     if (toastedPaid.current) return
     if (params.get('paid') !== '1' || watch || follow) return
     toastedPaid.current = true
-    toast.success('Stripe Checkout completed', {
-      description: 'Thank you. Pick a room below — nothing extra was unlocked.',
+    consumeChooserPaidReturn()
+    toast.success('You’re in', {
+      description: 'Dinner and movie night are unlocked in this browser. Pick a room.',
     })
     const next = new URLSearchParams(params)
     next.delete('paid')
@@ -57,7 +59,7 @@ export function DateRoomPage() {
         <div className="text-[#C9A962] text-sm tracking-[3px] mb-3">PICK YOUR EVENING</div>
         <h1 className="text-[#F8F4ED]">Three date rooms</h1>
         <p className="mt-4 text-xl text-[#A8988A] max-w-2xl mx-auto">
-          Each room is its own page. None of them are behind a paywall. Restaurant and movie night start with a short walk-in.
+          Each room is its own page. Free Date Night is free. Restaurant ($9.99) and Movie Night ($14.99) start after you pay with a card in the browser.
         </p>
       </div>
       <div className="grid md:grid-cols-3 gap-6">

@@ -10,9 +10,9 @@ export function FaqPage() {
       </p>
       <h2 className="text-[#F8F4ED] text-xl">What are the three rooms?</h2>
       <p>
-        <Link to="/restaurant" className="text-[#C9A962] underline">Restaurant</Link> is dinner: dual menus and waiter clips after a short walk-in.{' '}
-        <Link to="/movie-night" className="text-[#C9A962] underline">Movie night</Link> is Watch Together after a theater walk-in.{' '}
-        <Link to="/date-night" className="text-[#C9A962] underline">Free date night</Link> is simple chat. None of them are gated.
+        <Link to="/restaurant" className="text-[#C9A962] underline">Restaurant</Link> is dinner after $9.99.{' '}
+        <Link to="/movie-night" className="text-[#C9A962] underline">Movie night</Link> is Watch Together after $14.99.{' '}
+        <Link to="/date-night" className="text-[#C9A962] underline">Free date night</Link> is simple chat — no card, no lock.
       </p>
       <h2 className="text-[#F8F4ED] text-xl">Can we order from two restaurants?</h2>
       <p>
@@ -20,7 +20,7 @@ export function FaqPage() {
       </p>
       <h2 className="text-[#F8F4ED] text-xl">Do you take payment?</h2>
       <p>
-        The three rooms are free. Paid one-time amounts ($9.99 / $14.99 / $24.99) open Stripe Checkout when a <code className="text-[#C9A962]">STRIPE_SECRET_KEY</code> is set on Vercel. If that key is missing, Pricing collects a waitlist email instead. We never ask for raw card numbers on this website. See <Link to="/pricing" className="text-[#C9A962] underline">Pricing</Link>.
+        Free Date Night is free. Dinner ($9.99) and Movie Night ($14.99) must be paid before those rooms start, through Stripe Checkout when a <code className="text-[#C9A962]">STRIPE_SECRET_KEY</code> is set on Vercel. Premium ($24.99) unlocks both. If that key is missing, we collect a waitlist email instead. We never ask for raw card numbers on this website, and we do not send you to PayPal, Venmo, or Cash App. See <Link to="/pricing" className="text-[#C9A962] underline">Pricing</Link>.
       </p>
       <h2 className="text-[#F8F4ED] text-xl">How do Sign In and Get Started work?</h2>
       <p>

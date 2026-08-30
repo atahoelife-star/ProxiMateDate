@@ -6,15 +6,15 @@ export function GetStartedPage() {
   return (
     <PageShell kicker="GET STARTED" title="Join ProxiMateDate">
       <p>
-        Get Started does not create an account. The three date rooms are free. Paid one-time dates on{' '}
+        Get Started does not create an account.{' '}
+        <Link to="/date-night" className="text-[#C9A962] underline">
+          Free Date Night
+        </Link>{' '}
+        is open with no card. Dinner and movie night on{' '}
         <Link to="/pricing" className="text-[#C9A962] underline">
           Pricing
         </Link>{' '}
-        use Stripe Checkout when a secret key is configured — this page never asks for a card. You can still{' '}
-        <Link to="/date-room" className="text-[#C9A962] underline">
-          pick a room
-        </Link>{' '}
-        right now.
+        use Stripe Checkout when a secret key is configured — this page never asks for a card.
       </p>
       <div className="card p-6 mt-4">
         <WaitlistForm

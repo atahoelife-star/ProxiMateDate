@@ -4,32 +4,19 @@ import { Check, X } from 'lucide-react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { PLANS, type Plan } from '../data/plans'
 import { WaitlistForm } from '../components/WaitlistForm'
-
-async function startStripeCheckout(planId: string): Promise<'redirected' | 'waitlist'> {
-  try {
-    const response = await fetch('/api/create-checkout', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ plan: planId }),
-    })
-    if (response.status === 503 || response.status === 404) return 'waitlist'
-    if (!response.ok) return 'waitlist'
-    const data = (await response.json()) as { url?: string }
-    if (!data.url) return 'waitlist'
-    window.location.assign(data.url)
-    return 'redirected'
-  } catch {
-    return 'waitlist'
-  }
-}
+import { startStripeCheckout, type PaidPlanId } from '../lib/stripeCheckout'
 
 export function PricingPage() {
   const [waitlistPlan, setWaitlistPlan] = useState<Plan | null>(null)
   const [busy, setBusy] = useState<string | null>(null)
 
   const onPaidCta = async (plan: Plan) => {
+    if (plan.id === 'free') return
     setBusy(plan.id)
-    const result = await startStripeCheckout(plan.id)
+    const result = await startStripeCheckout(plan.id as PaidPlanId, {
+      returnTo: plan.roomPath,
+      cancelTo: '/pricing',
+    })
     setBusy(null)
     if (result === 'waitlist') setWaitlistPlan(plan)
   }
@@ -37,20 +24,20 @@ export function PricingPage() {
   return (
     <div className="max-w-7xl mx-auto px-6 py-16">
       <div className="text-center mb-6">
-        <div className="text-[#C9A962] tracking-[3px] text-sm mb-3">ROOMS ARE FREE</div>
+        <div className="text-[#C9A962] tracking-[3px] text-sm mb-3">PAY IN THE BROWSER</div>
         <h1 className="text-[#F8F4ED]">Pricing</h1>
         <p className="mt-4 text-xl text-[#A8988A] max-w-xl mx-auto">
-          Restaurant, movie night, and free date night are open with no paywall. Paid one-time dates use Stripe Checkout when a secret key is configured on Vercel. This site never asks for raw card numbers.
+          Free Date Night is free. Dinner is $9.99 and Movie Night is $14.99 — pay with a card on Stripe Checkout before those rooms start. This site never asks for raw card numbers, and we do not send you to PayPal, Venmo, or Cash App.
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center mt-8">
-          <Link to="/restaurant" className="btn btn-gold px-8 py-3 text-sm">
-            Restaurant
+          <Link to="/date-night" className="btn btn-gold px-8 py-3 text-sm">
+            Free Date Night
+          </Link>
+          <Link to="/restaurant" className="btn btn-outline px-8 py-3 text-sm">
+            Dinner $9.99
           </Link>
           <Link to="/movie-night" className="btn btn-outline px-8 py-3 text-sm">
-            Movie Night
-          </Link>
-          <Link to="/date-night" className="btn btn-outline px-8 py-3 text-sm">
-            Free Date Night
+            Movie Night $14.99
           </Link>
         </div>
       </div>
@@ -93,19 +80,14 @@ export function PricingPage() {
                   {plan.cta}
                 </Link>
               ) : (
-                <div className="space-y-2">
-                  <button
-                    type="button"
-                    className={`btn w-full py-3.5 text-sm ${isPopular ? 'btn-gold' : 'btn-outline'}`}
-                    disabled={busy === plan.id}
-                    onClick={() => onPaidCta(plan)}
-                  >
-                    {busy === plan.id ? 'Opening Stripe…' : plan.cta}
-                  </button>
-                  <Link to={plan.roomPath} className="block text-center text-xs text-[#C9A962] underline py-1">
-                    {plan.roomCta} — no paywall
-                  </Link>
-                </div>
+                <button
+                  type="button"
+                  className={`btn w-full py-3.5 text-sm ${isPopular ? 'btn-gold' : 'btn-outline'}`}
+                  disabled={busy === plan.id}
+                  onClick={() => onPaidCta(plan)}
+                >
+                  {busy === plan.id ? 'Opening Stripe…' : plan.cta}
+                </button>
               )}
             </div>
           )
@@ -115,7 +97,7 @@ export function PricingPage() {
       <div className="card p-8 mt-16 max-w-xl mx-auto">
         <h2 className="text-[#F8F4ED] text-2xl mb-2">Email waitlist</h2>
         <p className="text-[#A8988A] text-sm mb-6">
-          If Stripe is not set up yet, paid buttons collect this email instead. Subject: ProxiMateDate waitlist.
+          If Stripe is not set up yet, paid buttons collect this email instead. Subject: ProxiMateDate waitlist. No card on this page.
         </p>
         <WaitlistForm intent="pricing-optional" submitLabel="Join the waitlist" />
       </div>

@@ -1,10 +1,12 @@
 import Stripe from 'stripe'
 
 const PLANS = {
-  dinner: { name: 'Virtual Dinner Date', amount: 999, successPath: '/restaurant?paid=1' },
-  movie: { name: 'Movie Night', amount: 1499, successPath: '/movie-night?paid=1' },
-  premium: { name: 'Premium Romance', amount: 2499, successPath: '/date-room?paid=1' },
+  dinner: { name: 'Virtual Dinner Date', amount: 999, successPath: '/restaurant' },
+  movie: { name: 'Movie Night', amount: 1499, successPath: '/movie-night' },
+  premium: { name: 'Premium Romance', amount: 2499, successPath: '/date-room' },
 }
+
+const ALLOWED_PATHS = new Set(['/restaurant', '/movie-night', '/date-room', '/date-night', '/pricing'])
 
 async function readBody(req) {
   if (req.body) {
@@ -38,6 +40,13 @@ function siteOrigin(req) {
   return 'https://www.proximatedate.com'
 }
 
+function safePath(raw, fallback) {
+  if (typeof raw !== 'string') return fallback
+  const path = raw.split('?')[0]
+  if (!ALLOWED_PATHS.has(path)) return fallback
+  return path
+}
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
@@ -58,7 +67,8 @@ export default async function handler(req, res) {
   }
 
   const body = await readBody(req)
-  const plan = PLANS[body?.plan]
+  const planId = body?.plan
+  const plan = PLANS[planId]
   if (!plan) {
     res.status(400).json({ error: 'unknown_plan' })
     return
@@ -67,6 +77,8 @@ export default async function handler(req, res) {
   try {
     const stripe = new Stripe(secret)
     const origin = siteOrigin(req)
+    const successPath = safePath(body?.returnTo, plan.successPath)
+    const cancelPath = safePath(body?.cancelTo, '/pricing')
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
       submit_type: 'pay',
@@ -81,8 +93,8 @@ export default async function handler(req, res) {
           },
         },
       ],
-      success_url: `${origin}${plan.successPath}`,
-      cancel_url: `${origin}/pricing`,
+      success_url: `${origin}${successPath}?paid=1&plan=${planId}`,
+      cancel_url: `${origin}${cancelPath}`,
     })
 
     if (!session.url) {
