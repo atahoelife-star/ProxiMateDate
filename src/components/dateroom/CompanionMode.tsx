@@ -36,7 +36,7 @@ export function OwnAppsCountdown({ partnerName, onRoomMessage }: OwnAppsCountdow
         clearTimer()
         setCountdown(null)
         setWatching(true)
-        onRoomMessage(`Companion: press play on ${service} on your own apps. We cannot play that catalog here.`)
+        onRoomMessage(`Press play on ${service} on your own apps. We cannot play that catalog here.`)
       } else {
         setCountdown(n)
       }
@@ -82,10 +82,10 @@ export function OwnAppsCountdown({ partnerName, onRoomMessage }: OwnAppsCountdow
             clearTimer()
             setWatching(false)
             setCountdown(null)
-            onRoomMessage('Companion paused. Movie night is still here.')
+            onRoomMessage('Own-apps countdown stopped. Movie night is still here.')
           }}
         >
-          Stop companion
+          Stop countdown
         </button>
       </div>
     </div>

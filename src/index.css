@@ -380,29 +380,6 @@ select.input option {
   50% { opacity: 0.35; }
 }
 
-/* AI Companion personalities */
-.personality-btn {
-  padding: 0.65rem 1rem;
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  background: var(--bg-elevated);
-  color: var(--text);
-  font-size: 0.875rem;
-  transition: all 0.2s ease;
-  text-align: left;
-}
-
-.personality-btn:hover {
-  border-color: var(--gold);
-  background: var(--bg-card);
-}
-
-.personality-btn.active {
-  border-color: var(--gold);
-  background: rgba(201, 169, 98, 0.12);
-  color: var(--gold-light);
-}
-
 /* Movie night cards */
 .movie-card {
   cursor: pointer;
