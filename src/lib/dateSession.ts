@@ -128,17 +128,14 @@ export function useFreeDateSession(roomId: string): FreeSessionState {
   const isHost = !followFromWindow()
   const [now, setNow] = useState(() => {
     consumeFreeExtendReturn(roomId)
+    if (!isHost) beginFreeSessionNow(roomId)
     return Date.now()
   })
 
   useEffect(() => {
-    if (!isHost) {
-      beginFreeSessionNow(roomId)
-      setNow(Date.now())
-    }
     const id = window.setInterval(() => setNow(Date.now()), 250)
     return () => window.clearInterval(id)
-  }, [roomId, isHost])
+  }, [roomId])
 
   const start = peekStart(freeStartKey(roomId), startedFromQuery())
   const extraMs = readNumber(freeExtraKey(roomId), 0)
@@ -174,16 +171,15 @@ export type PaidSessionState = {
 export function usePaidDateSession(kind: PaidSessionKind, roomId: string, running: boolean): PaidSessionState {
   const isHost = !followFromWindow()
   const combo = hasPremiumAccess()
-  const [now, setNow] = useState(() => Date.now())
+  const [now, setNow] = useState(() => {
+    if (!isHost) beginPaidSessionNow(kind, roomId)
+    return Date.now()
+  })
 
   useEffect(() => {
-    if (!isHost) {
-      beginPaidSessionNow(kind, roomId)
-      setNow(Date.now())
-    }
     const id = window.setInterval(() => setNow(Date.now()), 250)
     return () => window.clearInterval(id)
-  }, [kind, roomId, isHost])
+  }, [])
 
   const budget = combo ? PREMIUM_SESSION_MS : kind === 'dinner' ? DINNER_SESSION_MS : MOVIE_SESSION_MS
   const budgetLabel = combo ? '3 hours' : kind === 'dinner' ? '90 minutes' : '2.5 hours'
