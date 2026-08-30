@@ -10,7 +10,7 @@ export function PrivacyPage() {
       </p>
       <h2 className="text-[#F8F4ED] text-xl">What stays in your browser</h2>
       <p>
-        Date-room chat, restaurant orders, and waiter/movie choices are local demo state. They are not stored on our servers. Opening one menu does not send the other person’s order anywhere.
+        Restaurant orders and waiter/movie choices stay in your browser. Chat on a date-night invite is shared with the other person on that room link so you can talk. Opening one menu does not send the other person’s order anywhere.
       </p>
       <h2 className="text-[#F8F4ED] text-xl">When accounts exist</h2>
       <p>
@@ -18,7 +18,7 @@ export function PrivacyPage() {
       </p>
       <h2 className="text-[#F8F4ED] text-xl">Third parties</h2>
       <p>
-        FormSubmit delivers waitlist mail. Stripe processes optional Checkout payments when configured. YouTube may load if you start watch-together. Netflix is not embedded. Hosting is on Vercel. Stock waiter clips are stored on this site.
+        FormSubmit delivers waitlist mail. Stripe processes Checkout payments. YouTube may load if you start watch-together. Netflix is not embedded. Stock waiter clips are stored on this site.
       </p>
       <p>Questions: atahoelife@gmail.com.</p>
     </PageShell>

@@ -51,6 +51,15 @@ type ExtendWire = { kind: 'extend'; extraMs: number }
 
 type Wire = HelloMsg | ChatWire | ExtendWire
 
+type SeatSnap = { name: string; photo?: string | null; startedAt: number; extraMs: number }
+
+type RoomSnap = {
+  messages: { id: number; seat: Seat; name: string; text: string }[]
+  seats: Partial<Record<Seat, SeatSnap>>
+  startedAt: number
+  extraMs: number
+}
+
 function storageKey(roomId: string) {
   return `pd-live-chat:${roomId}`
 }
@@ -74,6 +83,28 @@ function writeStored(roomId: string, messages: ChatMsg[]) {
   }
 }
 
+async function postLive(roomId: string, event: Wire) {
+  try {
+    await fetch('/api/live-room', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ room: roomId, event }),
+    })
+  } catch {
+    /* poller retries */
+  }
+}
+
+async function pullLive(roomId: string, after: number): Promise<RoomSnap | null> {
+  try {
+    const response = await fetch(`/api/live-room?room=${encodeURIComponent(roomId)}&after=${after}`)
+    if (!response.ok) return null
+    return (await response.json()) as RoomSnap
+  } catch {
+    return null
+  }
+}
+
 export function useLiveChat(
   roomId: string,
   seat: Seat,
@@ -93,6 +124,7 @@ export function useLiveChat(
   const sessionRef = useRef(session)
   const seatRef = useRef(seat)
   const youPhotoRef = useRef(youPhoto)
+  const afterRef = useRef(0)
 
   useEffect(() => {
     myNameRef.current = myName
@@ -106,11 +138,13 @@ export function useLiveChat(
       if (prev.some((m) => m.id === msg.id && m.text === msg.text)) return prev
       const next = [...prev, msg].sort((a, b) => a.id - b.id)
       writeStored(roomId, next)
+      afterRef.current = Math.max(afterRef.current, msg.id)
       return next
     })
   }
 
   const broadcast = (payload: Wire) => {
+    void postLive(roomId, payload)
     for (const conn of conns.current) {
       if (conn.open) conn.send(payload)
     }
@@ -148,6 +182,24 @@ export function useLiveChat(
     })
   }
 
+  const ingestSnap = (snap: RoomSnap) => {
+    const other: Seat = seatRef.current === 'host' ? 'guest' : 'host'
+    const them = snap.seats?.[other]
+    if (them?.name) {
+      setPartnerName(them.name)
+      setLinked(true)
+    }
+    if (them?.photo) setPartnerPhoto(them.photo)
+    if (snap.startedAt > 0) setRemoteStartedAt(snap.startedAt)
+    if (snap.extraMs > 0) setRemoteExtraMs(snap.extraMs)
+    for (const msg of snap.messages || []) {
+      ingest(
+        { kind: 'chat', id: msg.id, seat: msg.seat, name: msg.name, text: msg.text },
+        false,
+      )
+    }
+  }
+
   useEffect(() => {
     if (!roomId || !myName.trim()) return
     let peer: Peer | null = null
@@ -163,6 +215,16 @@ export function useLiveChat(
       photo: youPhotoRef.current,
     })
 
+    void postLive(roomId, hello())
+
+    const poll = window.setInterval(() => {
+      if (cancelled) return
+      void pullLive(roomId, afterRef.current).then((snap) => {
+        if (!snap || cancelled) return
+        ingestSnap(snap)
+      })
+    }, 900)
+
     const attach = (conn: DataConnection) => {
       if (conns.current.includes(conn)) return
       conns.current.push(conn)
@@ -173,7 +235,6 @@ export function useLiveChat(
       conn.on('data', (data) => ingest(data as Wire, false))
       conn.on('close', () => {
         conns.current = conns.current.filter((c) => c !== conn)
-        if (conns.current.length === 0) setLinked(false)
       })
     }
 
@@ -193,7 +254,7 @@ export function useLiveChat(
       })
       peer.on('connection', attach)
       peer.on('error', () => {
-        /* guest may not be online yet; retry below */
+        /* HTTP poll still carries the room */
       })
     } catch {
       peer = null
@@ -210,18 +271,18 @@ export function useLiveChat(
 
     return () => {
       cancelled = true
+      window.clearInterval(poll)
       window.clearInterval(retry)
       channel?.close()
       for (const conn of conns.current) conn.close()
       conns.current = []
       peer?.destroy()
     }
-    // ingest reads seatRef; reconnect when the seat or room changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roomId, seat, myName])
 
   useEffect(() => {
-    if (!myName.trim() || conns.current.length === 0) return
+    if (!myName.trim()) return
     broadcast({
       kind: 'hello',
       seat,

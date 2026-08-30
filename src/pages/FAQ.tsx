@@ -10,8 +10,8 @@ export function FaqPage() {
       </p>
       <h2 className="text-[#F8F4ED] text-xl">What are the three rooms?</h2>
       <p>
-        <Link to="/restaurant" className="text-[#C9A962] underline">Restaurant</Link> is dinner after $9.99 (90 minutes once you sit).{' '}
-        <Link to="/movie-night" className="text-[#C9A962] underline">Movie night</Link> is Watch Together after $14.99 (2.5 hours).{' '}
+        <Link to="/restaurant" className="text-[#C9A962] underline">Restaurant</Link> is dinner for $9.99 — 90 minutes once you sit.{' '}
+        <Link to="/movie-night" className="text-[#C9A962] underline">Movie night</Link> is Watch Together for $14.99 — 2.5 hours.{' '}
         <Link to="/date-night" className="text-[#C9A962] underline">Free date night</Link> is simple chat — free for 30 minutes. The host can extend for $2.99; the guest is not billed.
       </p>
       <h2 className="text-[#F8F4ED] text-xl">Can we order from two restaurants?</h2>
@@ -20,7 +20,7 @@ export function FaqPage() {
       </p>
       <h2 className="text-[#F8F4ED] text-xl">Do you take payment?</h2>
       <p>
-        Free Date Night is free for 30 minutes. About three minutes before it ends, the host (not the guest) can pay $2.99 on Stripe Checkout to extend. Dinner ($9.99, 90 minutes after you sit) and Movie Night ($14.99, 2.5 hours) must be paid before those rooms start. Premium ($24.99) unlocks both for 3 hours. If a <code className="text-[#C9A962]">STRIPE_SECRET_KEY</code> is missing, we collect a waitlist email instead of a card form. We never ask for raw card numbers on this website, and we do not send you to PayPal, Venmo, or Cash App. See <Link to="/pricing" className="text-[#C9A962] underline">Pricing</Link>.
+        Free Date Night is free for 30 minutes. About three minutes before it ends, the host (not the guest) can pay $2.99 on Stripe Checkout to extend. Dinner is $9.99 for 90 minutes after you sit. Movie Night is $14.99 for 2.5 hours. Both are paid before those rooms start. Premium is $24.99 for 3 hours covering both. We never ask for raw card numbers on this website, and we do not send you to PayPal, Venmo, or Cash App. See <Link to="/pricing" className="text-[#C9A962] underline">Pricing</Link>.
       </p>
       <h2 className="text-[#F8F4ED] text-xl">How do Sign In and Get Started work?</h2>
       <p>

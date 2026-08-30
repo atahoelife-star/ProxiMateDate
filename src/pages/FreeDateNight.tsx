@@ -103,7 +103,7 @@ export function FreeDateNightPage() {
               {waitlist ? (
                 <div className="card p-6 text-left">
                   <p className="text-[#A8988A] text-sm mb-4">
-                    Stripe Checkout is not configured on this deploy. Leave an email. No card on this page.
+                    Pay with a card, or leave an email. No card on this page.
                   </p>
                   <WaitlistForm intent="extend-waitlist" plan="extend" submitLabel="Join the waitlist" />
                 </div>
