@@ -2,7 +2,7 @@ import { defineConfig, type Plugin } from 'vite'
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
-import { applyEvent, loadRoom, roomIdFrom, saveRoom, snapshotAfter } from './api/live-room-store.js'
+import { applyEvent, claimSeatOnRoom, loadRoom, roomIdFrom, saveRoom, snapshotAfter } from './api/live-room-store.js'
 
 function readJson(req: IncomingMessage): Promise<Record<string, unknown>> {
   return new Promise((resolve) => {
@@ -69,7 +69,19 @@ function liveRoomPlugin(): Plugin {
               send(res, 400, { error: 'bad_room' })
               return
             }
-            const next = applyEvent(loadRoom(room), body.event)
+            const event = body.event as {
+              kind?: string
+              name?: string
+              clientId?: string
+              preferred?: string
+            } | undefined
+            if (event?.kind === 'claim') {
+              const claimed = claimSeatOnRoom(loadRoom(room), event.name, event.clientId, event.preferred)
+              saveRoom(room, claimed.state)
+              send(res, 200, { seat: claimed.seat, ...snapshotAfter(claimed.state, 0) })
+              return
+            }
+            const next = applyEvent(loadRoom(room), event)
             saveRoom(room, next)
             send(res, 200, snapshotAfter(next, 0))
             return

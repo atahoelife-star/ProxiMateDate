@@ -31,7 +31,7 @@ import { chatMomentForEvening } from '../data/suggestedLines'
 import { roomFromWindow, useRoomQuerySync } from '../lib/roomSession'
 import { usePaidRoom } from '../lib/roomAccess'
 import { applyRemotePaidClock, usePaidDateSession } from '../lib/dateSession'
-import { readSeatName, seatFromWindow, useLiveChat, writeSeatName } from '../lib/liveRoom'
+import { useLiveChat, useLiveSeat } from '../lib/liveRoom'
 import { useUsPhotos } from '../lib/datePhotos'
 import { RoomPaywall } from '../components/dateroom/RoomPaywall'
 
@@ -46,9 +46,7 @@ function RestaurantDateSession() {
   const navigate = useNavigate()
   const { muted: diningMuted, toggleMute: toggleDiningMute, fadeOutAndStop } = useDiningAmbience(phase === 'room')
   const [roomId] = useState(roomFromWindow)
-  const seat = seatFromWindow()
-  const [myName, setMyName] = useState(() => readSeatName(roomId, seat))
-  const photoScope = `${roomId}-${seat}`
+  const { seat, myName, join, rename, photoScope } = useLiveSeat(roomId)
   const { photos } = useUsPhotos(photoScope)
   const session = usePaidDateSession('dinner', roomId, phase === 'room')
   const live = useLiveChat(roomId, seat, myName, { startedAt: session.startedAt, extraMs: 0 }, photos.you)
@@ -202,7 +200,7 @@ function RestaurantDateSession() {
 
       {phase === 'room' && (
       <>
-      <HostRibbon show={session.isHost} />
+      <HostRibbon show={seat === 'host'} />
       <RoomChrome
         title="Restaurant Date"
         subtitle="Two kitchens, one table"
@@ -249,10 +247,7 @@ function RestaurantDateSession() {
               myName={myName}
               onRename={() => {
                 const next = window.prompt('Your name tonight?', myName)
-                if (next) {
-                  writeSeatName(roomId, seat, next)
-                  setMyName(next)
-                }
+                if (next) rename(next)
               }}
               messages={chatMessages}
               input={chatInput}
@@ -358,8 +353,7 @@ function RestaurantDateSession() {
       <JoinNameModal
         open={!myName}
         onSave={(name) => {
-          writeSeatName(roomId, seat, name)
-          setMyName(name)
+          void join(name)
         }}
         photoScope={photoScope}
         onYouPhoto={live.sendPhoto}

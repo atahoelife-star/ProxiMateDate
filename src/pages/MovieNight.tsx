@@ -11,14 +11,13 @@ import { SessionWrapNotice } from '../components/dateroom/SessionWrapNotice'
 import { CINEMA_ARRIVAL } from '../data/arrival'
 import { chatMomentForEvening } from '../data/suggestedLines'
 import {
-  followFromWindow,
   initialWatchId,
   roomFromWindow,
   useRoomQuerySync,
 } from '../lib/roomSession'
 import { usePaidRoom } from '../lib/roomAccess'
 import { applyRemotePaidClock, usePaidDateSession } from '../lib/dateSession'
-import { readSeatName, seatFromWindow, useLiveChat, writeSeatName } from '../lib/liveRoom'
+import { useLiveChat, useLiveSeat } from '../lib/liveRoom'
 import { useUsPhotos } from '../lib/datePhotos'
 import { RoomPaywall } from '../components/dateroom/RoomPaywall'
 
@@ -31,9 +30,7 @@ export function MovieNightPage() {
 function MovieNightSession() {
   const { arrived, markArrived } = useArrivalGate('pd-arrival-cinema')
   const [roomId] = useState(roomFromWindow)
-  const seat = seatFromWindow()
-  const [myName, setMyName] = useState(() => readSeatName(roomId, seat))
-  const photoScope = `${roomId}-${seat}`
+  const { seat, myName, join, rename, photoScope } = useLiveSeat(roomId)
   const { photos } = useUsPhotos(photoScope)
   const session = usePaidDateSession('movie', roomId, arrived)
   const live = useLiveChat(roomId, seat, myName, { startedAt: session.startedAt, extraMs: 0 }, photos.you)
@@ -52,7 +49,7 @@ function MovieNightSession() {
   )
   const [showInviteModal, setShowInviteModal] = useState(false)
   const [inviteStep, setInviteStep] = useState<'options' | 'success'>('options')
-  const [isFollower] = useState(followFromWindow)
+  const isFollower = seat === 'guest'
   const [initialVideoId] = useState(initialWatchId)
   const [watchingMovie, setWatchingMovie] = useState(Boolean(initialVideoId))
   const [wrapDismissed, setWrapDismissed] = useState(false)
@@ -77,7 +74,7 @@ function MovieNightSession() {
     >
       {!arrived && <ArrivalSequence beats={CINEMA_ARRIVAL} storageKey="pd-arrival-cinema" onDone={markArrived} />}
 
-      <HostRibbon show={session.isHost} />
+      <HostRibbon show={seat === 'host'} />
       <RoomChrome
         title="Movie Night"
         subtitle="Watch Together"
@@ -125,10 +122,7 @@ function MovieNightSession() {
               myName={myName}
               onRename={() => {
                 const next = window.prompt('Your name tonight?', myName)
-                if (next) {
-                  writeSeatName(roomId, seat, next)
-                  setMyName(next)
-                }
+                if (next) rename(next)
               }}
               messages={chatMessages}
               input={chatInput}
@@ -154,8 +148,7 @@ function MovieNightSession() {
       <JoinNameModal
         open={!myName}
         onSave={(name) => {
-          writeSeatName(roomId, seat, name)
-          setMyName(name)
+          void join(name)
         }}
         photoScope={photoScope}
         onYouPhoto={live.sendPhoto}

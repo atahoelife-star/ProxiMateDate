@@ -9,16 +9,14 @@ import { WaitlistForm } from '../components/WaitlistForm'
 import { chatMomentForEvening } from '../data/suggestedLines'
 import { roomFromWindow, useRoomQuerySync } from '../lib/roomSession'
 import { applyRemoteFreeClock, useFreeDateSession } from '../lib/dateSession'
-import { readSeatName, seatFromWindow, useLiveChat, writeSeatName } from '../lib/liveRoom'
+import { useLiveChat, useLiveSeat } from '../lib/liveRoom'
 import { useUsPhotos } from '../lib/datePhotos'
 import { startStripeCheckout } from '../lib/stripeCheckout'
 
 export function FreeDateNightPage() {
   const navigate = useNavigate()
   const [roomId] = useState(roomFromWindow)
-  const seat = seatFromWindow()
-  const [myName, setMyName] = useState(() => readSeatName(roomId, seat))
-  const photoScope = `${roomId}-${seat}`
+  const { seat, myName, join, rename, photoScope } = useLiveSeat(roomId)
   const { photos } = useUsPhotos(photoScope)
   const session = useFreeDateSession(roomId)
   const live = useLiveChat(roomId, seat, myName, { startedAt: session.startedAt, extraMs: session.extraMs }, photos.you)
@@ -54,8 +52,7 @@ export function FreeDateNightPage() {
     session.isHost && !session.waiting && session.warn && !session.expired && dismissedExtraMs !== session.extraMs
 
   const saveName = (name: string) => {
-    writeSeatName(roomId, seat, name)
-    setMyName(name)
+    void join(name)
   }
 
   return (
@@ -68,7 +65,7 @@ export function FreeDateNightPage() {
         backgroundAttachment: 'fixed',
       }}
     >
-      <HostRibbon show={session.isHost} />
+      <HostRibbon show={seat === 'host'} />
       <RoomChrome
         title="Free Date Night"
         subtitle="Simple together time"
@@ -136,7 +133,7 @@ export function FreeDateNightPage() {
             myName={myName}
             onRename={() => {
               const next = window.prompt('Your name tonight?', myName)
-              if (next) saveName(next)
+              if (next) rename(next)
             }}
             messages={live.chatMessages}
             input={live.chatInput}

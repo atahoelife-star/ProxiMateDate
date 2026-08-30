@@ -25,11 +25,19 @@ export function applyEvent(state, event) {
   if (kind === 'hello') {
     const seat = event.seat === 'guest' ? 'guest' : event.seat === 'host' ? 'host' : ''
     if (seat) {
+      const prev = next.seats[seat] || {}
+      const photo =
+        typeof event.photo === 'string'
+          ? event.photo.slice(0, 80_000)
+          : event.photo === null
+            ? null
+            : prev.photo ?? null
       next.seats[seat] = {
-        name: String(event.name || '').slice(0, 32),
-        photo: typeof event.photo === 'string' ? event.photo.slice(0, 80_000) : null,
-        startedAt: Number(event.startedAt) || 0,
-        extraMs: Number(event.extraMs) || 0,
+        name: String(event.name || prev.name || '').slice(0, 32),
+        photo,
+        startedAt: Number(event.startedAt) || Number(prev.startedAt) || 0,
+        extraMs: Number(event.extraMs) || Number(prev.extraMs) || 0,
+        clientId: String(event.clientId || prev.clientId || '').slice(0, 80),
       }
     }
     const startedAt = Number(event.startedAt) || 0
@@ -56,6 +64,34 @@ export function applyEvent(state, event) {
     if (extraMs > next.extraMs) next.extraMs = extraMs
   }
   return next
+}
+
+/** First browser to hold the host URL stays host. A second browser becomes guest even with an empty name. */
+export function claimSeatOnRoom(state, name, clientId, preferred) {
+  const trimmed = String(name || '').trim().slice(0, 32)
+  const cid = String(clientId || '').slice(0, 80)
+  const seats = state.seats && typeof state.seats === 'object' ? state.seats : {}
+  const host = seats.host
+  const guest = seats.guest
+  let seat
+  if (cid && host?.clientId === cid) seat = 'host'
+  else if (cid && guest?.clientId === cid) seat = 'guest'
+  else if (preferred === 'guest') seat = 'guest'
+  else if (!host) seat = 'host'
+  else seat = 'guest'
+  const prev = seat === 'host' ? host : guest
+  return {
+    state: applyEvent(state, {
+      kind: 'hello',
+      seat,
+      name: trimmed || prev?.name || '',
+      photo: typeof prev?.photo === 'string' ? prev.photo : undefined,
+      startedAt: prev?.startedAt || 0,
+      extraMs: prev?.extraMs || 0,
+      clientId: cid || prev?.clientId || '',
+    }),
+    seat,
+  }
 }
 
 export function snapshotAfter(state, after = 0) {

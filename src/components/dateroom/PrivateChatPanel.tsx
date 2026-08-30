@@ -59,8 +59,10 @@ export function PrivateChatPanel({
           <div key={msg.id} className={`flex ${msg.sender === 'me' ? 'justify-end' : 'justify-start'}`}>
             <div className={`chat-bubble ${msg.sender === 'me' ? 'me' : msg.sender === 'partner' ? 'date' : 'system'}`}>
               {msg.sender === 'system' && <span className="block text-[#C9A962] text-xs mb-1 tracking-wider">THE ROOM</span>}
-              {msg.sender === 'partner' && msg.name && (
-                <span className="block text-[#C9A962] text-[10px] mb-1 tracking-wider">{msg.name}</span>
+              {msg.sender !== 'system' && (
+                <span className="block text-[#C9A962] text-[10px] mb-1 tracking-wider">
+                  {msg.name || (msg.sender === 'me' ? myName : partnerName) || 'You'}
+                </span>
               )}
               {msg.text}
             </div>

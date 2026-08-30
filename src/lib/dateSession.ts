@@ -137,6 +137,7 @@ export function useFreeDateSession(roomId: string): FreeSessionState {
     return () => window.clearInterval(id)
   }, [roomId])
 
+  if (!isHost) beginFreeSessionNow(roomId)
   const start = peekStart(freeStartKey(roomId), startedFromQuery())
   const extraMs = readNumber(freeExtraKey(roomId), 0)
   const waiting = start <= 0
@@ -183,6 +184,7 @@ export function usePaidDateSession(kind: PaidSessionKind, roomId: string, runnin
 
   const budget = combo ? PREMIUM_SESSION_MS : kind === 'dinner' ? DINNER_SESSION_MS : MOVIE_SESSION_MS
   const budgetLabel = combo ? '3 hours' : kind === 'dinner' ? '90 minutes' : '2.5 hours'
+  if (!isHost) beginPaidSessionNow(kind, roomId)
   const start = peekStart(paidKey(kind, roomId), startedFromQuery())
   const waiting = start <= 0
   const remainingMs = waiting ? budget : budget - (now - start)

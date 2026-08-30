@@ -1,7 +1,27 @@
 import { Peer, type DataConnection } from 'peerjs'
 import { useEffect, useRef, useState } from 'react'
 import type { ChatMsg } from './demoChat'
-import { followFromWindow } from './roomSession'
+import { followFromWindow, writeFollowQuery } from './roomSession'
+
+const CLIENT_KEY = 'pd-client-id'
+
+export function readClientId() {
+  if (typeof window === 'undefined') return 'ssr'
+  try {
+    let id = sessionStorage.getItem(CLIENT_KEY)
+    if (!id) {
+      id = crypto.randomUUID()
+      sessionStorage.setItem(CLIENT_KEY, id)
+    }
+    return id
+  } catch {
+    return `tmp-${Math.random().toString(36).slice(2, 12)}`
+  }
+}
+
+export function photoScopeFor(roomId: string) {
+  return `${roomId}-${readClientId()}`
+}
 
 export type Seat = 'host' | 'guest'
 
@@ -51,7 +71,7 @@ type ExtendWire = { kind: 'extend'; extraMs: number }
 
 type Wire = HelloMsg | ChatWire | ExtendWire
 
-type SeatSnap = { name: string; photo?: string | null; startedAt: number; extraMs: number }
+type SeatSnap = { name: string; photo?: string | null; startedAt: number; extraMs: number; clientId?: string }
 
 type RoomSnap = {
   messages: { id: number; seat: Seat; name: string; text: string }[]
@@ -103,6 +123,103 @@ async function pullLive(roomId: string, after: number): Promise<RoomSnap | null>
   } catch {
     return null
   }
+}
+
+async function postClaim(roomId: string, name: string, preferred: Seat): Promise<Seat | null> {
+  const response = await fetch('/api/live-room', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      room: roomId,
+      event: { kind: 'claim', name, clientId: readClientId(), preferred },
+    }),
+  })
+  if (!response.ok) return null
+  const data = (await response.json()) as { seat?: Seat }
+  if (data.seat === 'guest' || data.seat === 'host') return data.seat
+  return null
+}
+
+function rememberSeat(roomId: string, seat: Seat, name?: string) {
+  if (seat === 'guest') writeFollowQuery(roomId)
+  if (name?.trim()) writeSeatName(roomId, seat, name.trim())
+}
+
+/** Hold the host chair as soon as the first browser opens the room, before they type a name. */
+export async function holdHostSeat(roomId: string): Promise<Seat> {
+  if (followFromWindow()) return 'guest'
+  try {
+    const seat = await postClaim(roomId, '', 'host')
+    if (seat) {
+      rememberSeat(roomId, seat)
+      return seat
+    }
+  } catch {
+    /* fall through */
+  }
+  return 'host'
+}
+
+/** Keep host/guest seats apart. A second person on the host URL still sits as guest. */
+export async function takeSeat(roomId: string, name: string, preferred: Seat): Promise<Seat> {
+  const trimmed = name.trim()
+  if (!trimmed) return preferred
+  const want: Seat = preferred === 'guest' || followFromWindow() ? 'guest' : 'host'
+  try {
+    const seat = await postClaim(roomId, trimmed, want)
+    if (seat) {
+      rememberSeat(roomId, seat, trimmed)
+      return seat
+    }
+  } catch {
+    /* fall through */
+  }
+  if (want === 'guest') {
+    rememberSeat(roomId, 'guest', trimmed)
+    return 'guest'
+  }
+  const snap = await pullLive(roomId, 0)
+  const hostName = snap?.seats?.host?.name?.trim() || ''
+  const hostId = snap?.seats?.host?.clientId || ''
+  if ((hostName && hostName !== trimmed) || (hostId && hostId !== readClientId())) {
+    rememberSeat(roomId, 'guest', trimmed)
+    return 'guest'
+  }
+  rememberSeat(roomId, 'host', trimmed)
+  return 'host'
+}
+
+export function useLiveSeat(roomId: string) {
+  const [seat, setSeat] = useState<Seat>(seatFromWindow)
+  const [myName, setMyName] = useState(() => readSeatName(roomId, seatFromWindow()))
+
+  useEffect(() => {
+    if (followFromWindow()) return
+    let cancelled = false
+    void holdHostSeat(roomId).then((next) => {
+      if (cancelled) return
+      setSeat(next)
+      setMyName((prev) => readSeatName(roomId, next) || prev)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [roomId])
+
+  const join = async (name: string) => {
+    const next = await takeSeat(roomId, name, seat)
+    setSeat(next)
+    setMyName(name.trim())
+  }
+
+  const rename = (name: string) => {
+    const trimmed = name.trim()
+    if (!trimmed) return
+    writeSeatName(roomId, seat, trimmed)
+    setMyName(trimmed)
+  }
+
+  return { seat, myName, join, rename, photoScope: photoScopeFor(roomId) }
 }
 
 export function useLiveChat(
@@ -160,7 +277,8 @@ export function useLiveChat(
   const ingest = (payload: Wire, fromSelf: boolean) => {
     if (payload.kind === 'hello') {
       if (payload.seat === seatRef.current) return
-      setPartnerName(payload.name)
+      const name = payload.name?.trim()
+      if (name) setPartnerName(name)
       if (payload.photo) setPartnerPhoto(payload.photo)
       if (payload.startedAt > 0) setRemoteStartedAt(payload.startedAt)
       if (payload.extraMs > 0) setRemoteExtraMs(payload.extraMs)
@@ -185,8 +303,8 @@ export function useLiveChat(
   const ingestSnap = (snap: RoomSnap) => {
     const other: Seat = seatRef.current === 'host' ? 'guest' : 'host'
     const them = snap.seats?.[other]
-    if (them?.name) {
-      setPartnerName(them.name)
+    if (them?.name?.trim()) {
+      setPartnerName(them.name.trim())
       setLinked(true)
     }
     if (them?.photo) setPartnerPhoto(them.photo)

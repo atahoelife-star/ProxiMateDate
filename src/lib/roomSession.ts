@@ -19,6 +19,15 @@ export function followFromWindow() {
   return new URLSearchParams(window.location.search).get('follow') === '1'
 }
 
+export function writeFollowQuery(roomId: string) {
+  if (typeof window === 'undefined') return
+  const params = new URLSearchParams(window.location.search)
+  params.set('room', roomId)
+  params.set('follow', '1')
+  const qs = params.toString()
+  window.history.replaceState({}, '', `${window.location.pathname}?${qs}`)
+}
+
 export function useRoomQuerySync(roomId: string, extra?: Record<string, string>) {
   const extraKey = extra ? JSON.stringify(extra) : ''
   useEffect(() => {
