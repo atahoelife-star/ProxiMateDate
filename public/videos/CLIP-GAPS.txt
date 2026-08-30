@@ -3,11 +3,11 @@ Serving-clip gaps (honest plates only — no wrong food).
 Host / staff
   Tour stays rooms only (no walk-in captions).
   After the thumbnail pick, the host who says “Right this way” is the same waitress as Call Waiter (waiter-idle.mp4 / Pexels #6327644). She leads into the chosen room. That room stays as the meal backdrop.
-  Serving clips stay in that house set: close-up plates and pours already on the preview. No new waiter faces.
+  The only staff face on purpose is that waitress. Food and pour clips are close-ups from the house set (plates, torch, glasses) — no extra waiter characters.
 
 Matched
   Call Waiter / host lead-in → waiter-idle.mp4 (same waitress)
-  Wine / rosé → waiter-pour-wine.mp4
+  Wine / rosé → waiter-pour-champagne.mp4 (faceless pour; see below)
   Champagne → waiter-pour-champagne.mp4
   All Verdant Ember savory plates → waiter-vegan.mp4 (existing house plant plate)
   Filet, ribeye, tomahawk → waiter-steak.mp4
@@ -22,3 +22,4 @@ Intentionally not forced
   waiter-steak.mp4 is the existing house steak file (dark wood, same set). Grill/kitchen steak stock did not match this service look, so it was not swapped.
 
 Do not use waiter-set-plate.mp4 for menu items (sliders).
+Do not use waiter-pour-wine.mp4 on screen — different man in a grey plaid suit, different dining room. Cast consistency over a second sommelier. File stays on disk.

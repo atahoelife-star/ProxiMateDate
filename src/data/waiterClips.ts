@@ -20,7 +20,9 @@ export const WAITER_CLIPS: Record<
     presenceLabel: 'Ready for your order',
   },
   wine: {
-    src: '/videos/waiter-pour-wine.mp4',
+    // Faceless pour from the house set. waiter-pour-wine.mp4 is a different
+    // sommelier in another room — kept on disk, not shown (cast).
+    src: '/videos/waiter-pour-champagne.mp4',
     label: 'Pouring wine',
     presenceLabel: 'Wine on the table',
   },
