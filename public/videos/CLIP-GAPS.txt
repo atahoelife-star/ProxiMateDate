@@ -1,0 +1,24 @@
+Serving-clip gaps (honest plates only — no wrong food).
+
+Host / staff
+  Tour stays rooms only (no walk-in captions).
+  After the thumbnail pick, the host who says “Right this way” is the same waitress as Call Waiter (waiter-idle.mp4 / Pexels #6327644). She leads into the chosen room. That room stays as the meal backdrop.
+  Serving clips stay in that house set: close-up plates and pours already on the preview. No new waiter faces.
+
+Matched
+  Call Waiter / host lead-in → waiter-idle.mp4 (same waitress)
+  Wine / rosé → waiter-pour-wine.mp4
+  Champagne → waiter-pour-champagne.mp4
+  All Verdant Ember savory plates → waiter-vegan.mp4 (existing house plant plate)
+  Filet, ribeye, tomahawk → waiter-steak.mp4
+  Crème brûlée (both kitchens) → waiter-dessert.mp4 (torch, not salad)
+  Dark chocolate soufflé (both kitchens) → waiter-chocolate.mp4 (chocolate dessert being served)
+
+Intentionally not forced
+  Japanese A5 Wagyu Beef Carpaccio — no royalty-free raw-beef carpaccio clip that matches this waiter set. Plays greet (same waitress, no cooked-steak plate).
+  Pan-Seared Foie Gras — no matching foie clip in this lighting/service style. Plays greet.
+  Classic Steak & Lobster — free lobster/surf clips we found were Mixkit Restricted (personal use only) or unrelated footage. Plays the steak clip (the beef half).
+  Whole roasted cauliflower, polenta cake, king-oyster carpaccio — no item-specific plated clip that matches the existing close-up service look. They keep the Verdant Ember plant-plate clip.
+  waiter-steak.mp4 is the existing house steak file (dark wood, same set). Grill/kitchen steak stock did not match this service look, so it was not swapped.
+
+Do not use waiter-set-plate.mp4 for menu items (sliders).

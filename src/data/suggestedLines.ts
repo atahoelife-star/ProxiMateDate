@@ -1,8 +1,7 @@
-import type { WaiterClip } from './waiterClips'
+import { isFoodClip, type WaiterClip } from './waiterClips'
 
 export type ChatMoment = 'settling' | 'waiter' | 'food' | 'movie' | 'quiet'
 
-const FOOD_CLIPS: WaiterClip[] = ['vegan', 'steak', 'dessert']
 const TOAST_CLIPS: WaiterClip[] = ['wine', 'champagne']
 
 export function chatMomentForEvening(opts: {
@@ -11,7 +10,7 @@ export function chatMomentForEvening(opts: {
   myMessageCount: number
 }): ChatMoment {
   if (opts.watching) return 'movie'
-  if (FOOD_CLIPS.includes(opts.waiterClip)) return 'food'
+  if (isFoodClip(opts.waiterClip)) return 'food'
   if (TOAST_CLIPS.includes(opts.waiterClip)) return 'waiter'
   if (opts.myMessageCount >= 3) return 'quiet'
   return 'settling'
