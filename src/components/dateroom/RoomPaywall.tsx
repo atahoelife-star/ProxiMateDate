@@ -50,7 +50,7 @@ export function RoomPaywall({ room }: RoomPaywallProps) {
       {waitlist ? (
         <div className="card p-6">
           <p className="text-[#A8988A] text-sm mb-4">
-            Stripe Checkout is not configured on this deploy. Leave an email. We never ask for a card number on this page, and we do not send you to PayPal, Venmo, or Cash App.
+            Stripe Checkout is not available right now. Leave an email. We never ask for a card number on this page, and we do not send you to PayPal, Venmo, or Cash App.
           </p>
           <WaitlistForm intent="paid-room-waitlist" plan={waitlist} submitLabel="Join the waitlist" />
         </div>

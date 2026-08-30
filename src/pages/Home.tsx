@@ -47,7 +47,7 @@ export function HomePage() {
           </h1>
 
           <p className="max-w-xl mx-auto text-xl text-[#EDE4D9]/90 mb-10">
-            Three rooms: restaurant dinner ($9.99, 90 minutes), movie night ($14.99, 2.5 hours), and a simple free date night (30 minutes).
+            Three rooms. Restaurant dinner is $9.99 for 90 minutes. Movie night is $14.99 for 2.5 hours. Free date night lasts 30 minutes.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
