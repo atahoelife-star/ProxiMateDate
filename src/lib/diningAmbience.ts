@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 const MUTE_KEY = 'pd-dining-mute'
 const SRC = '/audio/dining-room.mp3'
-const TARGET_VOLUME = 0.22
+const TARGET_VOLUME = 0.32
 const FADE_MS = 1600
 
 function readMuted() {
@@ -27,6 +27,24 @@ export function useDiningAmbience(active: boolean) {
   const fadeRef = useRef<number | null>(null)
   const [muted, setMuted] = useState(readMuted)
 
+  const fadeTo = useCallback((to: number, ms: number, then?: () => void) => {
+    const el = audioRef.current
+    if (!el) {
+      then?.()
+      return
+    }
+    if (fadeRef.current) window.cancelAnimationFrame(fadeRef.current)
+    const from = el.volume
+    const start = performance.now()
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - start) / ms)
+      el.volume = from + (to - from) * t
+      if (t < 1) fadeRef.current = window.requestAnimationFrame(tick)
+      else then?.()
+    }
+    fadeRef.current = window.requestAnimationFrame(tick)
+  }, [])
+
   useEffect(() => {
     const el = new Audio(SRC)
     el.loop = true
@@ -46,19 +64,6 @@ export function useDiningAmbience(active: boolean) {
     const el = audioRef.current
     if (!el) return
 
-    const fadeTo = (to: number, ms: number, then?: () => void) => {
-      if (fadeRef.current) window.cancelAnimationFrame(fadeRef.current)
-      const from = el.volume
-      const start = performance.now()
-      const tick = (now: number) => {
-        const t = Math.min(1, (now - start) / ms)
-        el.volume = from + (to - from) * t
-        if (t < 1) fadeRef.current = window.requestAnimationFrame(tick)
-        else then?.()
-      }
-      fadeRef.current = window.requestAnimationFrame(tick)
-    }
-
     if (!active || muted) {
       fadeTo(0, active ? 500 : 900, () => el.pause())
       return
@@ -73,7 +78,7 @@ export function useDiningAmbience(active: boolean) {
     const kick = () => start()
     window.addEventListener('pointerdown', kick, { once: true })
     return () => window.removeEventListener('pointerdown', kick)
-  }, [active, muted])
+  }, [active, muted, fadeTo])
 
   const toggleMute = () => {
     setMuted((current) => {
@@ -83,5 +88,17 @@ export function useDiningAmbience(active: boolean) {
     })
   }
 
-  return { muted, toggleMute }
+  const fadeOutAndStop = (then?: () => void) => {
+    const el = audioRef.current
+    if (!el) {
+      then?.()
+      return
+    }
+    fadeTo(0, 800, () => {
+      el.pause()
+      then?.()
+    })
+  }
+
+  return { muted, toggleMute, fadeOutAndStop }
 }

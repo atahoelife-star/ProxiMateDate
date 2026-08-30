@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { toast } from 'sonner'
 import { Heart, Send, Sparkles, X } from 'lucide-react'
@@ -30,7 +31,8 @@ import { roomFromWindow, useRoomClock, useRoomQuerySync } from '../lib/roomSessi
 
 export function RestaurantDatePage() {
   const { phase, look, finishTour, pickLook, finishLead } = useRestaurantEntry()
-  const { muted: diningMuted, toggleMute: toggleDiningMute } = useDiningAmbience(phase === 'room')
+  const navigate = useNavigate()
+  const { muted: diningMuted, toggleMute: toggleDiningMute, fadeOutAndStop } = useDiningAmbience(phase === 'room')
   const { chatMessages, chatInput, setChatInput, sendChatMessage, pickSuggestedLine, roomMessage } = useDemoChat()
   const [partnerName, setPartnerName] = useState('Emma')
   const roomTime = useRoomClock()
@@ -195,6 +197,7 @@ export function RestaurantDatePage() {
           setShowInviteModal(true)
         }}
         sound={{ muted: diningMuted, onToggle: toggleDiningMute }}
+        onEnd={() => fadeOutAndStop(() => navigate('/'))}
       />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pt-8 pb-16">

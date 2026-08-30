@@ -8,9 +8,10 @@ type RoomChromeProps = {
   roomTime: string
   onInvite: () => void
   sound?: { muted: boolean; onToggle: () => void }
+  onEnd?: () => void
 }
 
-export function RoomChrome({ title, subtitle, banner, roomTime, onInvite, sound }: RoomChromeProps) {
+export function RoomChrome({ title, subtitle, banner, roomTime, onInvite, sound, onEnd }: RoomChromeProps) {
   return (
     <>
       <div className="relative z-10 px-4 sm:px-6 py-3 bg-[#C9A962] text-[#0F0A0D] text-sm text-center tracking-wide">
@@ -48,9 +49,15 @@ export function RoomChrome({ title, subtitle, banner, roomTime, onInvite, sound 
           >
             <UserPlus className="w-4 h-4" /> Invite Your Date
           </button>
-          <Link to="/" className="btn btn-ghost px-6 py-2 text-sm border border-[#E8A0B8]/40">
-            End Date
-          </Link>
+          {onEnd ? (
+            <button type="button" onClick={onEnd} className="btn btn-ghost px-6 py-2 text-sm border border-[#E8A0B8]/40">
+              End Date
+            </button>
+          ) : (
+            <Link to="/" className="btn btn-ghost px-6 py-2 text-sm border border-[#E8A0B8]/40">
+              End Date
+            </Link>
+          )}
           <div className="px-4 py-1.5 text-xs rounded-full bg-[#C9A962]/10 text-[#C9A962] border border-[#C9A962]/30 tracking-widest">
             DEMO • PREVIEW
           </div>
