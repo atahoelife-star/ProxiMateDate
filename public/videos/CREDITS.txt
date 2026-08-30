@@ -52,8 +52,13 @@ cinema-popcorn-machine.mp4
   Cinema arrival popcorn beat: glass-box popper with corn tumbling out. Not a still bucket, not tomatoes.
 
 grand-doors-host.mp4 / grand-doors-tables.mp4 / grand-doors-yours.mp4 / grand-doors-sit.mp4
-  Photoreal hotel double doors (Pexels photo #277559)
-  opening into the seated dining-room still for that thumbnail.
-  https://www.pexels.com/photo/277559/
-  After the thumbnail pick only. Not kitchen/service swinging doors.
+  Pexels video #17422251 — “The entrance to a building with a wooden door”
+  https://www.pexels.com/video/the-entrance-to-a-building-with-a-wooden-door-17422251/
+  Photoreal dark-wood + glass restaurant double doors, looking into a real dining
+  room (bar, tables, waiter, warm light). Landscape crop, then xfade into the
+  chosen table still (host-stand / dining-room / your-table / sit-down).
+  Pexels License — free for commercial use.
+  After the thumbnail pick only, including restaurant QA ?paid=1.
+  Not used: Mixkit 21817 (hotel guest-room door + suitcase); kitchen swinging
+  doors; Pexels photo #277559 mustard-yellow door still / CSS leaf swing.
 

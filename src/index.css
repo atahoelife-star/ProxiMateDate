@@ -547,37 +547,20 @@ select.input option {
   .date-room-bg.date-room-seated::after {
     animation: none;
   }
-  .grand-entrance .ge-door,
-  .grand-entrance .ge-interior,
-  .grand-entrance .ge-veil,
-  .grand-entrance .ge-rays,
-  .grand-entrance .ge-seam,
-  .grand-entrance .ge-arch {
+  .grand-entrance .ge-closed-poster {
     transition: none !important;
     animation: none !important;
   }
 }
 
 /* Grand hotel double doors into the chosen dining room.
-   Front entrance — not kitchen/service swinging doors.
-   The dining room is only visible THROUGH the doorway. */
+   Photoreal wood/glass footage — not kitchen swinging doors, not CSS leaf swing. */
 .grand-entrance {
   position: fixed;
   inset: 0;
   z-index: 195;
   background: #100c0a;
   overflow: hidden;
-}
-
-.ge-interior {
-  position: absolute;
-  inset: 0;
-  transform: scale(1.1);
-  transition: transform 5.2s cubic-bezier(0.22, 0.61, 0.36, 1);
-}
-
-.grand-entrance.is-open .ge-interior {
-  transform: scale(1);
 }
 
 .ge-room {
@@ -588,190 +571,14 @@ select.input option {
   object-fit: cover;
 }
 
-.ge-veil {
-  position: absolute;
-  inset: 0;
-  background: rgba(8, 5, 4, 0.55);
-  transition: opacity 1.5s ease 0.35s;
-  pointer-events: none;
+.ge-closed-poster {
+  transition: opacity 1.8s ease 0.35s, transform 3.2s ease;
+  transform: scale(1);
 }
 
-.grand-entrance.is-open .ge-veil {
+.ge-closed-poster.is-fading {
   opacity: 0;
-}
-
-.ge-rays {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0;
-  mix-blend-mode: screen;
-  background:
-    radial-gradient(ellipse 38% 68% at 50% 48%, rgba(255, 214, 160, 0.5) 0%, transparent 62%),
-    linear-gradient(90deg, transparent 40%, rgba(255, 220, 170, 0.22) 50%, transparent 60%);
-  transition: opacity 1.1s ease 0.4s;
-}
-
-.grand-entrance.is-open .ge-rays {
-  opacity: 1;
-}
-
-.ge-stage {
-  position: absolute;
-  inset: 0;
-  perspective: 1800px;
-  perspective-origin: 50% 48%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-}
-
-.ge-arch {
-  position: relative;
-  width: min(68vw, 560px);
-  height: min(94vh, 920px);
-  transform-style: preserve-3d;
-  /* Vestibule wall: dining room only shows through this doorway. */
-  box-shadow: 0 0 0 120vmax #14110e;
-  transition: opacity 1.25s ease 2.85s, transform 1.25s ease 2.85s;
-}
-
-.grand-entrance.is-open .ge-arch {
-  opacity: 0;
-  transform: scale(1.03);
-  pointer-events: none;
-}
-
-.ge-transom {
-  height: 10%;
-  margin: 0;
-  border: 14px solid #1a1410;
-  border-bottom: 0;
-  border-radius: 6px 6px 0 0;
-  box-shadow:
-    inset 0 0 0 2px #c9a962,
-    inset 0 0 0 8px #3a2a1c;
-  background:
-    radial-gradient(ellipse at 50% 120%, rgba(255, 196, 130, 0.62), rgba(42, 24, 14, 0.94) 72%),
-    repeating-linear-gradient(90deg, transparent 0 16%, rgba(201, 169, 98, 0.4) 16% 17.2%);
-}
-
-.ge-portal {
-  position: relative;
-  height: 83%;
-  margin: 0;
-  border: 14px solid #1a1410;
-  border-top-width: 6px;
-  border-bottom-width: 6px;
-  box-shadow:
-    inset 0 0 0 3px #c9a962,
-    inset 0 0 0 10px #2e2016;
-  overflow: hidden;
-  background: transparent;
-  transform-style: preserve-3d;
-}
-
-.ge-seam {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 50%;
-  width: 3px;
-  margin-left: -1.5px;
-  z-index: 4;
-  background: linear-gradient(180deg, rgba(255, 230, 180, 0.15), rgba(255, 214, 150, 0.95), rgba(255, 230, 180, 0.15));
-  box-shadow: 0 0 18px 6px rgba(255, 196, 120, 0.55);
-  opacity: 1;
-  transition: opacity 0.7s ease 0.15s;
-}
-
-.grand-entrance.is-open .ge-seam {
-  opacity: 0;
-}
-
-.ge-threshold {
-  height: 7%;
-  margin: 0;
-  border: 14px solid #1a1410;
-  border-top: 0;
-  border-radius: 0 0 6px 6px;
-  background:
-    linear-gradient(180deg, #4a4036 0%, #2a2420 40%, #14110e 100%);
-  box-shadow: inset 0 0 0 2px rgba(201, 169, 98, 0.4);
-}
-
-.ge-door {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 50%;
-  transform-style: preserve-3d;
-  transition: transform 2.45s cubic-bezier(0.16, 0.84, 0.44, 1);
-  will-change: transform;
-}
-
-.ge-door-l {
-  left: 0;
-  transform-origin: left center;
-}
-
-.ge-door-r {
-  right: 0;
-  transform-origin: right center;
-}
-
-.grand-entrance.is-open .ge-door-l {
-  transform: rotateY(-92deg);
-}
-
-.grand-entrance.is-open .ge-door-r {
-  transform: rotateY(92deg);
-}
-
-.ge-door-face {
-  position: absolute;
-  inset: 0;
-  background-color: #2a170f;
-  background-size: cover;
-  background-position: center;
-  box-shadow: inset 0 0 0 1px rgba(201, 169, 98, 0.22);
-}
-
-.ge-door-l .ge-door-face {
-  background-image: url('/images/arrival/restaurant/door-left.jpg');
-  border-right: 1px solid rgba(201, 169, 98, 0.28);
-}
-
-.ge-door-r .ge-door-face {
-  background-image: url('/images/arrival/restaurant/door-right.jpg');
-  border-left: 1px solid rgba(201, 169, 98, 0.28);
-}
-
-.ge-door-panel,
-.ge-handle,
-.ge-kick {
-  display: none;
-}
-
-.ge-door-edge {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 10px;
-  background: linear-gradient(90deg, #1a0e08, #4a2c18);
-}
-
-.ge-door-l .ge-door-edge {
-  right: 0;
-  transform: rotateY(-90deg);
-  transform-origin: right center;
-}
-
-.ge-door-r .ge-door-edge {
-  left: 0;
-  transform: rotateY(90deg);
-  transform-origin: left center;
+  transform: scale(1.08);
 }
 
 .ge-vignette {
