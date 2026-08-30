@@ -40,7 +40,11 @@ export function FreeDateNightPage() {
 
   const payExtend = async () => {
     setBusy(true)
-    const result = await startStripeCheckout('extend', { returnTo: '/date-night', cancelTo: '/date-night' })
+    const qs = typeof window !== 'undefined' ? window.location.search : ''
+    const result = await startStripeCheckout('extend', {
+      returnTo: `/date-night${qs}`,
+      cancelTo: `/date-night${qs}`,
+    })
     setBusy(false)
     if (result === 'waitlist') setWaitlist(true)
   }

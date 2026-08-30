@@ -48,6 +48,35 @@ function safePath(raw, fallback) {
   return path
 }
 
+function withSessionQuery(origin, path, rawReturn, planId) {
+  const params = new URLSearchParams()
+  if (typeof rawReturn === 'string' && rawReturn.includes('?')) {
+    const incoming = new URLSearchParams(rawReturn.slice(rawReturn.indexOf('?') + 1))
+    for (const key of ['room', 'started', 'follow']) {
+      const value = incoming.get(key)
+      if (value) params.set(key, value)
+    }
+  }
+  params.set('paid', '1')
+  params.set('plan', planId)
+  return `${origin}${path}?${params.toString()}`
+}
+
+function cancelUrl(origin, rawCancel, fallbackPath) {
+  const path = safePath(rawCancel, fallbackPath)
+  if (typeof rawCancel === 'string' && rawCancel.includes('?')) {
+    const incoming = new URLSearchParams(rawCancel.slice(rawCancel.indexOf('?') + 1))
+    const params = new URLSearchParams()
+    for (const key of ['room', 'started', 'follow']) {
+      const value = incoming.get(key)
+      if (value) params.set(key, value)
+    }
+    const qs = params.toString()
+    return qs ? `${origin}${path}?${qs}` : `${origin}${path}`
+  }
+  return `${origin}${path}`
+}
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
@@ -79,7 +108,6 @@ export default async function handler(req, res) {
     const stripe = new Stripe(secret)
     const origin = siteOrigin(req)
     const successPath = safePath(body?.returnTo, plan.successPath)
-    const cancelPath = safePath(body?.cancelTo, '/pricing')
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
       submit_type: 'pay',
@@ -94,8 +122,8 @@ export default async function handler(req, res) {
           },
         },
       ],
-      success_url: `${origin}${successPath}?paid=1&plan=${planId}`,
-      cancel_url: `${origin}${cancelPath}`,
+      success_url: withSessionQuery(origin, successPath, body?.returnTo, planId),
+      cancel_url: cancelUrl(origin, body?.cancelTo, '/pricing'),
     })
 
     if (!session.url) {
