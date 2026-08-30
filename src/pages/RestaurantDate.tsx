@@ -215,7 +215,7 @@ function RestaurantDateSession() {
               ? `Preview restaurant — ${session.budgetLabel} starts when your date joins.`
               : session.wrap
                 ? `A few minutes left in this ${session.budgetLabel} dinner.`
-                : `Preview restaurant — ${session.budgetLabel} left for both of you. Orders stay in this browser. Waiter clips are serving videos, not a webcam.`
+                : `Preview restaurant — ${session.budgetLabel} left for both of you. Each of you orders on your own screen. Waiter clips are serving videos, not a webcam.`
         }
         roomTime={session.remainingLabel}
         timeHint={session.waiting ? 'starts when they join' : 'left'}
