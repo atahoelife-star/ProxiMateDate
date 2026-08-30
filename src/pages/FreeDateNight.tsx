@@ -9,16 +9,14 @@ import { WaitlistForm } from '../components/WaitlistForm'
 import { chatMomentForEvening } from '../data/suggestedLines'
 import { roomFromWindow, useRoomQuerySync } from '../lib/roomSession'
 import { applyRemoteFreeClock, useFreeDateSession } from '../lib/dateSession'
-import { readSeatName, seatFromWindow, takeSeat, useLiveChat, writeSeatName } from '../lib/liveRoom'
+import { useLiveChat, useLiveSeat } from '../lib/liveRoom'
 import { useUsPhotos } from '../lib/datePhotos'
 import { startStripeCheckout } from '../lib/stripeCheckout'
 
 export function FreeDateNightPage() {
   const navigate = useNavigate()
   const [roomId] = useState(roomFromWindow)
-  const [seat, setSeat] = useState(seatFromWindow)
-  const [myName, setMyName] = useState(() => readSeatName(roomId, seatFromWindow()))
-  const photoScope = `${roomId}-${seat}`
+  const { seat, myName, join, rename, photoScope } = useLiveSeat(roomId)
   const { photos } = useUsPhotos(photoScope)
   const session = useFreeDateSession(roomId)
   const live = useLiveChat(roomId, seat, myName, { startedAt: session.startedAt, extraMs: session.extraMs }, photos.you)
@@ -54,10 +52,7 @@ export function FreeDateNightPage() {
     session.isHost && !session.waiting && session.warn && !session.expired && dismissedExtraMs !== session.extraMs
 
   const saveName = (name: string) => {
-    void takeSeat(roomId, name, seat).then((next) => {
-      setSeat(next)
-      setMyName(name.trim())
-    })
+    void join(name)
   }
 
   return (
@@ -138,10 +133,7 @@ export function FreeDateNightPage() {
             myName={myName}
             onRename={() => {
               const next = window.prompt('Your name tonight?', myName)
-              if (next) {
-                writeSeatName(roomId, seat, next)
-                setMyName(next.trim())
-              }
+              if (next) rename(next)
             }}
             messages={live.chatMessages}
             input={live.chatInput}

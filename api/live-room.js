@@ -1,4 +1,4 @@
-import { applyEvent, loadRoom, roomIdFrom, saveRoom, snapshotAfter } from './live-room-store.js'
+import { applyEvent, claimSeatOnRoom, loadRoom, roomIdFrom, saveRoom, snapshotAfter } from './live-room-store.js'
 
 function cors(res) {
   res.setHeader('Access-Control-Allow-Origin', '*')
@@ -65,6 +65,12 @@ export default async function handler(req, res) {
   const room = roomIdFrom(body?.room)
   if (!room) {
     res.status(400).json({ error: 'bad_room' })
+    return
+  }
+  if (body?.event?.kind === 'claim') {
+    const claimed = claimSeatOnRoom(loadRoom(room), body.event.name, body.event.clientId, body.event.preferred)
+    saveRoom(room, claimed.state)
+    res.status(200).json({ seat: claimed.seat, ...snapshotAfter(claimed.state, 0) })
     return
   }
   const next = applyEvent(loadRoom(room), body?.event)
