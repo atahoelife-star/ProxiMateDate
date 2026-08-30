@@ -1,6 +1,6 @@
 import { RESTAURANT_ARRIVAL } from '../../data/arrival'
 import { lookThumb } from '../../lib/restaurantLook'
-import { playHostVoice } from '../../lib/hostVoice'
+import { primeHostVoice } from '../../lib/hostVoice'
 
 type RestaurantRoomChooserProps = {
   onPick: (id: string) => void
@@ -28,7 +28,7 @@ export function RestaurantRoomChooser({ onPick, currentId, onStay }: RestaurantR
                 key={beat.id}
                 type="button"
                 onClick={() => {
-                  playHostVoice()
+                  primeHostVoice()
                   onPick(beat.id)
                 }}
                 className={`group relative aspect-[4/5] min-h-[140px] sm:min-h-[180px] rounded-xl overflow-hidden border focus:outline-none ${

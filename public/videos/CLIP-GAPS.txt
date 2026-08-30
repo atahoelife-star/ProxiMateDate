@@ -2,11 +2,12 @@ Serving-clip gaps (honest plates only — no wrong food).
 
 Host / staff
   Tour stays rooms only (no walk-in captions).
-  After the thumbnail pick, the host who says “Right this way” is the same waitress as Call Waiter (waiter-idle.mp4 / Pexels #6327644). She leads into the chosen room. That room stays as the meal backdrop.
-  The only staff face on purpose is that waitress. Food and pour clips are close-ups from the house set (plates, torch, glasses) — no extra waiter characters.
+  After the thumbnail pick: grand hotel double doors open into the chosen dining room, then the host says “Right this way” (audio only). Do not play waiter-idle, kitchen swinging doors, or a zoomed service-door loop on this beat.
+  Call Waiter still uses waiter-idle.mp4 (Pexels #6327644) — that waitress is the only staff face on purpose. Food and pour clips are close-ups from the house set (plates, torch, glasses) — no extra waiter characters.
 
 Matched
-  Call Waiter / host lead-in → waiter-idle.mp4 (same waitress)
+  Call Waiter / greet → waiter-idle.mp4 (same waitress)
+  Post-pick seating → CSS grand front doors into the chosen room (not a waiter clip)
   Wine / rosé → waiter-pour-champagne.mp4 (faceless pour; see below)
   Champagne → waiter-pour-champagne.mp4
   All Verdant Ember savory plates → waiter-vegan.mp4 (existing house plant plate)
