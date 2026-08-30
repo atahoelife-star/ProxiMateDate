@@ -188,6 +188,7 @@ function RestaurantDateSession() {
         backgroundAttachment: 'fixed',
       }}
     >
+      <HostRibbon show={seat === 'host'} />
       {phase === 'tour' && (
         <ArrivalSequence beats={RESTAURANT_ARRIVAL} storageKey="pd-arrival-restaurant" onDone={finishTour} />
       )}
@@ -202,7 +203,6 @@ function RestaurantDateSession() {
 
       {phase === 'room' && (
       <>
-      <HostRibbon show={seat === 'host'} />
       <RoomChrome
         title="Restaurant Date"
         subtitle="Two kitchens, one table"
