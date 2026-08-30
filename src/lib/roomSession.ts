@@ -32,10 +32,13 @@ export function useRoomQuerySync(roomId: string, extra?: Record<string, string>)
   const extraKey = extra ? JSON.stringify(extra) : ''
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
-    if (!params.get('room')) params.set('room', roomId)
-    if (extraKey) {
-      const parsed = JSON.parse(extraKey) as Record<string, string>
+    params.set('room', roomId)
+    const parsed = extraKey ? (JSON.parse(extraKey) as Record<string, string>) : undefined
+    if (parsed?.started) params.set('started', parsed.started)
+    else params.delete('started')
+    if (parsed) {
       for (const [key, value] of Object.entries(parsed)) {
+        if (key === 'started') continue
         if (value) params.set(key, value)
       }
     }

@@ -5,12 +5,13 @@ import { Heart, Menu, X } from 'lucide-react'
 const navItems = [
   { to: '/', label: 'Home', end: true },
   { to: '/#how-it-works', label: 'How it works', end: false },
+  { to: '/date-night', label: 'Free Date Night', end: false },
   { to: '/date-room', label: 'Dates', end: false },
   { to: '/pricing', label: 'Pricing', end: false },
 ]
 
 function isDatesPath(pathname: string) {
-  return ['/date-room', '/restaurant', '/movie-night', '/date-night'].includes(pathname)
+  return ['/date-room', '/restaurant', '/movie-night'].includes(pathname)
 }
 
 function linkClass(isActive: boolean) {

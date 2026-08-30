@@ -7,9 +7,10 @@ type ArrivalSequenceProps = {
   beats: ArrivalBeat[]
   storageKey: string
   onDone: () => void
+  forcePlay?: boolean
 }
 
-export function ArrivalSequence({ beats, storageKey, onDone }: ArrivalSequenceProps) {
+export function ArrivalSequence({ beats, storageKey, onDone, forcePlay = false }: ArrivalSequenceProps) {
   const [index, setIndex] = useState(0)
   const beat = beats[index]
   const onDoneRef = useRef(onDone)
@@ -24,7 +25,7 @@ export function ArrivalSequence({ beats, storageKey, onDone }: ArrivalSequencePr
   }
 
   useEffect(() => {
-    if (shouldSkipArrival(storageKey)) {
+    if (!forcePlay && shouldSkipArrival(storageKey)) {
       onDoneRef.current()
       return
     }
@@ -43,7 +44,7 @@ export function ArrivalSequence({ beats, storageKey, onDone }: ArrivalSequencePr
       }
     }, current.durationMs)
     return () => window.clearTimeout(timer)
-  }, [index, beats, storageKey])
+  }, [index, beats, storageKey, forcePlay])
 
   if (!beat) return null
 

@@ -39,6 +39,12 @@ export function remainingFromStart(budgetMs: number, startedAt: number, now: num
   return { remainingMs: Math.max(0, total - elapsed), waiting: false }
 }
 
+/** True when a stored/query clock already ran out — not a live date still in progress. */
+export function clockIsDead(budgetMs: number, startedAt: number, now: number, extraMs = 0) {
+  const { remainingMs, waiting } = remainingFromStart(budgetMs, startedAt, now, extraMs)
+  return !waiting && remainingMs <= 0
+}
+
 function pad(n: number) {
   return n.toString().padStart(2, '0')
 }

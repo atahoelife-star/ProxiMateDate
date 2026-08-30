@@ -30,14 +30,14 @@ const COURSES: Course[] = ['appetizer', 'entree', 'dessert']
 
 export function DinnerMenus(props: DinnerMenusProps) {
   return (
-    <section className="mt-10 table-linen" id="dinner-menus">
+    <section className="mt-10 table-linen scroll-mt-28" id="dinner-menus">
       <div className="flex items-center gap-3 mb-3">
         <UtensilsCrossed className="w-5 h-5 text-[#C9A962]" />
         <div className="text-[#F8F4ED] text-xl tracking-tight">Tonight’s table</div>
         <div className="flex-1 h-px bg-[#C9A962]/30" />
       </div>
       <p className="text-[#D4C4B4] text-sm mb-6 max-w-3xl">
-        Menus sit on this table. Each of you picks a kitchen independently — vegan and steakhouse can share the same setting. Shared “for two” dishes are ordered for the table, not for one plate.
+        Both menus sit on this table — The Verdant Ember and The Silver Sage Steakhouse. Each of you orders on your own screen. Call Waiter brings what you picked, not their plate. Shared “for two” dishes are for the table.
       </p>
 
       <div className="grid lg:grid-cols-2 gap-6">

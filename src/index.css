@@ -733,99 +733,25 @@ select.input option {
   position: absolute;
   inset: 0;
   background-color: #2a170f;
-  background-image:
-    linear-gradient(90deg, rgba(0, 0, 0, 0.42) 0%, transparent 10%, transparent 90%, rgba(0, 0, 0, 0.45) 100%),
-    repeating-linear-gradient(
-      90deg,
-      rgba(92, 52, 28, 0.22) 0px,
-      rgba(42, 22, 12, 0.08) 3px,
-      rgba(110, 64, 36, 0.18) 6px
-    ),
-    linear-gradient(180deg, #5a3422 0%, #2c1810 48%, #1a0e08 100%);
+  background-size: cover;
+  background-position: center;
   box-shadow: inset 0 0 0 1px rgba(201, 169, 98, 0.22);
 }
 
 .ge-door-l .ge-door-face {
+  background-image: url('/images/arrival/restaurant/door-left.jpg');
   border-right: 1px solid rgba(201, 169, 98, 0.28);
 }
 
 .ge-door-r .ge-door-face {
+  background-image: url('/images/arrival/restaurant/door-right.jpg');
   border-left: 1px solid rgba(201, 169, 98, 0.28);
 }
 
-.ge-door-panel {
-  position: absolute;
-  left: 11%;
-  right: 11%;
-  border-radius: 2px;
-  background: linear-gradient(160deg, rgba(96, 56, 34, 0.45), rgba(18, 8, 4, 0.5));
-  box-shadow:
-    inset 0 0 0 1px rgba(201, 169, 98, 0.38),
-    inset 0 0 0 8px rgba(22, 10, 6, 0.88),
-    inset 0 10px 18px rgba(0, 0, 0, 0.45);
-}
-
-.ge-door-panel-top {
-  top: 6%;
-  height: 28%;
-}
-
-.ge-door-panel-bot {
-  top: 38%;
-  height: 46%;
-}
-
-.ge-handle {
-  position: absolute;
-  top: 48%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-
-.ge-door-l .ge-handle {
-  right: 7%;
-}
-
-.ge-door-r .ge-handle {
-  left: 7%;
-}
-
-.ge-handle-plate {
-  width: 18px;
-  height: 52px;
-  border-radius: 3px;
-  background: linear-gradient(180deg, #f0e0b4, #c9a962 42%, #8a6a32);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.35);
-}
-
-.ge-handle-lever {
-  width: 36px;
-  height: 7px;
-  border-radius: 4px;
-  background: linear-gradient(180deg, #f4e4b8, #a88a4a);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.45);
-}
-
-.ge-door-l .ge-handle-lever {
-  transform: translateX(8px);
-}
-
-.ge-door-r .ge-handle-lever {
-  transform: translateX(-8px);
-}
-
+.ge-door-panel,
+.ge-handle,
 .ge-kick {
-  position: absolute;
-  left: 8%;
-  right: 8%;
-  bottom: 4%;
-  height: 7%;
-  border-radius: 1px;
-  background: linear-gradient(180deg, #d4b56a, #8a6a32);
-  opacity: 0.55;
-  box-shadow: inset 0 1px 0 rgba(255, 240, 200, 0.35);
+  display: none;
 }
 
 .ge-door-edge {
