@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-export type ChatMsg = { id: number; sender: 'me' | 'partner' | 'system'; text: string }
+export type ChatMsg = { id: number; sender: 'me' | 'partner' | 'system'; text: string; name?: string }
 
 export function useDemoChat() {
   const [chatMessages, setChatMessages] = useState<ChatMsg[]>([])

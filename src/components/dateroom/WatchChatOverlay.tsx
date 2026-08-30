@@ -4,7 +4,7 @@ import type { ChatMoment } from '../../data/suggestedLines'
 import { SuggestedLines } from './SuggestedLines'
 import { UsPhotos } from './UsPhotos'
 
-export type RoomChatMsg = { id: number; sender: 'me' | 'partner' | 'system'; text: string }
+export type RoomChatMsg = { id: number; sender: 'me' | 'partner' | 'system'; text: string; name?: string }
 
 type WatchChatOverlayProps = {
   messages: RoomChatMsg[]
@@ -41,6 +41,9 @@ export function WatchChatOverlay({
       {messages.map((msg) => (
         <div key={msg.id} className={`flex ${msg.sender === 'me' ? 'justify-end' : 'justify-start'}`}>
           <div className={`chat-bubble overlay-chat ${msg.sender === 'me' ? 'me' : msg.sender === 'partner' ? 'date' : 'system'}`}>
+            {msg.sender === 'partner' && msg.name && (
+              <span className="block text-[#C9A962] text-[10px] mb-0.5 tracking-wider">{msg.name}</span>
+            )}
             {msg.text}
           </div>
         </div>

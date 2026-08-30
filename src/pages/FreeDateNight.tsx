@@ -3,21 +3,26 @@ import { Link, useNavigate } from 'react-router-dom'
 import { RoomChrome } from '../components/dateroom/RoomChrome'
 import { PrivateChatPanel } from '../components/dateroom/PrivateChatPanel'
 import { InviteDateModal } from '../components/dateroom/InviteDateModal'
+import { JoinNameModal } from '../components/dateroom/JoinNameModal'
+import { HostRibbon } from '../components/dateroom/HostRibbon'
 import { WaitlistForm } from '../components/WaitlistForm'
 import { chatMomentForEvening } from '../data/suggestedLines'
-import { useDemoChat } from '../lib/demoChat'
 import { roomFromWindow, useRoomQuerySync } from '../lib/roomSession'
-import { useFreeDateSession } from '../lib/dateSession'
+import { applyRemoteFreeClock, useFreeDateSession } from '../lib/dateSession'
+import { readSeatName, seatFromWindow, useLiveChat, writeSeatName } from '../lib/liveRoom'
 import { startStripeCheckout } from '../lib/stripeCheckout'
 
 export function FreeDateNightPage() {
   const navigate = useNavigate()
-  const { chatMessages, chatInput, setChatInput, sendChatMessage, pickSuggestedLine } = useDemoChat()
-  const [partnerName, setPartnerName] = useState('Emma')
+  const [roomId] = useState(roomFromWindow)
+  const seat = seatFromWindow()
+  const [myName, setMyName] = useState(() => readSeatName(roomId, seat))
+  const session = useFreeDateSession(roomId)
+  const live = useLiveChat(roomId, seat, myName, { startedAt: session.startedAt, extraMs: session.extraMs })
+  applyRemoteFreeClock(roomId, live.remoteStartedAt, live.remoteExtraMs)
+  const dateName = live.partnerName || 'your date'
   const [showInviteModal, setShowInviteModal] = useState(false)
   const [inviteStep, setInviteStep] = useState<'options' | 'success'>('options')
-  const [roomId] = useState(roomFromWindow)
-  const session = useFreeDateSession(roomId)
   const [busy, setBusy] = useState(false)
   const [waitlist, setWaitlist] = useState(false)
   const [dismissedExtraMs, setDismissedExtraMs] = useState<number | null>(null)
@@ -27,7 +32,7 @@ export function FreeDateNightPage() {
   const chatMoment = chatMomentForEvening({
     watching: false,
     waiterClip: 'idle',
-    myMessageCount: chatMessages.filter((m) => m.sender === 'me').length,
+    myMessageCount: live.chatMessages.filter((m) => m.sender === 'me').length,
   })
 
   const payExtend = async () => {
@@ -41,6 +46,11 @@ export function FreeDateNightPage() {
   const showHostOffer =
     session.isHost && session.warn && !session.expired && dismissedExtraMs !== session.extraMs
 
+  const saveName = (name: string) => {
+    writeSeatName(roomId, seat, name)
+    setMyName(name)
+  }
+
   return (
     <div
       className="date-room-bg min-h-[calc(100vh-80px)] relative overflow-hidden"
@@ -51,6 +61,7 @@ export function FreeDateNightPage() {
         backgroundAttachment: 'fixed',
       }}
     >
+      <HostRibbon show={session.isHost} />
       <RoomChrome
         title="Free Date Night"
         subtitle="Simple together time"
@@ -105,21 +116,26 @@ export function FreeDateNightPage() {
       ) : (
         <div className="relative z-10 max-w-xl mx-auto px-4 sm:px-6 pt-10 pb-16">
           <p className="text-center text-[#A8988A] mb-6 text-sm">
-            Sit together and talk. Restaurant and movie night are paid rooms on their own pages.
+            {live.linked ? `You’re live with ${dateName}.` : 'Invite your date with the room link. Chat waits for them — not a bot.'}{' '}
+            Remaining time counts down for both of you.
           </p>
           <PrivateChatPanel
-            partnerName={partnerName}
+            partnerName={dateName}
+            myName={myName}
             onRename={() => {
-              const next = window.prompt("What is your date's name tonight?", partnerName)
-              if (next) setPartnerName(next)
+              const next = window.prompt('Your name tonight?', myName)
+              if (next) saveName(next)
             }}
-            messages={chatMessages}
-            input={chatInput}
-            onInputChange={setChatInput}
-            onSend={sendChatMessage}
+            messages={live.chatMessages}
+            input={live.chatInput}
+            onInputChange={live.setChatInput}
+            onSend={live.sendChatMessage}
             moment={chatMoment}
-            onPickLine={pickSuggestedLine}
+            onPickLine={live.pickSuggestedLine}
             minHeight="560px"
+            photoScope={`${roomId}-${seat}`}
+            partnerPhoto={live.partnerPhoto}
+            onYouPhoto={live.sendPhoto}
           />
         </div>
       )}
@@ -145,10 +161,12 @@ export function FreeDateNightPage() {
         </div>
       )}
 
+      <JoinNameModal open={!myName} onSave={saveName} />
+
       <InviteDateModal
         open={showInviteModal}
         onClose={() => setShowInviteModal(false)}
-        partnerName={partnerName}
+        partnerName={dateName}
         roomId={roomId}
         invitePath="/date-night"
         follow

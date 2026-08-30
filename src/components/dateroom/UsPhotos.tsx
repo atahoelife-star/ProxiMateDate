@@ -3,6 +3,9 @@ import { fileToPhotoDataUrl, useUsPhotos } from '../../lib/datePhotos'
 
 type UsPhotosProps = {
   partnerName: string
+  scope?: string
+  partnerPhoto?: string | null
+  onYouPhoto?: (dataUrl: string) => void
 }
 
 function Circle({
@@ -42,21 +45,37 @@ function Circle({
   )
 }
 
-/** Optional you + date circles in chat. Never a scene/player tile. */
-export function UsPhotos({ partnerName }: UsPhotosProps) {
-  const { photos, setPhoto } = useUsPhotos()
+/** Optional 48px you + date circles in chat. Never a scene/player tile. */
+export function UsPhotos({ partnerName, scope = 'shared', partnerPhoto, onYouPhoto }: UsPhotosProps) {
+  const { photos, setPhoto } = useUsPhotos(scope)
   const dateInitial = (partnerName.trim()[0] || 'D').toUpperCase()
-
-  const pick = (who: 'you' | 'date') => (file: File) => {
-    void fileToPhotoDataUrl(file)
-      .then((dataUrl) => setPhoto(who, dataUrl))
-      .catch(() => {})
-  }
+  const dateSrc = partnerPhoto || photos.date
 
   return (
     <div className="us-photos" aria-label="You and your date">
-      <Circle src={photos.you} label="Y" hint="Add your photo (optional)" onPick={pick('you')} />
-      <Circle src={photos.date} label={dateInitial} hint={`Add ${partnerName}'s photo (optional)`} onPick={pick('date')} />
+      <Circle
+        src={photos.you}
+        label="Y"
+        hint="Add your photo (optional)"
+        onPick={(file) => {
+          void fileToPhotoDataUrl(file)
+            .then((dataUrl) => {
+              setPhoto('you', dataUrl)
+              onYouPhoto?.(dataUrl)
+            })
+            .catch(() => {})
+        }}
+      />
+      <Circle
+        src={dateSrc}
+        label={dateInitial}
+        hint={`Add ${partnerName || 'your date'}'s photo (optional)`}
+        onPick={(file) => {
+          void fileToPhotoDataUrl(file)
+            .then((dataUrl) => setPhoto('date', dataUrl))
+            .catch(() => {})
+        }}
+      />
     </div>
   )
 }

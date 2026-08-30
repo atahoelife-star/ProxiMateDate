@@ -40,7 +40,7 @@ export function InviteDateModal({
             <>
               <div className="px-8 pt-8 pb-6 text-center border-b border-[#3A2F36]">
                 <h3 className="text-[#F8F4ED] text-2xl">Share this preview</h3>
-                <p className="text-[#A8988A] mt-2 text-sm">Invites are not emailed yet. Copy this room URL for {partnerName}.</p>
+                <p className="text-[#A8988A] mt-2 text-sm">Copy this room URL. Your date joins the same chat — not a second Emma, and not a bot.</p>
               </div>
               <div className="p-8 space-y-4">
                 <button

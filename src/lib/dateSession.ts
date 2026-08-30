@@ -74,8 +74,18 @@ export function consumeFreeExtendReturn(roomId: string) {
   return true
 }
 
-export function freeSessionBudget(roomId: string) {
-  return FREE_SESSION_MS + readNumber(freeExtraKey(roomId), 0)
+export function applyRemoteFreeClock(roomId: string, startedAt: number, extraMs: number) {
+  if (startedAt > 0) ensureStart(freeStartKey(roomId), startedAt)
+  if (extraMs > 0) {
+    const have = readNumber(freeExtraKey(roomId), 0)
+    if (extraMs > have) writeNumber(freeExtraKey(roomId), extraMs)
+  }
+}
+
+export function applyRemotePaidClock(kind: PaidSessionKind, roomId: string, startedAt: number) {
+  if (startedAt <= 0) return
+  if (hasPremiumAccess()) ensureStart(PREMIUM_START_KEY, startedAt)
+  else ensureStart(kind === 'dinner' ? dinnerStartKey(roomId) : movieStartKey(roomId), startedAt)
 }
 
 export function formatRemaining(ms: number) {

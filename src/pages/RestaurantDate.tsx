@@ -13,6 +13,8 @@ import { useDiningAmbience } from '../lib/diningAmbience'
 import { RoomChrome } from '../components/dateroom/RoomChrome'
 import { PrivateChatPanel } from '../components/dateroom/PrivateChatPanel'
 import { InviteDateModal } from '../components/dateroom/InviteDateModal'
+import { JoinNameModal } from '../components/dateroom/JoinNameModal'
+import { HostRibbon } from '../components/dateroom/HostRibbon'
 import { SessionWrapNotice } from '../components/dateroom/SessionWrapNotice'
 import { WaiterQuickOrder } from '../components/dateroom/WaiterQuickOrder'
 import { RESTAURANT_ARRIVAL } from '../data/arrival'
@@ -26,10 +28,10 @@ import {
   type WaiterClip,
 } from '../data/waiterClips'
 import { chatMomentForEvening } from '../data/suggestedLines'
-import { useDemoChat } from '../lib/demoChat'
 import { roomFromWindow, useRoomQuerySync } from '../lib/roomSession'
 import { usePaidRoom } from '../lib/roomAccess'
-import { usePaidDateSession } from '../lib/dateSession'
+import { applyRemotePaidClock, usePaidDateSession } from '../lib/dateSession'
+import { readSeatName, seatFromWindow, useLiveChat, writeSeatName } from '../lib/liveRoom'
 import { RoomPaywall } from '../components/dateroom/RoomPaywall'
 
 export function RestaurantDatePage() {
@@ -42,13 +44,24 @@ function RestaurantDateSession() {
   const { phase, look, lookId, finishTour, pickLook, finishLead, changeRoom, stayHere } = useRestaurantEntry()
   const navigate = useNavigate()
   const { muted: diningMuted, toggleMute: toggleDiningMute, fadeOutAndStop } = useDiningAmbience(phase === 'room')
-  const { chatMessages, chatInput, setChatInput, sendChatMessage, pickSuggestedLine, roomMessage } = useDemoChat()
-  const [partnerName, setPartnerName] = useState('Emma')
+  const [roomId] = useState(roomFromWindow)
+  const seat = seatFromWindow()
+  const [myName, setMyName] = useState(() => readSeatName(roomId, seat))
+  const session = usePaidDateSession('dinner', roomId, phase === 'room')
+  const live = useLiveChat(roomId, seat, myName, { startedAt: session.startedAt, extraMs: 0 })
+  applyRemotePaidClock('dinner', roomId, live.remoteStartedAt)
+  const dateName = live.partnerName || 'your date'
+  const {
+    chatMessages,
+    chatInput,
+    setChatInput,
+    sendChatMessage,
+    pickSuggestedLine,
+    roomMessage,
+  } = live
   const [showWaiterMenu, setShowWaiterMenu] = useState(false)
   const [showInviteModal, setShowInviteModal] = useState(false)
   const [inviteStep, setInviteStep] = useState<'options' | 'success'>('options')
-  const [roomId] = useState(roomFromWindow)
-  const session = usePaidDateSession('dinner', roomId, phase === 'room')
   const [wrapDismissed, setWrapDismissed] = useState(false)
 
   const [youRestaurant, setYouRestaurant] = useState<RestaurantId>('verdant-ember')
@@ -93,7 +106,7 @@ function RestaurantDateSession() {
     else setTableOrder((prev) => [...prev, full])
 
     const clip = clipForOrder(full)
-    const who = full.seat === 'table' ? 'the table' : full.seat === 'you' ? 'you' : partnerName
+    const who = full.seat === 'table' ? 'the table' : full.seat === 'you' ? 'you' : dateName
     playWaiter(
       clip,
       WAITER_CLIPS[clip].label,
@@ -186,6 +199,7 @@ function RestaurantDateSession() {
 
       {phase === 'room' && (
       <>
+      <HostRibbon show={session.isHost} />
       <RoomChrome
         title="Restaurant Date"
         subtitle="Two kitchens, one table"
@@ -226,10 +240,14 @@ function RestaurantDateSession() {
 
           <div className="lg:col-span-5">
             <PrivateChatPanel
-              partnerName={partnerName}
+              partnerName={dateName}
+              myName={myName}
               onRename={() => {
-                const next = window.prompt("What is your date's name tonight?", partnerName)
-                if (next) setPartnerName(next)
+                const next = window.prompt('Your name tonight?', myName)
+                if (next) {
+                  writeSeatName(roomId, seat, next)
+                  setMyName(next)
+                }
               }}
               messages={chatMessages}
               input={chatInput}
@@ -237,6 +255,9 @@ function RestaurantDateSession() {
               onSend={sendChatMessage}
               moment={chatMoment}
               onPickLine={pickSuggestedLine}
+              photoScope={`${roomId}-${seat}`}
+              partnerPhoto={live.partnerPhoto}
+              onYouPhoto={live.sendPhoto}
             />
           </div>
         </div>
@@ -255,7 +276,7 @@ function RestaurantDateSession() {
         </div>
 
         <DinnerMenus
-          partnerName={partnerName}
+          partnerName={dateName}
           youRestaurant={youRestaurant}
           partnerRestaurant={partnerRestaurant}
           onYouRestaurant={setYouRestaurant}
@@ -313,7 +334,7 @@ function RestaurantDateSession() {
               <WaiterQuickOrder
                 youRestaurant={youRestaurant}
                 partnerRestaurant={partnerRestaurant}
-                partnerName={partnerName}
+                partnerName={dateName}
                 onAdd={addOrderLine}
               />
               <div className="text-center mt-8 text-xs text-[#7A6B5F] tracking-widest">Demo service — local state only</div>
@@ -329,10 +350,17 @@ function RestaurantDateSession() {
         onDismiss={() => setWrapDismissed(true)}
       />
 
+      <JoinNameModal
+        open={!myName}
+        onSave={(name) => {
+          writeSeatName(roomId, seat, name)
+          setMyName(name)
+        }}
+      />
       <InviteDateModal
         open={showInviteModal}
         onClose={() => setShowInviteModal(false)}
-        partnerName={partnerName}
+        partnerName={dateName}
         roomId={roomId}
         invitePath="/restaurant"
         follow
