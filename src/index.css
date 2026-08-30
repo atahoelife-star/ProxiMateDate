@@ -872,6 +872,9 @@ select.input option {
   -webkit-appearance: none;
   position: relative;
   box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 48px;
   height: 48px;
   min-width: 48px;
@@ -885,7 +888,7 @@ select.input option {
   border-radius: 9999px;
   overflow: hidden;
   border: 1.5px solid rgba(201, 169, 98, 0.65);
-  background: #1a1418;
+  background: #3a3036;
   color: #ede4d9;
   font-size: 11px;
   letter-spacing: 0.04em;

@@ -34,7 +34,7 @@ export function PrivateChatPanel({
           <UsPhotos partnerName={partnerName} />
           <div className="min-w-0 flex-1">
             <div className="text-[#F8F4ED] font-medium leading-tight">Private Chat</div>
-            <div className="text-[11px] text-[#A8988A] leading-tight">Demo replies. Not a live messenger.</div>
+            <div className="text-[11px] text-[#A8988A] leading-tight">Waits for your date. Not a bot.</div>
           </div>
           <button type="button" onClick={onRename} className="text-[#C9A962] text-xs underline hover:text-[#E8A0B8] shrink-0">
             {partnerName}

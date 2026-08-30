@@ -63,7 +63,7 @@ export function HomePage() {
             </Link>
           </div>
 
-          <div className="mt-8 text-xs tracking-[2px] text-[#A8988A]">NO ACCOUNT YET • EMAIL WAITLIST ONLY • NO CARD NUMBERS</div>
+          <div className="mt-8 text-xs tracking-[2px] text-[#A8988A]">CARDS VIA STRIPE CHECKOUT • NO CARD FORM ON THIS SITE</div>
         </div>
 
         <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center text-xs text-[#A8988A]">
