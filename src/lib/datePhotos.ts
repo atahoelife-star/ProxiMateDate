@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
 
-const KEY = 'pd-us-photos'
 const CHANGE = 'pd-us-photos'
 const SIZE = 192
 
@@ -13,10 +12,14 @@ function empty(): UsPhotosState {
   return { you: null, date: null }
 }
 
-export function readUsPhotos(): UsPhotosState {
+function storageKey(scope: string) {
+  return `pd-us-photos:${scope}`
+}
+
+export function readUsPhotos(scope = 'shared'): UsPhotosState {
   if (typeof window === 'undefined') return empty()
   try {
-    const raw = localStorage.getItem(KEY)
+    const raw = localStorage.getItem(storageKey(scope)) ?? (scope === 'shared' ? localStorage.getItem('pd-us-photos') : null)
     if (!raw) return empty()
     const parsed = JSON.parse(raw) as Partial<UsPhotosState>
     return {
@@ -28,9 +31,9 @@ export function readUsPhotos(): UsPhotosState {
   }
 }
 
-export function writeUsPhotos(next: UsPhotosState) {
+export function writeUsPhotos(next: UsPhotosState, scope = 'shared') {
   try {
-    localStorage.setItem(KEY, JSON.stringify(next))
+    localStorage.setItem(storageKey(scope), JSON.stringify(next))
   } catch {
     /* quota / private mode */
   }
@@ -70,24 +73,27 @@ export function fileToPhotoDataUrl(file: File): Promise<string> {
   })
 }
 
-export function useUsPhotos() {
-  const [photos, setPhotos] = useState<UsPhotosState>(readUsPhotos)
+export function useUsPhotos(scope = 'shared') {
+  const [photos, setPhotos] = useState<UsPhotosState>(() => readUsPhotos(scope))
 
   useEffect(() => {
-    const sync = () => setPhotos(readUsPhotos())
+    const sync = () => setPhotos(readUsPhotos(scope))
     window.addEventListener('storage', sync)
     window.addEventListener(CHANGE, sync)
     return () => {
       window.removeEventListener('storage', sync)
       window.removeEventListener(CHANGE, sync)
     }
-  }, [])
+  }, [scope])
 
-  const setPhoto = useCallback((who: 'you' | 'date', dataUrl: string | null) => {
-    const next = { ...readUsPhotos(), [who]: dataUrl }
-    writeUsPhotos(next)
-    setPhotos(next)
-  }, [])
+  const setPhoto = useCallback(
+    (who: 'you' | 'date', dataUrl: string | null) => {
+      const next = { ...readUsPhotos(scope), [who]: dataUrl }
+      writeUsPhotos(next, scope)
+      setPhotos(next)
+    },
+    [scope],
+  )
 
   return { photos, setPhoto }
 }

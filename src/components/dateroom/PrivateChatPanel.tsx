@@ -6,6 +6,7 @@ import { UsPhotos } from './UsPhotos'
 
 type PrivateChatPanelProps = {
   partnerName: string
+  myName?: string
   onRename: () => void
   messages: ChatMsg[]
   input: string
@@ -14,10 +15,14 @@ type PrivateChatPanelProps = {
   moment: ChatMoment
   onPickLine: (line: string) => void
   minHeight?: string
+  photoScope?: string
+  partnerPhoto?: string | null
+  onYouPhoto?: (dataUrl: string) => void
 }
 
 export function PrivateChatPanel({
   partnerName,
+  myName,
   onRename,
   messages,
   input,
@@ -26,18 +31,26 @@ export function PrivateChatPanel({
   moment,
   onPickLine,
   minHeight = '520px',
+  photoScope,
+  partnerPhoto,
+  onYouPhoto,
 }: PrivateChatPanelProps) {
   return (
     <div className="card flex flex-col h-full" style={{ minHeight }}>
-      <div className="px-4 py-2.5 border-b border-[#3A2F36] bg-[#1A1418]">
-        <div className="flex items-center gap-2.5">
-          <UsPhotos partnerName={partnerName} />
+      <div className="px-4 py-3 border-b border-[#3A2F36] bg-[#1A1418]">
+        <div className="flex items-center gap-3">
+          <UsPhotos
+            partnerName={partnerName}
+            scope={photoScope}
+            partnerPhoto={partnerPhoto}
+            onYouPhoto={onYouPhoto}
+          />
           <div className="min-w-0 flex-1">
             <div className="text-[#F8F4ED] font-medium leading-tight">Private Chat</div>
-            <div className="text-[11px] text-[#A8988A] leading-tight">Demo replies. Not a live messenger.</div>
+            <div className="text-[11px] text-[#A8988A] leading-tight">Optional photos · waits for your date. Not a bot.</div>
           </div>
           <button type="button" onClick={onRename} className="text-[#C9A962] text-xs underline hover:text-[#E8A0B8] shrink-0">
-            {partnerName}
+            {myName || 'Your name'}
           </button>
         </div>
       </div>
@@ -46,6 +59,9 @@ export function PrivateChatPanel({
           <div key={msg.id} className={`flex ${msg.sender === 'me' ? 'justify-end' : 'justify-start'}`}>
             <div className={`chat-bubble ${msg.sender === 'me' ? 'me' : msg.sender === 'partner' ? 'date' : 'system'}`}>
               {msg.sender === 'system' && <span className="block text-[#C9A962] text-xs mb-1 tracking-wider">THE ROOM</span>}
+              {msg.sender === 'partner' && msg.name && (
+                <span className="block text-[#C9A962] text-[10px] mb-1 tracking-wider">{msg.name}</span>
+              )}
               {msg.text}
             </div>
           </div>

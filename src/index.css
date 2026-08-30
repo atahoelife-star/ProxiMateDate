@@ -860,11 +860,29 @@ select.input option {
 /* Size lock: you + date are 48px circles (40–60px dime-to-quarter). Never tiles or a banner. */
 .us-photos {
   display: flex;
-  align-items: center;
-  gap: 4px;
+  align-items: flex-start;
+  gap: 8px;
   flex: 0 0 auto;
   width: auto;
-  height: 48px;
+  height: auto;
+}
+
+.us-photo-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  width: 48px;
+  flex: 0 0 48px;
+}
+
+.us-photo-caption {
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #c9a962;
+  line-height: 1;
+  white-space: nowrap;
 }
 
 .us-photo {
@@ -872,6 +890,9 @@ select.input option {
   -webkit-appearance: none;
   position: relative;
   box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 48px;
   height: 48px;
   min-width: 48px;
@@ -884,19 +905,41 @@ select.input option {
   aspect-ratio: 1 / 1;
   border-radius: 9999px;
   overflow: hidden;
-  border: 1.5px solid rgba(201, 169, 98, 0.65);
-  background: #1a1418;
-  color: #ede4d9;
-  font-size: 11px;
+  border: 1.5px solid rgba(201, 169, 98, 0.85);
+  background: #52444c;
+  color: #f8f4ed;
+  font-size: 10px;
   letter-spacing: 0.04em;
   line-height: 1;
   cursor: pointer;
   transform: none;
+  box-shadow: 0 0 0 1px rgba(201, 169, 98, 0.2);
 }
 
 .us-photo:hover,
 .us-photo:focus {
   transform: none;
+  border-color: #c9a962;
+}
+
+.us-photo-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  color: #f8f4ed;
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.us-photo-plus {
+  color: #c9a962;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
 }
 
 .us-photo img {

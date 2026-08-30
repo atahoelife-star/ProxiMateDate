@@ -5,10 +5,11 @@ import { useArrivalGate } from '../lib/arrivalGate'
 import { RoomChrome } from '../components/dateroom/RoomChrome'
 import { PrivateChatPanel } from '../components/dateroom/PrivateChatPanel'
 import { InviteDateModal } from '../components/dateroom/InviteDateModal'
+import { JoinNameModal } from '../components/dateroom/JoinNameModal'
+import { HostRibbon } from '../components/dateroom/HostRibbon'
 import { SessionWrapNotice } from '../components/dateroom/SessionWrapNotice'
 import { CINEMA_ARRIVAL } from '../data/arrival'
 import { chatMomentForEvening } from '../data/suggestedLines'
-import { useDemoChat } from '../lib/demoChat'
 import {
   followFromWindow,
   initialWatchId,
@@ -16,7 +17,9 @@ import {
   useRoomQuerySync,
 } from '../lib/roomSession'
 import { usePaidRoom } from '../lib/roomAccess'
-import { usePaidDateSession } from '../lib/dateSession'
+import { applyRemotePaidClock, usePaidDateSession } from '../lib/dateSession'
+import { readSeatName, seatFromWindow, useLiveChat, writeSeatName } from '../lib/liveRoom'
+import { useUsPhotos } from '../lib/datePhotos'
 import { RoomPaywall } from '../components/dateroom/RoomPaywall'
 
 export function MovieNightPage() {
@@ -27,18 +30,31 @@ export function MovieNightPage() {
 
 function MovieNightSession() {
   const { arrived, markArrived } = useArrivalGate('pd-arrival-cinema')
-  const { chatMessages, chatInput, setChatInput, sendChatMessage, pickSuggestedLine, roomMessage } = useDemoChat()
-  const [partnerName, setPartnerName] = useState('Emma')
+  const [roomId] = useState(roomFromWindow)
+  const seat = seatFromWindow()
+  const [myName, setMyName] = useState(() => readSeatName(roomId, seat))
+  const photoScope = `${roomId}-${seat}`
+  const { photos } = useUsPhotos(photoScope)
+  const session = usePaidDateSession('movie', roomId, arrived)
+  const live = useLiveChat(roomId, seat, myName, { startedAt: session.startedAt, extraMs: 0 }, photos.you)
+  applyRemotePaidClock('movie', roomId, live.remoteStartedAt)
+  const dateName = live.partnerName || 'your date'
+  const {
+    chatMessages,
+    chatInput,
+    setChatInput,
+    sendChatMessage,
+    pickSuggestedLine,
+    roomMessage,
+  } = live
   const [showMoviePicker, setShowMoviePicker] = useState(
     () => typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('watch') === 'open',
   )
   const [showInviteModal, setShowInviteModal] = useState(false)
   const [inviteStep, setInviteStep] = useState<'options' | 'success'>('options')
-  const [roomId] = useState(roomFromWindow)
   const [isFollower] = useState(followFromWindow)
   const [initialVideoId] = useState(initialWatchId)
   const [watchingMovie, setWatchingMovie] = useState(Boolean(initialVideoId))
-  const session = usePaidDateSession('movie', roomId, arrived)
   const [wrapDismissed, setWrapDismissed] = useState(false)
 
   useRoomQuerySync(roomId, session.startedAt > 0 ? { started: String(session.startedAt) } : undefined)
@@ -61,18 +77,21 @@ function MovieNightSession() {
     >
       {!arrived && <ArrivalSequence beats={CINEMA_ARRIVAL} storageKey="pd-arrival-cinema" onDone={markArrived} />}
 
+      <HostRibbon show={session.isHost} />
       <RoomChrome
         title="Movie Night"
         subtitle="Watch Together"
         banner={
           session.expired
             ? 'This movie night has wrapped up. No extra charge — stay as long as you like, or end the date.'
-            : session.wrap
-              ? `A few minutes left in this ${session.budgetLabel} movie night.`
-              : `Preview theater — ${session.budgetLabel}. Paste a YouTube link and press Play. Chat floats when a video is playing. Netflix stays on your own apps.`
+            : session.waiting
+              ? `Preview theater — ${session.budgetLabel} starts when your date joins.`
+              : session.wrap
+                ? `A few minutes left in this ${session.budgetLabel} movie night.`
+                : `Preview theater — ${session.budgetLabel} left for both of you. Paste a YouTube link and press Play. Chat floats when a video is playing. Netflix stays on your own apps.`
         }
         roomTime={session.remainingLabel}
-        timeHint="left"
+        timeHint={session.waiting ? 'starts when they join' : 'left'}
         onInvite={() => {
           setInviteStep('options')
           setShowInviteModal(true)
@@ -84,7 +103,7 @@ function MovieNightSession() {
           <div className="lg:col-span-8">
             <WatchStage
               roomId={roomId}
-              partnerName={partnerName}
+              partnerName={dateName}
               initialVideoId={initialVideoId}
               isFollower={isFollower}
               pickerOpen={showMoviePicker}
@@ -102,10 +121,14 @@ function MovieNightSession() {
           </div>
           <div className="lg:col-span-4">
             <PrivateChatPanel
-              partnerName={partnerName}
+              partnerName={dateName}
+              myName={myName}
               onRename={() => {
-                const next = window.prompt("What is your date's name tonight?", partnerName)
-                if (next) setPartnerName(next)
+                const next = window.prompt('Your name tonight?', myName)
+                if (next) {
+                  writeSeatName(roomId, seat, next)
+                  setMyName(next)
+                }
               }}
               messages={chatMessages}
               input={chatInput}
@@ -113,6 +136,9 @@ function MovieNightSession() {
               onSend={sendChatMessage}
               moment={chatMoment}
               onPickLine={pickSuggestedLine}
+              photoScope={photoScope}
+              partnerPhoto={live.partnerPhoto}
+              onYouPhoto={live.sendPhoto}
             />
           </div>
         </div>
@@ -125,10 +151,19 @@ function MovieNightSession() {
         onDismiss={() => setWrapDismissed(true)}
       />
 
+      <JoinNameModal
+        open={!myName}
+        onSave={(name) => {
+          writeSeatName(roomId, seat, name)
+          setMyName(name)
+        }}
+        photoScope={photoScope}
+        onYouPhoto={live.sendPhoto}
+      />
       <InviteDateModal
         open={showInviteModal}
         onClose={() => setShowInviteModal(false)}
-        partnerName={partnerName}
+        partnerName={dateName}
         roomId={roomId}
         invitePath="/movie-night"
         follow
