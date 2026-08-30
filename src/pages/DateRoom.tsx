@@ -8,23 +8,23 @@ const rooms = [
   {
     to: '/restaurant',
     icon: UtensilsCrossed,
-    kicker: '$9.99',
+    kicker: '$9.99 • 90 MIN',
     title: 'Restaurant Date',
-    desc: 'Walk in, sit down, order from The Verdant Ember and The Silver Sage at one table. Live waiter clips. No movie player.',
+    desc: 'Walk in, sit down, order from The Verdant Ember and The Silver Sage at one table. 90 minutes after you sit. Live waiter clips. No movie player.',
   },
   {
     to: '/movie-night',
     icon: Clapperboard,
-    kicker: 'THEATER',
+    kicker: '$14.99 • 2.5 H',
     title: 'Movie Night',
-    desc: 'Walk in past the booth and lobby. Paste YouTube, press Play. Chat floats while you watch. No restaurant menus.',
+    desc: 'Walk in past the booth and lobby. Paste YouTube, press Play. 2.5 hours. Chat floats while you watch. No restaurant menus.',
   },
   {
     to: '/date-night',
     icon: MessageCircle,
-    kicker: 'FREE',
+    kicker: 'FREE • 30 MIN',
     title: 'Free Date Night',
-    desc: 'Simple together time. Chat only. No menus, no movie player.',
+    desc: 'Simple together time. Chat only. Free for 30 minutes; the host can extend for $2.99. No menus, no movie player.',
   },
 ]
 
@@ -38,6 +38,7 @@ export function DateRoomPage() {
   useEffect(() => {
     if (toastedPaid.current) return
     if (params.get('paid') !== '1' || watch || follow) return
+    if (params.get('plan') === 'extend') return
     toastedPaid.current = true
     consumeChooserPaidReturn()
     toast.success('You’re in', {
@@ -59,7 +60,7 @@ export function DateRoomPage() {
         <div className="text-[#C9A962] text-sm tracking-[3px] mb-3">PICK YOUR EVENING</div>
         <h1 className="text-[#F8F4ED]">Three date rooms</h1>
         <p className="mt-4 text-xl text-[#A8988A] max-w-2xl mx-auto">
-          Each room is its own page. Free Date Night is free. Restaurant ($9.99) and Movie Night ($14.99) start after you pay with a card in the browser.
+          Each room is its own page. Free Date Night is free for 30 minutes. Restaurant ($9.99, 90 minutes) and Movie Night ($14.99, 2.5 hours) start after you pay with a card in the browser.
         </p>
       </div>
       <div className="grid md:grid-cols-3 gap-6">

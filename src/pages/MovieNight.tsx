@@ -5,6 +5,7 @@ import { useArrivalGate } from '../lib/arrivalGate'
 import { RoomChrome } from '../components/dateroom/RoomChrome'
 import { PrivateChatPanel } from '../components/dateroom/PrivateChatPanel'
 import { InviteDateModal } from '../components/dateroom/InviteDateModal'
+import { SessionWrapNotice } from '../components/dateroom/SessionWrapNotice'
 import { CINEMA_ARRIVAL } from '../data/arrival'
 import { chatMomentForEvening } from '../data/suggestedLines'
 import { useDemoChat } from '../lib/demoChat'
@@ -12,10 +13,10 @@ import {
   followFromWindow,
   initialWatchId,
   roomFromWindow,
-  useRoomClock,
   useRoomQuerySync,
 } from '../lib/roomSession'
 import { usePaidRoom } from '../lib/roomAccess'
+import { usePaidDateSession } from '../lib/dateSession'
 import { RoomPaywall } from '../components/dateroom/RoomPaywall'
 
 export function MovieNightPage() {
@@ -28,7 +29,6 @@ function MovieNightSession() {
   const { arrived, markArrived } = useArrivalGate('pd-arrival-cinema')
   const { chatMessages, chatInput, setChatInput, sendChatMessage, pickSuggestedLine, roomMessage } = useDemoChat()
   const [partnerName, setPartnerName] = useState('Emma')
-  const roomTime = useRoomClock()
   const [showMoviePicker, setShowMoviePicker] = useState(
     () => typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('watch') === 'open',
   )
@@ -38,8 +38,10 @@ function MovieNightSession() {
   const [isFollower] = useState(followFromWindow)
   const [initialVideoId] = useState(initialWatchId)
   const [watchingMovie, setWatchingMovie] = useState(Boolean(initialVideoId))
+  const session = usePaidDateSession('movie', roomId, arrived)
+  const [wrapDismissed, setWrapDismissed] = useState(false)
 
-  useRoomQuerySync(roomId)
+  useRoomQuerySync(roomId, session.startedAt > 0 ? { started: String(session.startedAt) } : undefined)
 
   const chatMoment = chatMomentForEvening({
     watching: watchingMovie,
@@ -62,8 +64,15 @@ function MovieNightSession() {
       <RoomChrome
         title="Movie Night"
         subtitle="Watch Together"
-        banner="Preview theater — paste a YouTube link and press Play. Chat floats when a video is playing. Netflix stays on your own apps. Not a live two-person call."
-        roomTime={roomTime}
+        banner={
+          session.expired
+            ? 'This movie night has wrapped up. No extra charge — stay as long as you like, or end the date.'
+            : session.wrap
+              ? `A few minutes left in this ${session.budgetLabel} movie night.`
+              : `Preview theater — ${session.budgetLabel}. Paste a YouTube link and press Play. Chat floats when a video is playing. Netflix stays on your own apps.`
+        }
+        roomTime={session.remainingLabel}
+        timeHint="left"
         onInvite={() => {
           setInviteStep('options')
           setShowInviteModal(true)
@@ -109,6 +118,13 @@ function MovieNightSession() {
         </div>
       </div>
 
+      <SessionWrapNotice
+        open={session.isHost && session.wrap && !wrapDismissed}
+        title="This movie night is wrapping up"
+        body={`You have about ${session.remainingLabel} left of your ${session.budgetLabel}. No extra charge unless you later ask to extend. Your date is not billed.`}
+        onDismiss={() => setWrapDismissed(true)}
+      />
+
       <InviteDateModal
         open={showInviteModal}
         onClose={() => setShowInviteModal(false)}
@@ -116,6 +132,7 @@ function MovieNightSession() {
         roomId={roomId}
         invitePath="/movie-night"
         follow
+        startedAt={session.startedAt || undefined}
         step={inviteStep}
         onStep={setInviteStep}
       />

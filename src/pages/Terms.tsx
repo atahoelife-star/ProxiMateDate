@@ -10,7 +10,7 @@ export function TermsPage() {
       </p>
       <h2 className="text-[#F8F4ED] text-xl">Waitlist and Checkout</h2>
       <p>
-        Free Date Night is free. Dinner ($9.99) and Movie Night ($14.99) are paid before those rooms start, through Stripe Checkout when a secret key is configured. Submitting an email does not charge you and does not create an account. Do not enter card numbers on this site — we do not host a card form. We do not send you to PayPal, Venmo, or Cash App.
+        Free Date Night is free for 30 minutes; the host may extend for $2.99. Dinner ($9.99, 90 minutes after you sit) and Movie Night ($14.99, 2.5 hours) are paid before those rooms start, through Stripe Checkout when a secret key is configured. Premium ($24.99) covers both rooms for 3 hours. Submitting an email does not charge you and does not create an account. Do not enter card numbers on this site — we do not host a card form. We do not send you to PayPal, Venmo, or Cash App.
       </p>
       <h2 className="text-[#F8F4ED] text-xl">Your use</h2>
       <p>

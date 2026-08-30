@@ -18,7 +18,7 @@ const rooms = [
     to: '/date-night',
     icon: MessageCircle,
     title: 'Free Date Night',
-    desc: 'Simple together time. Just chat. No menus, no movie player.',
+    desc: 'Simple together time. Just chat. Free for 30 minutes, then $2.99 to extend.',
   },
 ]
 
@@ -47,7 +47,7 @@ export function HomePage() {
           </h1>
 
           <p className="max-w-xl mx-auto text-xl text-[#EDE4D9]/90 mb-10">
-            Three rooms: restaurant dinner ($9.99), movie night ($14.99), and a simple free date night.
+            Three rooms: restaurant dinner ($9.99, 90 minutes), movie night ($14.99, 2.5 hours), and a simple free date night (30 minutes).
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -111,7 +111,7 @@ export function HomePage() {
         <div className="max-w-xl mx-auto text-center px-6">
           <Heart className="w-9 h-9 text-[#E8A0B8] mx-auto mb-6" />
           <h2 className="text-[#F8F4ED] mb-4">Your next date night is waiting.</h2>
-          <p className="text-lg text-[#A8988A] mb-8">Try free date night, or pay for dinner or movie night with a card on Stripe Checkout — never a card form on this site.</p>
+          <p className="text-lg text-[#A8988A] mb-8">Try free date night for 30 minutes, or pay for dinner or movie night with a card on Stripe Checkout — never a card form on this site.</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link to="/pricing" className="btn btn-rose text-base px-10 py-4">
               See pricing

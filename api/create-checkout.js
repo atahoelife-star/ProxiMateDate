@@ -4,6 +4,7 @@ const PLANS = {
   dinner: { name: 'Virtual Dinner Date', amount: 999, successPath: '/restaurant' },
   movie: { name: 'Movie Night', amount: 1499, successPath: '/movie-night' },
   premium: { name: 'Premium Romance', amount: 2499, successPath: '/date-room' },
+  extend: { name: 'Date Night extend', amount: 299, successPath: '/date-night' },
 }
 
 const ALLOWED_PATHS = new Set(['/restaurant', '/movie-night', '/date-room', '/date-night', '/pricing'])

@@ -6,16 +6,16 @@ Website-only long-distance date night at [proximatedate.com](https://www.proxima
 
 Three rooms:
 
-- **Restaurant** (`/restaurant`): **$9.99** before the walk-in (host, tables, sit down), then dual menus and waiter serving videos. LIVE idle is a seated 1x dining room.
-- **Movie Night** (`/movie-night`): **$14.99** before the walk-in (ticket booth, lobby, popcorn, seats), then Watch Together. Official YouTube IFrame Player (`youtube.com/iframe_api`). Paste a youtube.com / youtu.be link, then press Play. Floating chat opens with Play. Netflix stays on your own accounts as companion mode.
-- **Free Date Night** (`/date-night`): **free**, no card, no lock. Simple chat / together time. No menus, no movie player.
+- **Restaurant** (`/restaurant`): **$9.99** before the walk-in (host, tables, sit down), then dual menus and waiter serving videos. **90 minutes after you sit.** LIVE idle is a seated 1x dining room.
+- **Movie Night** (`/movie-night`): **$14.99** before the walk-in (ticket booth, lobby, popcorn, seats), then Watch Together for **2.5 hours**. Official YouTube IFrame Player (`youtube.com/iframe_api`). Paste a youtube.com / youtu.be link, then press Play. Floating chat opens with Play. Netflix stays on your own accounts as companion mode.
+- **Free Date Night** (`/date-night`): **free for 30 minutes**. Remaining time is on the clock. About three minutes before cutoff the **host** (not the guest) can pay **$2.99** on Stripe Checkout to extend. If they do not, the date ends at 30:00. No menus, no movie player.
 - **Dates chooser** (`/date-room`): picks a room. Old Watch Together follower links (`?watch=` / `?follow=1`) redirect to movie night. Guest `?follow=1` links skip a second payment.
 
 Other:
 
 - **Companion mode:** countdown + chat while each person uses their own Netflix / Hulu / Disney+ / Prime app. No unofficial stream URLs. We do not bypass YouTube age-restriction.
 - **Waitlist:** Sign In / Get Started / Contact post to FormSubmit (`atahoelife@gmail.com`, subject **ProxiMateDate waitlist**).
-- **Pricing:** Dinner **$9.99**, Movie Night **$14.99**, Premium Romance **$24.99** (both paid rooms). Candlelight Chat stays free. Paid rooms use Stripe Checkout when a secret key is configured. This site never collects raw card numbers and does not send people to PayPal, Venmo, or Cash App. If the key is missing, paid buttons collect a waitlist email.
+- **Pricing:** Dinner **$9.99** (90 minutes), Movie Night **$14.99** (2.5 hours), Premium Romance **$24.99** (both paid rooms, 3 hours). Candlelight Chat is free for 30 minutes, then **$2.99** to extend (host only). Paid rooms use Stripe Checkout when a secret key is configured. This site never collects raw card numbers and does not send people to PayPal, Venmo, or Cash App. If the key is missing, paid buttons collect a waitlist email.
 
 ### Watch Together sync (limitation)
 
@@ -38,7 +38,7 @@ Cloudflare Workers Git builds (if connected) need this Wrangler file and a dashb
 
 ## Stripe Checkout (website only)
 
-Paid plans: Dinner **$9.99**, Movie Night **$14.99**, Premium Romance **$24.99** (unlocks both). Candlelight Chat stays free. Restaurant and movie night are gated until Checkout succeeds in this browser (`?paid=1`).
+Paid plans: Dinner **$9.99**, Movie Night **$14.99**, Premium Romance **$24.99** (unlocks both for 3 hours). Candlelight Chat is free for 30 minutes; extend is **$2.99**. Restaurant and movie night are gated until Checkout succeeds in this browser (`?paid=1`). Extend returns to `/date-night?paid=1&plan=extend`.
 
 1. Create a Stripe account at [https://dashboard.stripe.com/register](https://dashboard.stripe.com/register).
 2. From Developers → API keys, copy the **Secret key** (`sk_test_…` for testing, `sk_live_…` for production). Never put this in the frontend repo.
@@ -50,4 +50,4 @@ Paid plans: Dinner **$9.99**, Movie Night **$14.99**, Premium Romance **$24.99**
 4. Redeploy. Pricing CTAs `POST /api/create-checkout`, then redirect to Stripe-hosted Checkout.
 5. If the key is missing, the API returns 503 and the site collects a waitlist email instead. No card fields are rendered on proximatedate.com.
 
-Checkout success returns to the matching room (`/restaurant`, `/movie-night`, or `/date-room`) with `?paid=1&plan=…`, which unlocks that room (or both, for Premium) in this browser.
+Checkout success returns to the matching room (`/restaurant`, `/movie-night`, `/date-night` for extend, or `/date-room`) with `?paid=1&plan=…`, which unlocks that room (or both, for Premium) in this browser. Extend adds 30 minutes to the free date night clock. If the key is missing, we never render a card form on this site — waitlist email only.

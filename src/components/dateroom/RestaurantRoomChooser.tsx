@@ -1,5 +1,4 @@
-import { RESTAURANT_ARRIVAL } from '../../data/arrival'
-import { lookThumb } from '../../lib/restaurantLook'
+import { lookThumb, RESTAURANT_LOOKS } from '../../lib/restaurantLook'
 import { primeHostVoice } from '../../lib/hostVoice'
 
 type RestaurantRoomChooserProps = {
@@ -17,11 +16,11 @@ export function RestaurantRoomChooser({ onPick, currentId, onStay }: RestaurantR
         <h2 className="text-[#F8F4ED] text-center text-2xl sm:text-3xl mb-2">Which dining room?</h2>
         <p className="text-[#A8988A] text-center text-sm mb-6">
           {returning
-            ? 'Tap another room. The host will seat you there. This table stays until you pick.'
-            : 'Tap the room you want to sit in. You can come back and pick another later.'}
+            ? 'Tap another room. The host will walk you in. This table stays until you pick.'
+            : 'Tap the room you want to sit in. The host will walk you in. You can come back and pick another later.'}
         </p>
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-          {RESTAURANT_ARRIVAL.map((beat) => {
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {RESTAURANT_LOOKS.map((beat) => {
             const selected = beat.id === currentId
             return (
               <button

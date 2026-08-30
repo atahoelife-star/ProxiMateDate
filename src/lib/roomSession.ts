@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react'
-import { toast } from 'sonner'
+import { useEffect } from 'react'
 import { newRoomId } from './watchSync'
 import { parseYouTubeId } from './youtube'
 
@@ -20,32 +19,18 @@ export function followFromWindow() {
   return new URLSearchParams(window.location.search).get('follow') === '1'
 }
 
-export function useRoomClock() {
-  const [roomTime, setRoomTime] = useState('00:00')
-  useEffect(() => {
-    const startTime = Date.now()
-    const interval = window.setInterval(() => {
-      const elapsed = Math.floor((Date.now() - startTime) / 1000)
-      const minutes = Math.floor(elapsed / 60)
-      const seconds = elapsed % 60
-      setRoomTime(`${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`)
-    }, 1000)
-    return () => window.clearInterval(interval)
-  }, [])
-  return roomTime
-}
-
-export function useRoomQuerySync(roomId: string) {
+export function useRoomQuerySync(roomId: string, extra?: Record<string, string>) {
+  const extraKey = extra ? JSON.stringify(extra) : ''
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
-    if (params.get('paid') === '1') {
-      toast.success('Stripe Checkout completed', {
-        description: 'Thank you. This room stays open either way — nothing extra was unlocked.',
-      })
-      params.delete('paid')
-    }
     if (!params.get('room')) params.set('room', roomId)
+    if (extraKey) {
+      const parsed = JSON.parse(extraKey) as Record<string, string>
+      for (const [key, value] of Object.entries(parsed)) {
+        if (value) params.set(key, value)
+      }
+    }
     const qs = params.toString()
     window.history.replaceState({}, '', `${window.location.pathname}${qs ? `?${qs}` : ''}`)
-  }, [roomId])
+  }, [roomId, extraKey])
 }

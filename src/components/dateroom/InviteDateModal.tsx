@@ -9,6 +9,7 @@ type InviteDateModalProps = {
   roomId: string
   invitePath: string
   follow: boolean
+  startedAt?: number
   step: 'options' | 'success'
   onStep: (step: 'options' | 'success') => void
 }
@@ -20,6 +21,7 @@ export function InviteDateModal({
   roomId,
   invitePath,
   follow,
+  startedAt,
   step,
   onStep,
 }: InviteDateModalProps) {
@@ -47,6 +49,7 @@ export function InviteDateModal({
                     const url = new URL(`${window.location.origin}${invitePath}`)
                     url.searchParams.set('room', roomId)
                     if (follow) url.searchParams.set('follow', '1')
+                    if (startedAt && startedAt > 0) url.searchParams.set('started', String(startedAt))
                     navigator.clipboard.writeText(url.toString())
                     toast.success('Preview link copied', { description: 'Live invites are not sending. This opens the demo.' })
                   }}

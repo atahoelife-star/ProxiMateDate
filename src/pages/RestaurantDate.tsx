@@ -13,6 +13,7 @@ import { useDiningAmbience } from '../lib/diningAmbience'
 import { RoomChrome } from '../components/dateroom/RoomChrome'
 import { PrivateChatPanel } from '../components/dateroom/PrivateChatPanel'
 import { InviteDateModal } from '../components/dateroom/InviteDateModal'
+import { SessionWrapNotice } from '../components/dateroom/SessionWrapNotice'
 import { WaiterQuickOrder } from '../components/dateroom/WaiterQuickOrder'
 import { RESTAURANT_ARRIVAL } from '../data/arrival'
 import { formatPrice, orderTotal, type OrderLine, type RestaurantId } from '../data/menus'
@@ -26,8 +27,9 @@ import {
 } from '../data/waiterClips'
 import { chatMomentForEvening } from '../data/suggestedLines'
 import { useDemoChat } from '../lib/demoChat'
-import { roomFromWindow, useRoomClock, useRoomQuerySync } from '../lib/roomSession'
+import { roomFromWindow, useRoomQuerySync } from '../lib/roomSession'
 import { usePaidRoom } from '../lib/roomAccess'
+import { usePaidDateSession } from '../lib/dateSession'
 import { RoomPaywall } from '../components/dateroom/RoomPaywall'
 
 export function RestaurantDatePage() {
@@ -42,11 +44,12 @@ function RestaurantDateSession() {
   const { muted: diningMuted, toggleMute: toggleDiningMute, fadeOutAndStop } = useDiningAmbience(phase === 'room')
   const { chatMessages, chatInput, setChatInput, sendChatMessage, pickSuggestedLine, roomMessage } = useDemoChat()
   const [partnerName, setPartnerName] = useState('Emma')
-  const roomTime = useRoomClock()
   const [showWaiterMenu, setShowWaiterMenu] = useState(false)
   const [showInviteModal, setShowInviteModal] = useState(false)
   const [inviteStep, setInviteStep] = useState<'options' | 'success'>('options')
   const [roomId] = useState(roomFromWindow)
+  const session = usePaidDateSession('dinner', roomId, phase === 'room')
+  const [wrapDismissed, setWrapDismissed] = useState(false)
 
   const [youRestaurant, setYouRestaurant] = useState<RestaurantId>('verdant-ember')
   const [partnerRestaurant, setPartnerRestaurant] = useState<RestaurantId>('silver-sage')
@@ -60,7 +63,7 @@ function RestaurantDateSession() {
   const waiterPresenceRef = useRef<WaiterClip>('idle')
   const [waiterStage, setWaiterStage] = useState<WaiterClip>('idle')
 
-  useRoomQuerySync(roomId)
+  useRoomQuerySync(roomId, session.startedAt > 0 ? { started: String(session.startedAt) } : undefined)
 
   const playWaiter = (requested: WaiterClip, note: string, chat?: string) => {
     const play = clipToPlay(waiterPresenceRef.current, requested)
@@ -186,8 +189,15 @@ function RestaurantDateSession() {
       <RoomChrome
         title="Restaurant Date"
         subtitle="Two kitchens, one table"
-        banner="Preview restaurant — not a live two-person call. Orders stay in this browser. Waiter clips are serving videos, not a webcam. LIVE idle is a seated 1x dining room."
-        roomTime={roomTime}
+        banner={
+          session.expired
+            ? 'This dinner has wrapped up. No extra charge — stay as long as you like, or end the date.'
+            : session.wrap
+              ? `A few minutes left in this ${session.budgetLabel} dinner.`
+              : `Preview restaurant — ${session.budgetLabel} after you sit. Orders stay in this browser. Waiter clips are serving videos, not a webcam.`
+        }
+        roomTime={session.remainingLabel}
+        timeHint="left"
         onInvite={() => {
           setInviteStep('options')
           setShowInviteModal(true)
@@ -312,6 +322,13 @@ function RestaurantDateSession() {
         )}
       </AnimatePresence>
 
+      <SessionWrapNotice
+        open={session.isHost && session.wrap && !wrapDismissed}
+        title="This dinner is wrapping up"
+        body={`You have about ${session.remainingLabel} left of your ${session.budgetLabel}. No extra charge unless you later ask to extend. Your date is not billed.`}
+        onDismiss={() => setWrapDismissed(true)}
+      />
+
       <InviteDateModal
         open={showInviteModal}
         onClose={() => setShowInviteModal(false)}
@@ -319,6 +336,7 @@ function RestaurantDateSession() {
         roomId={roomId}
         invitePath="/restaurant"
         follow
+        startedAt={session.startedAt || undefined}
         step={inviteStep}
         onStep={setInviteStep}
       />

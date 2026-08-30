@@ -20,7 +20,15 @@ export function WaiterVideoTile({ clip, serving, playId, onServiceEnded, idleBac
   const spec = WAITER_CLIPS[clip]
   const showChosenRoom = Boolean(idleBackdrop) && !serving
   const caption = serving ? spec.label : idleBackdrop ? 'Your table' : spec.presenceLabel
-  const videoSrc = serving || !idleBackdrop ? spec.src : idleBackdrop.kind === 'video' ? idleBackdrop.src : null
+  // Never play waiter-idle or the walk-in door clip as the seated room.
+  const seatedVideo =
+    !serving &&
+    idleBackdrop?.kind === 'video' &&
+    !idleBackdrop.src.includes('waiter-idle') &&
+    !idleBackdrop.src.includes('restaurant-walk-in')
+      ? idleBackdrop.src
+      : null
+  const videoSrc = serving ? spec.src : seatedVideo
 
   useEffect(() => {
     onEndedRef.current = onServiceEnded
@@ -62,9 +70,9 @@ export function WaiterVideoTile({ clip, serving, playId, onServiceEnded, idleBac
         <div className="text-[#A8988A] text-xs">{caption}</div>
       </div>
       <div className="video-frame video-frame-live flex-1">
-        {showChosenRoom && idleBackdrop?.kind === 'image' ? (
+        {showChosenRoom && (idleBackdrop?.kind === 'image' || !seatedVideo) && idleBackdrop ? (
           <img src={idleBackdrop.src} alt="" className="absolute inset-0 w-full h-full object-cover" />
-        ) : (
+        ) : videoSrc ? (
           <video
             ref={videoRef}
             className="absolute inset-0 w-full h-full object-cover"
@@ -78,7 +86,7 @@ export function WaiterVideoTile({ clip, serving, playId, onServiceEnded, idleBac
               el.play().catch(() => {})
             }}
           />
-        )}
+        ) : null}
         <div className="overlay pointer-events-none" />
         {serving && (
           <>

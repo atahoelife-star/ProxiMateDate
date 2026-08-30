@@ -25,6 +25,7 @@ function writeFlag(key: string) {
 }
 
 export function grantPaidPlan(plan: PaidPlanId) {
+  if (plan === 'extend') return
   if (plan === 'premium') {
     writeFlag(PREMIUM_KEY)
     writeFlag(DINNER_KEY)
@@ -40,15 +41,19 @@ function isFollowerJoin() {
   return new URLSearchParams(window.location.search).get('follow') === '1'
 }
 
+export function hasPremiumAccess() {
+  return readFlag(PREMIUM_KEY)
+}
+
 export function hasRoomAccess(room: PaidRoom) {
   if (isFollowerJoin()) return true
-  if (readFlag(PREMIUM_KEY)) return true
+  if (hasPremiumAccess()) return true
   if (room === 'dinner') return readFlag(DINNER_KEY)
   return readFlag(MOVIE_KEY)
 }
 
 function planFromQuery(raw: string | null, fallback: PaidRoom): PaidPlanId {
-  if (raw === 'premium' || raw === 'dinner' || raw === 'movie') return raw
+  if (raw === 'premium' || raw === 'dinner' || raw === 'movie' || raw === 'extend') return raw
   return fallback
 }
 

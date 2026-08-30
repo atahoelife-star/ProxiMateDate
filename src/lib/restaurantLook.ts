@@ -4,24 +4,37 @@ import { shouldSkipArrival } from './arrivalGate'
 
 export const RESTAURANT_LOOK_KEY = 'pd-restaurant-look'
 
+/** Seated rooms only — never the walk-in / service-door clip. */
+export const RESTAURANT_LOOKS: ArrivalBeat[] = RESTAURANT_ARRIVAL.filter((beat) => beat.id !== 'doors')
+
+const DEFAULT_LOOK = RESTAURANT_LOOKS.find((beat) => beat.id === 'tables') ?? RESTAURANT_LOOKS[0]
+
 export function lookThumb(beat: ArrivalBeat) {
   return beat.poster ?? beat.src
 }
 
 export function lookBackdrop(beat: ArrivalBeat): { src: string; kind: 'image' | 'video' } {
+  // Walk-in / waiter-door video is arrival only. Seated looks are stills of the room.
+  if (beat.id === 'doors' || beat.src.includes('restaurant-walk-in') || beat.src.includes('waiter-idle')) {
+    return { src: lookThumb(DEFAULT_LOOK), kind: 'image' }
+  }
   if (beat.kind === 'video') return { src: beat.src, kind: 'video' }
   return { src: beat.src, kind: 'image' }
 }
 
 export function lookById(id: string | null): ArrivalBeat {
-  return RESTAURANT_ARRIVAL.find((beat) => beat.id === id) ?? RESTAURANT_ARRIVAL[0]
+  if (id && id !== 'doors') {
+    const found = RESTAURANT_LOOKS.find((beat) => beat.id === id)
+    if (found) return found
+  }
+  return DEFAULT_LOOK
 }
 
 export function readRestaurantLook(): string | null {
   if (typeof window === 'undefined') return null
   try {
     const id = sessionStorage.getItem(RESTAURANT_LOOK_KEY)
-    if (id && RESTAURANT_ARRIVAL.some((beat) => beat.id === id)) return id
+    if (id && RESTAURANT_LOOKS.some((beat) => beat.id === id)) return id
   } catch {
     /* private mode */
   }
@@ -29,6 +42,7 @@ export function readRestaurantLook(): string | null {
 }
 
 export function writeRestaurantLook(id: string) {
+  if (id === 'doors') return
   try {
     sessionStorage.setItem(RESTAURANT_LOOK_KEY, id)
   } catch {
@@ -53,6 +67,7 @@ export function useRestaurantEntry() {
   const finishTour = useCallback(() => setPhase('choose'), [])
 
   const pickLook = useCallback((id: string) => {
+    if (id === 'doors') return
     writeRestaurantLook(id)
     setLookId(id)
     setPhase('lead')

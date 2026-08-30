@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { PLANS, type PlanId } from '../../data/plans'
+import { PLANS } from '../../data/plans'
 import { WaitlistForm } from '../WaitlistForm'
 import { startStripeCheckout, type PaidPlanId } from '../../lib/stripeCheckout'
 
@@ -9,13 +9,13 @@ const COPY: Record<'dinner' | 'movie', { kicker: string; title: string; plan: Pa
     kicker: 'DINNER DATE',
     title: 'Restaurant Date',
     plan: 'dinner',
-    blurb: 'Pay $9.99 with a card in the browser (Stripe Checkout). Then the host seats you. Your date can join on the follow link without paying again.',
+    blurb: 'Pay $9.99 with a card in the browser (Stripe Checkout). Then the host seats you for 90 minutes. Your date can join on the follow link without paying again.',
   },
   movie: {
     kicker: 'MOVIE NIGHT',
     title: 'Movie Night',
     plan: 'movie',
-    blurb: 'Pay $14.99 with a card in the browser (Stripe Checkout). Then the theater walk-in starts. Your date can join on the follow link without paying again.',
+    blurb: 'Pay $14.99 with a card in the browser (Stripe Checkout). Then the theater walk-in starts — 2.5 hours. Your date can join on the follow link without paying again.',
   },
 }
 
@@ -27,7 +27,7 @@ export function RoomPaywall({ room }: RoomPaywallProps) {
   const copy = COPY[room]
   const plan = PLANS.find((p) => p.id === copy.plan)
   const premium = PLANS.find((p) => p.id === 'premium')
-  const [busy, setBusy] = useState<PlanId | null>(null)
+  const [busy, setBusy] = useState<PaidPlanId | null>(null)
   const [waitlist, setWaitlist] = useState<PaidPlanId | null>(null)
 
   const pay = async (planId: PaidPlanId) => {
@@ -82,7 +82,7 @@ export function RoomPaywall({ room }: RoomPaywallProps) {
       </p>
       <p className="text-center mt-6">
         <Link to="/date-night" className="text-[#C9A962] underline text-sm">
-          Free Date Night is still free
+          Free Date Night is free for 30 minutes
         </Link>
       </p>
     </div>

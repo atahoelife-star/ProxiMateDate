@@ -6,13 +6,28 @@ type RoomChromeProps = {
   subtitle: string
   banner: string
   roomTime: string
+  timeHint?: string
   onInvite: () => void
   sound?: { muted: boolean; onToggle: () => void }
   onEnd?: () => void
   onChangeRoom?: () => void
+  onExtend?: () => void
+  extendLabel?: string
 }
 
-export function RoomChrome({ title, subtitle, banner, roomTime, onInvite, sound, onEnd, onChangeRoom }: RoomChromeProps) {
+export function RoomChrome({
+  title,
+  subtitle,
+  banner,
+  roomTime,
+  timeHint,
+  onInvite,
+  sound,
+  onEnd,
+  onChangeRoom,
+  onExtend,
+  extendLabel,
+}: RoomChromeProps) {
   return (
     <>
       <div className="relative z-10 px-4 sm:px-6 py-3 bg-[#C9A962] text-[#0F0A0D] text-sm text-center tracking-wide">
@@ -23,6 +38,7 @@ export function RoomChrome({ title, subtitle, banner, roomTime, onInvite, sound,
           <div className="flex items-center gap-2 text-[#C9A962]">
             <Clock className="w-4 h-4" />
             <span className="font-mono tracking-[3px] text-sm">{roomTime}</span>
+            {timeHint && <span className="text-[11px] tracking-normal text-[#A8988A] font-sans">{timeHint}</span>}
           </div>
           <div className="text-[#E8A0B8] text-sm">•</div>
           <div>
@@ -50,6 +66,11 @@ export function RoomChrome({ title, subtitle, banner, roomTime, onInvite, sound,
             >
               {sound.muted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
               {sound.muted ? 'Sound off' : 'Room sound'}
+            </button>
+          )}
+          {onExtend && (
+            <button type="button" onClick={onExtend} className="btn btn-gold px-4 py-2 text-sm">
+              {extendLabel ?? 'Extend $2.99'}
             </button>
           )}
           <button

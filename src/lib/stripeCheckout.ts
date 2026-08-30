@@ -1,4 +1,4 @@
-export type PaidPlanId = 'dinner' | 'movie' | 'premium'
+export type PaidPlanId = 'dinner' | 'movie' | 'premium' | 'extend'
 
 const ALLOWED_RETURN = new Set(['/restaurant', '/movie-night', '/date-room', '/date-night', '/pricing'])
 

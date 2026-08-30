@@ -27,7 +27,7 @@ export function PricingPage() {
         <div className="text-[#C9A962] tracking-[3px] text-sm mb-3">PAY IN THE BROWSER</div>
         <h1 className="text-[#F8F4ED]">Pricing</h1>
         <p className="mt-4 text-xl text-[#A8988A] max-w-xl mx-auto">
-          Free Date Night is free. Dinner is $9.99 and Movie Night is $14.99 — pay with a card on Stripe Checkout before those rooms start. This site never asks for raw card numbers, and we do not send you to PayPal, Venmo, or Cash App.
+          Free Date Night is free for 30 minutes — then $2.99 if the host extends. Dinner is $9.99 (90 minutes after you sit) and Movie Night is $14.99 (2.5 hours) — pay with a card on Stripe Checkout before those rooms start. Premium is $24.99 for 3 hours covering both. This site never asks for raw card numbers, and we do not send you to PayPal, Venmo, or Cash App.
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center mt-8">
           <Link to="/date-night" className="btn btn-gold px-8 py-3 text-sm">

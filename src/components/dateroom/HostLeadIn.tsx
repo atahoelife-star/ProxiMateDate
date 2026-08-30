@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { ArrivalBeat } from '../../data/arrival'
-import { lookBackdrop, lookThumb } from '../../lib/restaurantLook'
+import { lookThumb } from '../../lib/restaurantLook'
 import { playHostVoice, stopHostVoice } from '../../lib/hostVoice'
 
 /** Grand hotel double doors — never waiter/service swinging doors. */
@@ -37,9 +37,7 @@ function DoorLeaf({ side }: { side: 'left' | 'right' }) {
 
 export function HostLeadIn({ look, onDone }: HostLeadInProps) {
   const [open, setOpen] = useState(false)
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const backdrop = lookBackdrop(look)
-  const poster = lookThumb(look)
+  const interior = lookThumb(look)
 
   useEffect(() => {
     const reduced = prefersReducedMotion()
@@ -53,15 +51,6 @@ export function HostLeadIn({ look, onDone }: HostLeadInProps) {
     }
   }, [onDone])
 
-  useEffect(() => {
-    const el = videoRef.current
-    if (!el) return
-    el.muted = true
-    el.playsInline = true
-    el.playbackRate = 1
-    void el.play().catch(() => {})
-  }, [backdrop.src])
-
   return (
     <div
       className={`grand-entrance${open ? ' is-open' : ''}`}
@@ -69,26 +58,7 @@ export function HostLeadIn({ look, onDone }: HostLeadInProps) {
       aria-label="Entering the dining room"
     >
       <div className="ge-interior">
-        {backdrop.kind === 'video' ? (
-          <video
-            ref={videoRef}
-            className="ge-room"
-            src={backdrop.src}
-            poster={poster}
-            muted
-            playsInline
-            autoPlay
-            loop
-            onLoadedData={(event) => {
-              const el = event.currentTarget
-              el.muted = true
-              el.playbackRate = 1
-              void el.play().catch(() => {})
-            }}
-          />
-        ) : (
-          <img className="ge-room" src={backdrop.src} alt="" />
-        )}
+        <img className="ge-room" src={interior} alt="" />
         <div className="ge-veil" />
         <div className="ge-rays" />
       </div>

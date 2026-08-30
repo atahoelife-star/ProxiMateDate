@@ -10,7 +10,7 @@ export function GetStartedPage() {
         <Link to="/date-night" className="text-[#C9A962] underline">
           Free Date Night
         </Link>{' '}
-        is open with no card. Dinner and movie night on{' '}
+        is open for 30 minutes with no card (the host can extend for $2.99). Dinner and movie night on{' '}
         <Link to="/pricing" className="text-[#C9A962] underline">
           Pricing
         </Link>{' '}
