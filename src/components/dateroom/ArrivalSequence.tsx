@@ -60,12 +60,19 @@ export function ArrivalSequence({ beats, storageKey, onDone }: ArrivalSequencePr
         >
           {beat.kind === 'video' ? (
             <video
-              className="arrival-media absolute inset-0 w-full h-full object-cover"
+              className="absolute inset-0 w-full h-full object-cover"
               src={beat.src}
               poster={beat.poster}
               muted
               playsInline
               autoPlay
+              loop
+              onLoadedData={(event) => {
+                const el = event.currentTarget
+                el.muted = true
+                el.playbackRate = 1
+                void el.play().catch(() => {})
+              }}
               onError={() => {
                 if (index >= beats.length - 1) finish()
                 else setIndex((i) => i + 1)
