@@ -8,6 +8,11 @@ export function lookThumb(beat: ArrivalBeat) {
   return beat.poster ?? beat.src
 }
 
+export function lookBackdrop(beat: ArrivalBeat): { src: string; kind: 'image' | 'video' } {
+  if (beat.kind === 'video') return { src: beat.src, kind: 'video' }
+  return { src: beat.src, kind: 'image' }
+}
+
 export function lookById(id: string | null): ArrivalBeat {
   return RESTAURANT_ARRIVAL.find((beat) => beat.id === id) ?? RESTAURANT_ARRIVAL[0]
 }

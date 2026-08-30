@@ -6,7 +6,7 @@ import { DinnerMenus } from '../components/dateroom/DinnerMenus'
 import { WaiterVideoTile } from '../components/dateroom/WaiterVideoTile'
 import { ArrivalSequence } from '../components/dateroom/ArrivalSequence'
 import { RestaurantRoomChooser } from '../components/dateroom/RestaurantRoomChooser'
-import { lookThumb, useRestaurantEntry } from '../lib/restaurantLook'
+import { lookBackdrop, lookThumb, useRestaurantEntry } from '../lib/restaurantLook'
 import { RoomChrome } from '../components/dateroom/RoomChrome'
 import { PrivateChatPanel } from '../components/dateroom/PrivateChatPanel'
 import { InviteDateModal } from '../components/dateroom/InviteDateModal'
@@ -195,6 +195,7 @@ export function RestaurantDatePage() {
               serving={waiterServing}
               playId={waiterPlayId}
               onServiceEnded={settleWaiter}
+              idleBackdrop={lookBackdrop(look)}
             />
             <p className="text-center text-xs text-[#A8988A] mt-3">{waiterNote}</p>
           </div>
