@@ -2,6 +2,7 @@ export type ArrivalBeat = {
   id: string
   src: string
   kind: 'image' | 'video'
+  poster?: string
   durationMs: number
 }
 
@@ -10,6 +11,7 @@ export const RESTAURANT_ARRIVAL: ArrivalBeat[] = [
     id: 'doors',
     src: '/videos/restaurant-walk-in.mp4',
     kind: 'video',
+    poster: '/images/arrival/restaurant/walk-in.jpg',
     durationMs: 3400,
   },
   {

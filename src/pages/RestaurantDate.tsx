@@ -5,7 +5,8 @@ import { Heart, Send, Sparkles, X } from 'lucide-react'
 import { DinnerMenus } from '../components/dateroom/DinnerMenus'
 import { WaiterVideoTile } from '../components/dateroom/WaiterVideoTile'
 import { ArrivalSequence } from '../components/dateroom/ArrivalSequence'
-import { useArrivalGate } from '../lib/arrivalGate'
+import { RestaurantRoomChooser } from '../components/dateroom/RestaurantRoomChooser'
+import { lookThumb, useRestaurantEntry } from '../lib/restaurantLook'
 import { RoomChrome } from '../components/dateroom/RoomChrome'
 import { PrivateChatPanel } from '../components/dateroom/PrivateChatPanel'
 import { InviteDateModal } from '../components/dateroom/InviteDateModal'
@@ -26,7 +27,7 @@ import { useDemoChat } from '../lib/demoChat'
 import { roomFromWindow, useRoomClock, useRoomQuerySync } from '../lib/roomSession'
 
 export function RestaurantDatePage() {
-  const { arrived, markArrived } = useArrivalGate('pd-arrival-restaurant')
+  const { phase, look, finishTour, pickLook } = useRestaurantEntry()
   const { chatMessages, chatInput, setChatInput, sendChatMessage, pickSuggestedLine, roomMessage } = useDemoChat()
   const [partnerName, setPartnerName] = useState('Emma')
   const roomTime = useRoomClock()
@@ -162,16 +163,19 @@ export function RestaurantDatePage() {
     <div
       className="date-room-bg min-h-[calc(100vh-80px)] relative overflow-hidden"
       style={{
-        backgroundImage: `linear-gradient(rgba(15,10,13,0.65), rgba(15,10,13,0.82)), url('/images/candlelit-table.jpg')`,
+        backgroundImage: `linear-gradient(rgba(15,10,13,0.55), rgba(15,10,13,0.78)), url('${lookThumb(look)}')`,
         backgroundSize: 'cover',
-        backgroundPosition: 'center 38%',
+        backgroundPosition: 'center',
         backgroundAttachment: 'fixed',
       }}
     >
-      {!arrived && (
-        <ArrivalSequence beats={RESTAURANT_ARRIVAL} storageKey="pd-arrival-restaurant" onDone={markArrived} />
+      {phase === 'tour' && (
+        <ArrivalSequence beats={RESTAURANT_ARRIVAL} storageKey="pd-arrival-restaurant" onDone={finishTour} />
       )}
+      {phase === 'choose' && <RestaurantRoomChooser onPick={pickLook} />}
 
+      {phase === 'room' && (
+      <>
       <RoomChrome
         title="Restaurant Date"
         subtitle="Two kitchens, one table"
@@ -400,6 +404,8 @@ export function RestaurantDatePage() {
         step={inviteStep}
         onStep={setInviteStep}
       />
+      </>
+      )}
     </div>
   )
 }

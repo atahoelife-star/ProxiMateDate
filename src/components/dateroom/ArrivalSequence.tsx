@@ -62,6 +62,7 @@ export function ArrivalSequence({ beats, storageKey, onDone }: ArrivalSequencePr
             <video
               className="arrival-media absolute inset-0 w-full h-full object-cover"
               src={beat.src}
+              poster={beat.poster}
               muted
               playsInline
               autoPlay
