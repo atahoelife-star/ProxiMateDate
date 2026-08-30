@@ -4,7 +4,7 @@ import type { ArrivalBeat } from '../../data/arrival'
 import { lookThumb } from '../../lib/restaurantLook'
 import { stopHostVoice } from '../../lib/hostVoice'
 
-const LEAD_MS = 4200
+const LEAD_MS = 5200
 
 type HostLeadInProps = {
   look: ArrivalBeat
@@ -42,7 +42,7 @@ export function HostLeadIn({ look, onDone }: HostLeadInProps) {
         className="absolute inset-0 w-full h-full object-cover"
         initial={{ opacity: 1, scale: 1.04 }}
         animate={{ opacity: 0, scale: 1.1 }}
-        transition={{ duration: 1.8, delay: 1.15, ease: 'easeInOut' }}
+        transition={{ duration: 1.7, delay: 2.35, ease: 'easeInOut' }}
       />
       <motion.img
         src={chosen}
@@ -50,7 +50,7 @@ export function HostLeadIn({ look, onDone }: HostLeadInProps) {
         className="absolute inset-0 w-full h-full object-cover"
         initial={{ opacity: 0, scale: 1.1 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 1.55, delay: 1.45, ease: 'easeOut' }}
+        transition={{ duration: 1.5, delay: 2.65, ease: 'easeOut' }}
       />
       <div className="absolute inset-0 bg-gradient-to-t from-[#0F0A0D]/30 via-transparent to-[#0F0A0D]/15 pointer-events-none" />
       <button
