@@ -9,16 +9,19 @@ import { startStripeCheckout, type PaidPlanId } from '../lib/stripeCheckout'
 export function PricingPage() {
   const [waitlistPlan, setWaitlistPlan] = useState<Plan | null>(null)
   const [busy, setBusy] = useState<string | null>(null)
+  const [checkoutError, setCheckoutError] = useState(false)
 
   const onPaidCta = async (plan: Plan) => {
     if (plan.id === 'free') return
     setBusy(plan.id)
+    setCheckoutError(false)
     const result = await startStripeCheckout(plan.id as PaidPlanId, {
       returnTo: plan.roomPath,
       cancelTo: '/pricing',
     })
     setBusy(null)
     if (result === 'waitlist') setWaitlistPlan(plan)
+    if (result === 'error') setCheckoutError(true)
   }
 
   return (
@@ -29,6 +32,9 @@ export function PricingPage() {
         <p className="mt-4 text-xl text-[#A8988A] max-w-xl mx-auto">
           Free Date Night is free for 30 minutes — then $2.99 if the host extends. Dinner is $9.99 for 90 minutes after you sit. Movie Night is $14.99 for 2.5 hours. Pay with a card on Stripe Checkout before those paid rooms start. Premium is $24.99 for 3 hours covering both. This site never asks for raw card numbers, and we do not send you to PayPal, Venmo, or Cash App.
         </p>
+        {checkoutError && (
+          <p className="mt-4 text-sm text-[#E8A0B8]">Couldn’t open Stripe. Tap a pay button to try again.</p>
+        )}
         <div className="flex flex-col sm:flex-row gap-3 justify-center mt-8">
           <Link to="/date-night" className="btn btn-gold px-8 py-3 text-sm">
             Free Date Night

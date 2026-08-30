@@ -29,6 +29,7 @@ export function FreeDateNightPage() {
   const [inviteStep, setInviteStep] = useState<'options' | 'success'>('options')
   const [busy, setBusy] = useState(false)
   const [waitlist, setWaitlist] = useState(false)
+  const [checkoutError, setCheckoutError] = useState(false)
   const [dismissedExtraMs, setDismissedExtraMs] = useState<number | null>(null)
 
   useRoomQuerySync(roomId, session.startedAt > 0 ? { started: String(session.startedAt) } : undefined)
@@ -47,6 +48,7 @@ export function FreeDateNightPage() {
 
   const payExtend = async () => {
     setBusy(true)
+    setCheckoutError(false)
     const qs = typeof window !== 'undefined' ? window.location.search : ''
     const result = await startStripeCheckout('extend', {
       returnTo: `/date-night${qs}`,
@@ -54,6 +56,7 @@ export function FreeDateNightPage() {
     })
     setBusy(false)
     if (result === 'waitlist') setWaitlist(true)
+    if (result === 'error') setCheckoutError(true)
   }
 
   const showHostPay = session.isHost && !session.waiting && (session.warn || session.expired)
@@ -114,9 +117,14 @@ export function FreeDateNightPage() {
                   <WaitlistForm intent="extend-waitlist" plan="extend" submitLabel="Join the waitlist" />
                 </div>
               ) : (
-                <button type="button" className="btn btn-gold px-8 py-3" disabled={busy} onClick={payExtend}>
-                  {busy ? 'Opening Stripe…' : 'Extend $2.99'}
-                </button>
+                <>
+                  {checkoutError && (
+                    <p className="text-[#E8A0B8] text-sm mb-4">Couldn’t open Stripe. Tap Extend $2.99 to try again.</p>
+                  )}
+                  <button type="button" className="btn btn-gold px-8 py-3" disabled={busy} onClick={payExtend}>
+                    {busy ? 'Opening Stripe…' : 'Extend $2.99'}
+                  </button>
+                </>
               )}
             </>
           ) : (
@@ -168,9 +176,14 @@ export function FreeDateNightPage() {
             {waitlist ? (
               <WaitlistForm intent="extend-waitlist" plan="extend" submitLabel="Join the waitlist" />
             ) : (
-              <button type="button" className="btn btn-gold w-full py-3 mb-3" disabled={busy} onClick={payExtend}>
-                {busy ? 'Opening Stripe…' : 'Extend $2.99'}
-              </button>
+              <>
+                {checkoutError && (
+                  <p className="text-[#E8A0B8] text-sm mb-3">Couldn’t open Stripe. Tap Extend $2.99 to try again.</p>
+                )}
+                <button type="button" className="btn btn-gold w-full py-3 mb-3" disabled={busy} onClick={payExtend}>
+                  {busy ? 'Opening Stripe…' : 'Extend $2.99'}
+                </button>
+              </>
             )}
             <button type="button" className="btn btn-ghost w-full py-2 text-sm" onClick={() => setDismissedExtraMs(session.extraMs)}>
               Keep the timer
