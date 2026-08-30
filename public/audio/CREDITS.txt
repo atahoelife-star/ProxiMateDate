@@ -1,0 +1,15 @@
+host-right-this-way.mp3
+  Short seating line (“Right this way.”) generated with Microsoft Edge neural TTS
+  Voice: en-GB-SoniaNeural, spoken as a host, not as a UI label.
+  Used only after the guest picks a dining room.
+
+dining-room.mp3
+  Seated dining bed (restaurant page after sit only). Soft jazz under room tone,
+  glass clinks, and silverware. Mixkit Stock Music / SFX Free License.
+  Not used on the marketing homepage.
+  Music: “Smooth Like Jazz” — Ahjay Stelino
+    https://mixkit.co/free-stock-music/smooth-like-jazz-24/
+  Room: Mixkit “Hotel reception and restaurant” (sfx 454)
+  Glasses: Mixkit “A couple of glasses clink” (sfx 154), “Wine glass clink” (sfx 2936)
+  Table: Mixkit “Taking cutlery from a plate” (sfx 133), “Dish placed in a wood table” (sfx 2933)
+

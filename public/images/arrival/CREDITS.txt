@@ -1,0 +1,26 @@
+Royalty-free stills for short arrival sequences (Ken Burns, not hotlinked).
+
+Restaurant
+  walk-in.jpg — still from Mixkit #29050 walk-in clip (thumbnail / locked room)
+  host-stand.jpg — Pexels #941861, restaurant host / maître d’ stand
+    https://www.pexels.com/photo/photo-of-people-having-dinner-941861/
+  dining-room.jpg — Pexels #67468, dining room with tables
+    https://www.pexels.com/photo/people-sitting-on-chair-inside-restaurant-67468/
+  your-table.jpg — Pexels #1579739, set table for two
+    https://www.pexels.com/photo/wine-glasses-on-table-1579739/
+  sit-down.jpg — Pexels #1581384, couple seated at a restaurant table
+    https://www.pexels.com/photo/man-and-woman-near-table-1581384/
+  host.jpg — still from waiter-idle.mp4 (Pexels #6327644, Tima Miroshnichenko)
+    Same waitress as Call Waiter / the “Right this way” lead-in. Not a choosable room.
+
+Cinema
+  ticket-booth.jpg — Pexels #7991225, cinema ticket booth
+    https://www.pexels.com/photo/photo-of-a-ticket-booth-7991225/
+  lobby.jpg — Pexels #7991579, cinema lobby
+    https://www.pexels.com/photo/people-inside-a-building-7991579/
+  popcorn.jpg — still from cinema-popcorn-machine.mp4 (Coverr popcorn maker)
+    Poster only. The arrival beat is the video: kettle in a glass popper, corn tumbling out.
+  theater.jpg — Pexels #7991158, theater seats
+    https://www.pexels.com/photo/empty-cinema-7991158/
+
+Walk-in video lives in /videos (see public/videos/CREDITS.txt).

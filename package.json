@@ -13,10 +13,13 @@
     "@tailwindcss/vite": "^4.3.0",
     "framer-motion": "^12.40.0",
     "lucide-react": "^1.17.0",
+    "peerjs": "^1.5.5",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
+    "react-router-dom": "^7.18.2",
     "react-youtube": "^10.1.0",
     "sonner": "^2.0.7",
+    "stripe": "^22.6.0",
     "tailwindcss": "^4.3.0"
   },
   "devDependencies": {
@@ -31,6 +34,7 @@
     "globals": "^17.6.0",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.59.2",
-    "vite": "^8.0.12"
+    "vite": "^8.0.12",
+    "wrangler": "^4.127.0"
   }
 }

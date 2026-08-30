@@ -1,0 +1,26 @@
+Serving-clip gaps (honest plates only — no wrong food).
+
+Host / staff
+  Tour stays rooms only (no walk-in captions).
+  After the thumbnail pick: grand hotel double doors open into the chosen dining room, then the host says “Right this way” (audio only). Do not play waiter-idle, kitchen swinging doors, or a zoomed service-door loop on this beat.
+  Call Waiter still uses waiter-idle.mp4 (Pexels #6327644) — that waitress is the only staff face on purpose. Food and pour clips are close-ups from the house set (plates, torch, glasses) — no extra waiter characters.
+
+Matched
+  Call Waiter / greet → waiter-idle.mp4 (same waitress)
+  Post-pick seating → CSS grand front doors into the chosen room (not a waiter clip)
+  Wine / rosé → waiter-pour-champagne.mp4 (faceless pour; see below)
+  Champagne → waiter-pour-champagne.mp4
+  All Verdant Ember savory plates → waiter-vegan.mp4 (existing house plant plate)
+  Filet, ribeye, tomahawk → waiter-steak.mp4
+  Crème brûlée (both kitchens) → waiter-dessert.mp4 (torch, not salad)
+  Dark chocolate soufflé (both kitchens) → waiter-chocolate.mp4 (chocolate dessert being served)
+
+Intentionally not forced
+  Japanese A5 Wagyu Beef Carpaccio — no royalty-free raw-beef carpaccio clip that matches this waiter set. Plays greet (same waitress, no cooked-steak plate).
+  Pan-Seared Foie Gras — no matching foie clip in this lighting/service style. Plays greet.
+  Classic Steak & Lobster — free lobster/surf clips we found were Mixkit Restricted (personal use only) or unrelated footage. Plays the steak clip (the beef half).
+  Whole roasted cauliflower, polenta cake, king-oyster carpaccio — no item-specific plated clip that matches the existing close-up service look. They keep the Verdant Ember plant-plate clip.
+  waiter-steak.mp4 is the existing house steak file (dark wood, same set). Grill/kitchen steak stock did not match this service look, so it was not swapped.
+
+Do not use waiter-set-plate.mp4 for menu items (sliders).
+Do not use waiter-pour-wine.mp4 on screen — different man in a grey plaid suit, different dining room. Cast consistency over a second sommelier. File stays on disk.

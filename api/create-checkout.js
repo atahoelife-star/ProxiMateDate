@@ -1,0 +1,109 @@
+import Stripe from 'stripe'
+
+const PLANS = {
+  dinner: { name: 'Virtual Dinner Date', amount: 999, successPath: '/restaurant' },
+  movie: { name: 'Movie Night', amount: 1499, successPath: '/movie-night' },
+  premium: { name: 'Premium Romance', amount: 2499, successPath: '/date-room' },
+  extend: { name: 'Date Night extend', amount: 299, successPath: '/date-night' },
+}
+
+const ALLOWED_PATHS = new Set(['/restaurant', '/movie-night', '/date-room', '/date-night', '/pricing'])
+
+async function readBody(req) {
+  if (req.body) {
+    if (typeof req.body === 'string') {
+      try {
+        return JSON.parse(req.body)
+      } catch {
+        return {}
+      }
+    }
+    if (typeof req.body === 'object' && !Buffer.isBuffer(req.body)) return req.body
+  }
+  const chunks = []
+  for await (const chunk of req) chunks.push(chunk)
+  const raw = Buffer.concat(chunks).toString('utf8')
+  if (!raw) return {}
+  try {
+    return JSON.parse(raw)
+  } catch {
+    return {}
+  }
+}
+
+function siteOrigin(req) {
+  const fromEnv = process.env.PUBLIC_SITE_URL
+  if (fromEnv) return fromEnv.replace(/\/$/, '')
+  const origin = req.headers.origin
+  if (origin && typeof origin === 'string') return origin.replace(/\/$/, '')
+  const host = req.headers.host
+  if (host) return `https://${host}`
+  return 'https://www.proximatedate.com'
+}
+
+function safePath(raw, fallback) {
+  if (typeof raw !== 'string') return fallback
+  const path = raw.split('?')[0]
+  if (!ALLOWED_PATHS.has(path)) return fallback
+  return path
+}
+
+export default async function handler(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
+  if (req.method === 'OPTIONS') {
+    res.status(204).end()
+    return
+  }
+  if (req.method !== 'POST') {
+    res.status(405).json({ error: 'method_not_allowed' })
+    return
+  }
+
+  const secret = process.env.STRIPE_SECRET_KEY
+  if (!secret) {
+    res.status(503).json({ error: 'not_configured' })
+    return
+  }
+
+  const body = await readBody(req)
+  const planId = body?.plan
+  const plan = PLANS[planId]
+  if (!plan) {
+    res.status(400).json({ error: 'unknown_plan' })
+    return
+  }
+
+  try {
+    const stripe = new Stripe(secret)
+    const origin = siteOrigin(req)
+    const successPath = safePath(body?.returnTo, plan.successPath)
+    const cancelPath = safePath(body?.cancelTo, '/pricing')
+    const session = await stripe.checkout.sessions.create({
+      mode: 'payment',
+      submit_type: 'pay',
+      billing_address_collection: 'auto',
+      line_items: [
+        {
+          quantity: 1,
+          price_data: {
+            currency: 'usd',
+            unit_amount: plan.amount,
+            product_data: { name: `ProxiMateDate — ${plan.name}` },
+          },
+        },
+      ],
+      success_url: `${origin}${successPath}?paid=1&plan=${planId}`,
+      cancel_url: `${origin}${cancelPath}`,
+    })
+
+    if (!session.url) {
+      res.status(500).json({ error: 'no_checkout_url' })
+      return
+    }
+    res.status(200).json({ url: session.url })
+  } catch {
+    res.status(500).json({ error: 'checkout_failed' })
+  }
+}
