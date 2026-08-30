@@ -45,9 +45,11 @@ Paid plans: Dinner **$9.99**, Movie Night **$14.99**, Premium Romance **$24.99**
 3. In the [Vercel project](https://vercel.com) → Settings → Environment Variables, add:
    - `STRIPE_SECRET_KEY` = that secret
    - optional `PUBLIC_SITE_URL` = `https://www.proximatedate.com` (used for success/cancel URLs)
+   - `VERCEL_PREVIEW_FEEDBACK_ENABLED` = `0` (documented toolbar disable for preview branches)
+4. Same Vercel project → Settings → General → **Vercel Toolbar** → **Production: Off** (and Preview: Off). Customers must never see the comments / draft / feedback bubble on proximatedate.com. `vercel.json` also sends `x-vercel-skip-toolbar: 1`, and `index.html` removes the `vercel-live-feedback` widget if the platform still injects it.
 
    A `.env.example` file in this repo lists the same names. Do not put the secret in a `VITE_` variable or it would ship to the browser.
-4. Redeploy. Pricing CTAs `POST /api/create-checkout`, then redirect to Stripe-hosted Checkout.
-5. If the key is missing, the API returns 503 and the site collects a waitlist email instead. No card fields are rendered on proximatedate.com.
+5. Redeploy. Pricing CTAs `POST /api/create-checkout`, then redirect to Stripe-hosted Checkout.
+6. If the key is missing, the API returns 503 and the site collects a waitlist email instead. No card fields are rendered on proximatedate.com.
 
 Checkout success returns to the matching room (`/restaurant`, `/movie-night`, `/date-night` for extend, or `/date-room`) with `?paid=1&plan=…`, which unlocks that room (or both, for Premium) in this browser. Extend adds 30 minutes to the free date night clock. If the key is missing, we never render a card form on this site — waitlist email only.
