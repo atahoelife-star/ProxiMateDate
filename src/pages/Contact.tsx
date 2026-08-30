@@ -9,7 +9,7 @@ export function ContactPage() {
         <a className="text-[#C9A962] underline" href="mailto:atahoelife@gmail.com">
           atahoelife@gmail.com
         </a>
-        . You can also leave a note below; it goes to the same inbox with the subject “ProxiMateDate waitlist.”
+        . You can also leave a note below. It goes to the same inbox.
       </p>
       <div className="card p-6 mt-6">
         <WaitlistForm
@@ -17,7 +17,7 @@ export function ContactPage() {
           showMessage
           submitLabel="Send"
           heading="Send a note"
-          description="Questions about the rooms, the two Silver Springs menus, or the waitlist are welcome."
+          description="Questions about the rooms or the two Silver Springs menus are welcome."
         />
       </div>
     </PageShell>

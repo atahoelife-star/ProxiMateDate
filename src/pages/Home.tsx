@@ -63,7 +63,7 @@ export function HomePage() {
             </Link>
           </div>
 
-          <div className="mt-8 text-xs tracking-[2px] text-[#A8988A]">CARDS VIA STRIPE CHECKOUT • NO CARD FORM ON THIS SITE</div>
+          <div className="mt-8 text-xs tracking-[2px] text-[#A8988A]">PAY WITH A CARD ON STRIPE</div>
         </div>
 
         <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center text-xs text-[#A8988A]">
@@ -99,10 +99,10 @@ export function HomePage() {
         </div>
         <div className="card p-8 md:p-12">
           <p className="text-[#EDE4D9] leading-relaxed text-lg">
-            ProxiMateDate is a product in progress from A Tahoe Life / Gregory Barrett. We are not claiming a crowd of couples, and we are not quoting people who did not write in. If you miss dinner across a table — vegan on one side, steak on the other — the restaurant room is for you. Movie night is Watch Together. Free date night is just talking.
+            ProxiMateDate is a long-distance date night from A Tahoe Life / Gregory Barrett. If you miss dinner across a table — vegan on one side, steak on the other — the restaurant room is for you. Movie night is Watch Together. Free date night is just talking: 30 minutes, then $2.99 to extend.
           </p>
           <p className="text-[#A8988A] mt-6 leading-relaxed">
-            Orders do not go to a kitchen. YouTube uses Google’s official player. Netflix stays on your own apps. When real accounts exist, we’ll say so on the Privacy page.
+            Orders stay with you; they do not go to a kitchen. YouTube uses Google’s official player. Netflix stays on your own apps. Dinner and movie night are paid with a card on Stripe.
           </p>
         </div>
       </div>
@@ -111,7 +111,7 @@ export function HomePage() {
         <div className="max-w-xl mx-auto text-center px-6">
           <Heart className="w-9 h-9 text-[#E8A0B8] mx-auto mb-6" />
           <h2 className="text-[#F8F4ED] mb-4">Your next date night is waiting.</h2>
-          <p className="text-lg text-[#A8988A] mb-8">Try free date night for 30 minutes, or pay for dinner or movie night with a card on Stripe Checkout — never a card form on this site.</p>
+          <p className="text-lg text-[#A8988A] mb-8">Try free date night for 30 minutes, or pay for dinner or movie night with a card on Stripe.</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link to="/pricing" className="btn btn-rose text-base px-10 py-4">
               See pricing

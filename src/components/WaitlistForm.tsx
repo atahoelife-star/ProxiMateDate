@@ -35,7 +35,7 @@ export function WaitlistForm({
       await submitWaitlist({ email, name, intent, plan, message })
       setStatus('sent')
       toast.success('You’re on the list', {
-        description: 'We’ll email you at this address when accounts are ready. Nothing is charged.',
+        description: 'We’ll email you at this address. Nothing is charged.',
       })
     } catch (err) {
       setStatus('error')
@@ -49,7 +49,7 @@ export function WaitlistForm({
         <div className="text-[#C9A962] text-xs tracking-[2px] mb-2">WAITLIST</div>
         <h3 className="text-[#F8F4ED] text-2xl mb-2">You’re on the list</h3>
         <p className="text-[#A8988A] text-sm leading-relaxed">
-          We saved {email} for ProxiMateDate. This is not an account yet — no password, no card, no fake “you’re signed in.”
+          We saved {email} for ProxiMateDate. We’ll write when we have something to share.
         </p>
       </div>
     )
@@ -106,7 +106,7 @@ export function WaitlistForm({
         {status === 'sending' ? 'Sending…' : submitLabel}
       </button>
       <p className="text-[11px] text-[#7A6B5F] tracking-wide text-center">
-        Goes to atahoelife@gmail.com via FormSubmit. Subject: ProxiMateDate waitlist. No card numbers.
+        We’ll email this address. Nothing is charged here.
       </p>
     </form>
   )

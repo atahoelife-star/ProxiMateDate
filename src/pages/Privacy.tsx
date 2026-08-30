@@ -6,7 +6,7 @@ export function PrivacyPage() {
       <p>Last updated August 27, 2026. ProxiMateDate is a long-distance date-night website operated by A Tahoe Life / Gregory Barrett (atahoelife@gmail.com).</p>
       <h2 className="text-[#F8F4ED] text-xl">What we collect today</h2>
       <p>
-        Today we collect email (and optional name or message) if you submit Sign In, Get Started, Contact, or a waitlist form. That form is sent through FormSubmit to atahoelife@gmail.com with the subject “ProxiMateDate waitlist.” We do not collect passwords, raw payment cards, or webcam video. If you pay a one-time date, Stripe Checkout (on stripe.com) processes the card; we do not see or store the number.
+        We collect email (and optional name or message) if you submit Sign In, Get Started, Contact, or a waitlist form. That mail is delivered to atahoelife@gmail.com. When you pay for a date, Stripe Checkout on stripe.com processes the card; we do not see or store the number.
       </p>
       <h2 className="text-[#F8F4ED] text-xl">What stays in your browser</h2>
       <p>

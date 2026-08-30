@@ -112,7 +112,7 @@ export function FreeDateNightPage() {
               {waitlist ? (
                 <div className="card p-6 text-left">
                   <p className="text-[#A8988A] text-sm mb-4">
-                    Pay with a card, or leave an email. No card on this page.
+                    Leave your email and we’ll follow up.
                   </p>
                   <WaitlistForm intent="extend-waitlist" plan="extend" submitLabel="Join the waitlist" />
                 </div>
@@ -171,7 +171,7 @@ export function FreeDateNightPage() {
           <div className="modal w-full max-w-md bg-[#1A1418] border border-[#3A2F36] rounded-3xl p-8">
             <h3 className="text-[#F8F4ED] text-2xl mb-2">About three minutes left</h3>
             <p className="text-[#A8988A] text-sm mb-6">
-              Extend this free date night for $2.99 so you don’t get cut off at 30:00. Card on Stripe Checkout — not PayPal, Venmo, or Cash App. Your date is not billed.
+              Extend this free date night for $2.99 so you don’t get cut off at 30:00. Pay with a card on Stripe. We do not send you to PayPal, Venmo, or Cash App. Your date is not billed.
             </p>
             {waitlist ? (
               <WaitlistForm intent="extend-waitlist" plan="extend" submitLabel="Join the waitlist" />

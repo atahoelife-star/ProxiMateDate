@@ -60,7 +60,7 @@ export function DateRoomPage() {
         <div className="text-[#C9A962] text-sm tracking-[3px] mb-3">PICK YOUR EVENING</div>
         <h1 className="text-[#F8F4ED]">Three date rooms</h1>
         <p className="mt-4 text-xl text-[#A8988A] max-w-2xl mx-auto">
-          Each room is its own page. Free Date Night lasts 30 minutes. Restaurant is $9.99 for 90 minutes. Movie Night is $14.99 for 2.5 hours. Pay with a card before those paid rooms start.
+          Each room is its own page. Free Date Night lasts 30 minutes. Restaurant is $9.99 for 90 minutes. Movie Night is $14.99 for 2.5 hours. Pay with a card on Stripe before those paid rooms start.
         </p>
       </div>
       <div className="grid md:grid-cols-3 gap-6">

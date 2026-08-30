@@ -6,11 +6,11 @@ export function TermsPage() {
       <p>Last updated August 27, 2026. By using proximatedate.com you agree to these terms.</p>
       <h2 className="text-[#F8F4ED] text-xl">What this site is</h2>
       <p>
-        ProxiMateDate is a website preview of a long-distance date night. The rooms are demos: simulated chat, local restaurant orders, waiter serving videos, and YouTube Watch Together. They are not a live two-person call and not a reservation at The Verdant Ember or The Silver Sage Steakhouse. Dinner and Movie Night are paid before those rooms start.
+        ProxiMateDate is a website for a long-distance date night. Chat is between the two of you on a room link. Restaurant orders stay in your browser. Waiter clips are videos. YouTube Watch Together uses YouTube. This is not a live two-person video call and not a reservation at The Verdant Ember or The Silver Sage Steakhouse. Dinner and Movie Night are paid before those rooms start.
       </p>
       <h2 className="text-[#F8F4ED] text-xl">Waitlist and Checkout</h2>
       <p>
-        Free Date Night is free for 30 minutes; the host may extend for $2.99. Dinner is $9.99 for 90 minutes after you sit. Movie Night is $14.99 for 2.5 hours. Both are paid before those rooms start through Stripe Checkout. Premium is $24.99 for 3 hours covering both. Submitting an email does not charge you and does not create an account. Do not enter card numbers on this site — we do not host a card form. We do not send you to PayPal, Venmo, or Cash App.
+        Free Date Night is free for 30 minutes; the host may extend for $2.99. Dinner is $9.99 for 90 minutes after you sit. Movie Night is $14.99 for 2.5 hours. Both are paid before those rooms start through Stripe. Premium is $24.99 for 3 hours covering both. Submitting an email does not charge you. Paid rooms are billed through Stripe. We do not send you to PayPal, Venmo, or Cash App.
       </p>
       <h2 className="text-[#F8F4ED] text-xl">Your use</h2>
       <p>
@@ -18,7 +18,7 @@ export function TermsPage() {
       </p>
       <h2 className="text-[#F8F4ED] text-xl">No warranty</h2>
       <p>
-        The preview is offered as-is. We are not liable for missed dates, kitchen orders that never existed, or third-party outages. Contact atahoelife@gmail.com with concerns.
+        The site is offered as-is. We are not liable for missed dates, kitchen orders that never existed, or third-party outages. Contact atahoelife@gmail.com with concerns.
       </p>
     </PageShell>
   )

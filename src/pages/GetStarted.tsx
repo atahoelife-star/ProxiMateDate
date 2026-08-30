@@ -6,22 +6,20 @@ export function GetStartedPage() {
   return (
     <PageShell kicker="GET STARTED" title="Join ProxiMateDate">
       <p>
-        Get Started does not create an account.{' '}
         <Link to="/date-night" className="text-[#C9A962] underline">
           Free Date Night
         </Link>{' '}
-        is open for 30 minutes. The host can extend for $2.99. Dinner and movie night are on{' '}
+        is 30 minutes. The host can extend for $2.99. Dinner is $9.99 for 90 minutes. Movie night is $14.99 for 2.5 hours. Pay with a card on Stripe — see{' '}
         <Link to="/pricing" className="text-[#C9A962] underline">
           Pricing
         </Link>
-        {' '}
-        — pay with a card.
+        .
       </p>
       <div className="card p-6 mt-4">
         <WaitlistForm
           intent="get-started"
-          submitLabel="Join the waitlist"
-          description="Subject line: ProxiMateDate waitlist. No credit card."
+          submitLabel="Leave my email"
+          description="Leave your email and we’ll send a note from us."
         />
       </div>
     </PageShell>

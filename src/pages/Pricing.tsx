@@ -30,7 +30,7 @@ export function PricingPage() {
         <div className="text-[#C9A962] tracking-[3px] text-sm mb-3">PAY IN THE BROWSER</div>
         <h1 className="text-[#F8F4ED]">Pricing</h1>
         <p className="mt-4 text-xl text-[#A8988A] max-w-xl mx-auto">
-          Free Date Night is free for 30 minutes — then $2.99 if the host extends. Dinner is $9.99 for 90 minutes after you sit. Movie Night is $14.99 for 2.5 hours. Pay with a card on Stripe Checkout before those paid rooms start. Premium is $24.99 for 3 hours covering both. This site never asks for raw card numbers, and we do not send you to PayPal, Venmo, or Cash App.
+          Free Date Night is free for 30 minutes — then $2.99 if the host extends. Dinner is $9.99 for 90 minutes after you sit. Movie Night is $14.99 for 2.5 hours. Pay with a card on Stripe. Premium is $24.99 for 3 hours covering both. We do not send you to PayPal, Venmo, or Cash App.
         </p>
         {checkoutError && (
           <p className="mt-4 text-sm text-[#E8A0B8]">Couldn’t open Stripe. Tap a pay button to try again.</p>
@@ -103,7 +103,7 @@ export function PricingPage() {
       <div className="card p-8 mt-16 max-w-xl mx-auto">
         <h2 className="text-[#F8F4ED] text-2xl mb-2">Leave your email</h2>
         <p className="text-[#A8988A] text-sm mb-6">
-          Want a note when we add more rooms? Subject: ProxiMateDate waitlist. No card on this page.
+          Want a note when we add more rooms? Leave your email.
         </p>
         <WaitlistForm intent="pricing-optional" submitLabel="Join the waitlist" />
       </div>
@@ -121,7 +121,7 @@ export function PricingPage() {
                 <X className="w-5 h-5" />
               </button>
               <p className="text-[#A8988A] text-sm mb-4">
-                Leave an email for {waitlistPlan.name} ({waitlistPlan.price}). No card on this page.
+                Leave your email for {waitlistPlan.name} ({waitlistPlan.price}). We’ll follow up.
               </p>
               <WaitlistForm intent="paid-plan-waitlist" plan={`${waitlistPlan.id}:${waitlistPlan.name}`} submitLabel="Join the waitlist" />
             </motion.div>
