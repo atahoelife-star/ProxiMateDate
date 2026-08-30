@@ -17,7 +17,7 @@ export function RestaurantRoomChooser({ onPick, currentId, onStay }: RestaurantR
         <p className="text-[#A8988A] text-center text-sm mb-6">
           {returning
             ? 'Tap another room. The host will walk you in. This table stays until you pick.'
-            : 'Tap the room you want to sit in. The host will walk you in. You can come back and pick another later.'}
+            : 'Tap the room you want to sit in. Front doors open into that dining room. The host walks you in.'}
         </p>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {RESTAURANT_LOOKS.map((beat) => {

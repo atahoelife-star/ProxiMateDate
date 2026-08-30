@@ -5,8 +5,10 @@ import { playHostVoice, stopHostVoice } from '../../lib/hostVoice'
 
 /** Photoreal double doors into the chosen dining room — never waiter/kitchen swinging doors. */
 const HOST_AFTER_MS = 1550
-const DONE_MS = 6400
+const DONE_AFTER_PLAYING_MS = 6200
 const REDUCED_DONE_MS = 1400
+const PLAY_FALLBACK_MS = 10000
+const CLOSED_DOORS = '/images/arrival/restaurant/grand-doors.jpg'
 
 type HostLeadInProps = {
   look: ArrivalBeat
@@ -35,6 +37,7 @@ export function HostLeadIn({ look, onDone }: HostLeadInProps) {
   const [open, setOpen] = useState(false)
   const [useCss, setUseCss] = useState(false)
   const finished = useRef(false)
+  const playing = useRef(false)
   const interior = lookThumb(look)
   const src = doorClip(look)
 
@@ -46,38 +49,48 @@ export function HostLeadIn({ look, onDone }: HostLeadInProps) {
   }
 
   useEffect(() => {
+    if (useCss) return
+    const fallback = window.setTimeout(finish, PLAY_FALLBACK_MS)
+    return () => window.clearTimeout(fallback)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [useCss])
+
+  useEffect(() => {
+    if (!useCss) return
     const reduced = prefersReducedMotion()
-    if (reduced) {
-      const doneTimer = window.setTimeout(finish, REDUCED_DONE_MS)
-      return () => window.clearTimeout(doneTimer)
-    }
-    const openTimer = window.setTimeout(() => setOpen(true), 480)
-    const hostTimer = window.setTimeout(() => playHostVoice(), HOST_AFTER_MS)
-    const doneTimer = window.setTimeout(finish, DONE_MS)
+    const openTimer = window.setTimeout(() => setOpen(true), reduced ? 0 : 480)
+    const hostTimer = window.setTimeout(() => playHostVoice(), reduced ? 60 : HOST_AFTER_MS)
+    const doneTimer = window.setTimeout(finish, reduced ? REDUCED_DONE_MS : DONE_AFTER_PLAYING_MS)
     return () => {
       window.clearTimeout(openTimer)
       window.clearTimeout(hostTimer)
       window.clearTimeout(doneTimer)
     }
-    // finish is stable for this mount
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [onDone])
+  }, [useCss, onDone])
 
   return (
     <div
-      className={`grand-entrance${open || !useCss ? ' is-open' : ''}`}
+      className={`grand-entrance${useCss && open ? ' is-open' : ''}`}
       role="dialog"
       aria-label="Entering the dining room"
     >
       {!useCss ? (
         <>
+          <img className="ge-room absolute inset-0 w-full h-full object-cover" src={CLOSED_DOORS} alt="" />
           <video
             className="ge-room absolute inset-0 w-full h-full object-cover"
             src={src}
-            poster={interior}
+            poster={CLOSED_DOORS}
             autoPlay
             muted
             playsInline
+            onPlaying={() => {
+              if (playing.current) return
+              playing.current = true
+              window.setTimeout(() => playHostVoice(), HOST_AFTER_MS)
+              window.setTimeout(finish, DONE_AFTER_PLAYING_MS)
+            }}
             onEnded={finish}
             onError={() => setUseCss(true)}
           />

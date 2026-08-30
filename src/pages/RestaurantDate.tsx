@@ -45,7 +45,8 @@ export function RestaurantDatePage() {
 }
 
 function RestaurantDateSession() {
-  const { phase, look, lookId, finishTour, pickLook, finishLead, changeRoom, stayHere, forceTour } = useRestaurantEntry()
+  const { phase, look, lookId, finishTour, pickLook, finishLead, changeRoom, stayHere, forceTour, mustEnterThroughDoors } =
+    useRestaurantEntry()
   const navigate = useNavigate()
   const { muted: diningMuted, toggleMute: toggleDiningMute, fadeOutAndStop } = useDiningAmbience(phase === 'room')
   const [roomId] = useState(roomFromWindow)
@@ -202,10 +203,10 @@ function RestaurantDateSession() {
         <RestaurantRoomChooser
           onPick={pickLook}
           currentId={lookId}
-          onStay={lookId ? stayHere : undefined}
+          onStay={lookId && !mustEnterThroughDoors ? stayHere : undefined}
         />
       )}
-      {phase === 'lead' && <HostLeadIn look={look} onDone={finishLead} />}
+      {phase === 'lead' && <HostLeadIn key={look.id} look={look} onDone={finishLead} />}
 
       {phase === 'room' && (
       <>
