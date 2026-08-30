@@ -1,4 +1,5 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
     {
       "source": "/((?!api/|videos/|images/|audio/|favicon.svg|icons.svg|assets/).*)",
@@ -9,7 +10,8 @@
     {
       "source": "/(.*)",
       "headers": [
-        { "key": "x-vercel-skip-toolbar", "value": "1" }
+        { "key": "x-vercel-skip-toolbar", "value": "1" },
+        { "key": "x-vercel-toolbar", "value": "0" }
       ]
     }
   ]

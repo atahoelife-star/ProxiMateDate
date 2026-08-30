@@ -9,13 +9,13 @@ const COPY: Record<'dinner' | 'movie', { kicker: string; title: string; plan: Pa
     kicker: 'DINNER DATE',
     title: 'Restaurant Date',
     plan: 'dinner',
-    blurb: 'Pay $9.99 with a card in the browser (Stripe Checkout). Then the host seats you for 90 minutes. Your date can join on the follow link without paying again.',
+    blurb: 'Pay $9.99 with a card on Stripe. Then the host seats you for 90 minutes. Your date can join on the follow link without paying again.',
   },
   movie: {
     kicker: 'MOVIE NIGHT',
     title: 'Movie Night',
     plan: 'movie',
-    blurb: 'Pay $14.99 with a card in the browser (Stripe Checkout). Then the theater walk-in starts — 2.5 hours. Your date can join on the follow link without paying again.',
+    blurb: 'Pay $14.99 with a card on Stripe. Then the theater walk-in starts for 2.5 hours. Your date can join on the follow link without paying again.',
   },
 }
 
@@ -53,7 +53,7 @@ export function RoomPaywall({ room }: RoomPaywallProps) {
       {waitlist ? (
         <div className="card p-6">
           <p className="text-[#A8988A] text-sm mb-4">
-            Stripe Checkout is not available right now. Leave an email. We never ask for a card number on this page, and we do not send you to PayPal, Venmo, or Cash App.
+            Leave your email and we’ll follow up about this date night.
           </p>
           <WaitlistForm intent="paid-room-waitlist" plan={waitlist} submitLabel="Join the waitlist" />
         </div>
@@ -84,7 +84,7 @@ export function RoomPaywall({ room }: RoomPaywallProps) {
       )}
 
       <p className="text-center text-xs text-[#7A6B5F] mt-6">
-        Card on Stripe’s page. Apple Pay / Google Pay only if your phone already offers them there. No PayPal, Venmo, or Cash App.
+        Pay with a card on Stripe. We do not send you to PayPal, Venmo, or Cash App.
       </p>
       <p className="text-center mt-6">
         <Link to="/date-night" className="text-[#C9A962] underline text-sm">

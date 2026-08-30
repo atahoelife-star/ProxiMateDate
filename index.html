@@ -6,9 +6,71 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ProxiMateDate • Stay Close, Even When Far Apart</title>
     <style>
-      [data-vercel-toolbar], vercel-live-feedback, #vercel-live-feedback,
-      iframe[src*="vercel.live"], iframe[src*="vercel.com/live"] { display: none !important; }
+      vercel-live-feedback,
+      vercel-toolbar,
+      [data-vercel-toolbar],
+      [data-vercel-toolbar-container],
+      #vercel-live-feedback,
+      iframe[src*="vercel.live"],
+      iframe[src*="vercel.com/live"] {
+        display: none !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+        opacity: 0 !important;
+        width: 0 !important;
+        height: 0 !important;
+        position: fixed !important;
+        left: -9999px !important;
+      }
     </style>
+    <script>
+      (function () {
+        var MATCH = /vercel\.live|vercel\.com\/live|vercel-toolbar|vercel-live/i
+        function isToolbar(node) {
+          if (!node || node.nodeType !== 1) return false
+          var tag = node.tagName || ''
+          var id = node.id || ''
+          var src =
+            (node.getAttribute &&
+              (node.getAttribute('src') || node.getAttribute('href') || '')) ||
+            ''
+          return (
+            /VERCEL/i.test(tag) ||
+            MATCH.test(id) ||
+            MATCH.test(src) ||
+            (node.hasAttribute && node.hasAttribute('data-vercel-toolbar'))
+          )
+        }
+        function strip(root) {
+          if (!root || !root.querySelectorAll) return
+          var nodes = root.querySelectorAll(
+            'vercel-live-feedback, vercel-toolbar, [data-vercel-toolbar], iframe[src*="vercel.live"], iframe[src*="vercel.com/live"], script[src*="vercel.live"]',
+          )
+          for (var i = 0; i < nodes.length; i++) nodes[i].remove()
+        }
+        if (window.customElements && customElements.define) {
+          var define = customElements.define.bind(customElements)
+          customElements.define = function (name, ctor, options) {
+            if (/vercel/i.test(String(name))) {
+              return undefined
+            }
+            return define(name, ctor, options)
+          }
+        }
+        var observer = new MutationObserver(function (mutations) {
+          for (var i = 0; i < mutations.length; i++) {
+            var added = mutations[i].addedNodes
+            for (var j = 0; j < added.length; j++) {
+              var n = added[j]
+              if (isToolbar(n)) n.remove()
+              else strip(n)
+            }
+          }
+        })
+        observer.observe(document.documentElement, { childList: true, subtree: true })
+        strip(document)
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>
