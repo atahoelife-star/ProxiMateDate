@@ -1,7 +1,5 @@
 import { useState } from 'react'
-import { Play } from 'lucide-react'
 import { WatchStage } from '../components/dateroom/WatchTogether'
-import { CompanionMode } from '../components/dateroom/CompanionMode'
 import { ArrivalSequence } from '../components/dateroom/ArrivalSequence'
 import { useArrivalGate } from '../lib/arrivalGate'
 import { RoomChrome } from '../components/dateroom/RoomChrome'
@@ -28,7 +26,6 @@ export function MovieNightPage() {
   )
   const [showInviteModal, setShowInviteModal] = useState(false)
   const [inviteStep, setInviteStep] = useState<'options' | 'success'>('options')
-  const [companionOpen, setCompanionOpen] = useState(false)
   const [roomId] = useState(roomFromWindow)
   const [isFollower] = useState(followFromWindow)
   const [initialVideoId] = useState(initialWatchId)
@@ -67,7 +64,7 @@ export function MovieNightPage() {
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pt-8 pb-16">
         <div className="grid lg:grid-cols-12 gap-6 items-stretch">
-          <div className="lg:col-span-8 min-h-[520px]">
+          <div className="lg:col-span-8">
             <WatchStage
               roomId={roomId}
               partnerName={partnerName}
@@ -102,24 +99,7 @@ export function MovieNightPage() {
             />
           </div>
         </div>
-
-        <div className="mt-7">
-          <button
-            type="button"
-            onClick={() => setCompanionOpen(true)}
-            className="btn btn-outline py-[19px] text-[15px] flex items-center justify-center gap-3 border-[#E8A0B8] hover:bg-[#E8A0B8] hover:text-[#0F0A0D] w-full sm:w-auto px-8"
-          >
-            <Play className="w-5 h-5" /> Watch on your own apps
-          </button>
-        </div>
       </div>
-
-      <CompanionMode
-        partnerName={partnerName}
-        open={companionOpen}
-        onClose={() => setCompanionOpen(false)}
-        onRoomMessage={roomMessage}
-      />
 
       <InviteDateModal
         open={showInviteModal}

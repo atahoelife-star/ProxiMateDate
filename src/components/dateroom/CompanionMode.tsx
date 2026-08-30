@@ -1,29 +1,39 @@
-import { useState } from 'react'
-import { X } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
 
 const SERVICES = ['Netflix', 'Hulu', 'Disney+', 'Prime Video'] as const
 
-type CompanionModeProps = {
+type OwnAppsCountdownProps = {
   partnerName: string
-  open: boolean
-  onClose: () => void
   onRoomMessage: (text: string) => void
 }
 
-export function CompanionMode({ partnerName, open, onClose, onRoomMessage }: CompanionModeProps) {
+/** Countdown only. Does not embed or proxy Netflix/Hulu/Disney+/Prime. */
+export function OwnAppsCountdown({ partnerName, onRoomMessage }: OwnAppsCountdownProps) {
   const [service, setService] = useState<(typeof SERVICES)[number]>('Netflix')
   const [countdown, setCountdown] = useState<number | null>(null)
   const [watching, setWatching] = useState(false)
+  const timerRef = useRef<number | null>(null)
+
+  const clearTimer = () => {
+    if (timerRef.current == null) return
+    window.clearInterval(timerRef.current)
+    timerRef.current = null
+  }
+
+  useEffect(() => () => clearTimer(), [])
 
   const startCountdown = () => {
+    clearTimer()
     setWatching(false)
     setCountdown(5)
-    onRoomMessage(`Starting a 5-second countdown for ${service}. ${partnerName} should open their own app — not this website.`)
+    onRoomMessage(
+      `Starting a 5-second countdown for ${service}. ${partnerName} should open their own app — not this website.`,
+    )
     let n = 5
-    const id = window.setInterval(() => {
+    timerRef.current = window.setInterval(() => {
       n -= 1
       if (n <= 0) {
-        window.clearInterval(id)
+        clearTimer()
         setCountdown(null)
         setWatching(true)
         onRoomMessage(`Companion: press play on ${service} on your own apps. We cannot play that catalog here.`)
@@ -33,50 +43,50 @@ export function CompanionMode({ partnerName, open, onClose, onRoomMessage }: Com
     }, 1000)
   }
 
-  if (!open) return null
-
   return (
-    <div className="fixed inset-0 z-[125] flex items-center justify-center bg-black/80 p-4" onClick={onClose}>
-      <div className="modal w-full max-w-lg bg-[#1A1418] border border-[#3A2F36] rounded-3xl p-8" onClick={(e) => e.stopPropagation()}>
-        <div className="flex justify-between items-start mb-4">
-          <h3 className="text-[#F8F4ED] text-2xl">Watch on your own apps</h3>
-          <button type="button" onClick={onClose} aria-label="Close">
-            <X className="text-[#A8988A]" />
-          </button>
+    <div className="flex flex-col flex-1 min-h-[280px]">
+      <p className="text-[#A8988A] text-sm mb-4">
+        Each of you opens {service} on another screen. Chat stays here. We do not embed or proxy {SERVICES.join(', ')}.
+      </p>
+      <label className="text-xs tracking-widest text-[#A8988A] block mb-1.5">SERVICE</label>
+      <select
+        className="input w-full mb-5"
+        value={service}
+        onChange={(e) => setService(e.target.value as (typeof SERVICES)[number])}
+      >
+        {SERVICES.map((s) => (
+          <option key={s} value={s}>
+            {s}
+          </option>
+        ))}
+      </select>
+      <div className="video-frame video-frame-watch flex-1 min-h-[220px] mb-5">
+        <div className="absolute inset-0 flex flex-col items-center justify-center px-4 text-center">
+          {countdown !== null ? (
+            <div className="text-7xl sm:text-8xl font-serif text-[#C9A962] tabular-nums">{countdown}</div>
+          ) : watching ? (
+            <p className="text-[#EDE4D9] text-lg">Press play in {service} together.</p>
+          ) : (
+            <p className="text-[#A8988A] text-sm max-w-xs">Countdown to hit play at the same time on your own apps.</p>
+          )}
         </div>
-        <p className="text-[#A8988A] text-sm leading-relaxed mb-4">
-          We do not embed, scrape, or proxy {SERVICES.join(', ')}. There is no fake player. Each of you opens the real app on another screen. Chat stays here. We do not put those catalogs in this page.
-        </p>
-        <label className="text-xs tracking-widest text-[#A8988A] block mb-1.5">SERVICE</label>
-        <select className="input w-full mb-5" value={service} onChange={(e) => setService(e.target.value as (typeof SERVICES)[number])}>
-          {SERVICES.map((s) => (
-            <option key={s} value={s}>
-              {s}
-            </option>
-          ))}
-        </select>
-        {countdown !== null && (
-          <div className="text-center text-6xl font-serif text-[#C9A962] mb-6">{countdown}</div>
-        )}
-        {watching && countdown === null && (
-          <p className="text-[#EDE4D9] text-sm mb-4">Companion is live. Press play in {service} together. We are not streaming it.</p>
-        )}
-        <div className="flex flex-col sm:flex-row gap-3">
-          <button type="button" className="btn btn-gold flex-1" onClick={startCountdown}>
-            Countdown 5
-          </button>
-          <button
-            type="button"
-            className="btn btn-outline flex-1"
-            onClick={() => {
-              setWatching(false)
-              setCountdown(null)
-              onRoomMessage('Companion paused. Movie night is still here.')
-            }}
-          >
-            Stop companion
-          </button>
-        </div>
+      </div>
+      <div className="flex flex-col sm:flex-row gap-3">
+        <button type="button" className="btn btn-gold flex-1" onClick={startCountdown}>
+          Countdown 5
+        </button>
+        <button
+          type="button"
+          className="btn btn-outline flex-1"
+          onClick={() => {
+            clearTimer()
+            setWatching(false)
+            setCountdown(null)
+            onRoomMessage('Companion paused. Movie night is still here.')
+          }}
+        >
+          Stop companion
+        </button>
       </div>
     </div>
   )
