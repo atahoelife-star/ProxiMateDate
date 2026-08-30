@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { RESTAURANT_ARRIVAL, type ArrivalBeat } from '../data/arrival'
 import { shouldSkipArrival } from './arrivalGate'
 
@@ -36,7 +36,7 @@ export function writeRestaurantLook(id: string) {
   }
 }
 
-export type RestaurantEntryPhase = 'tour' | 'choose' | 'room'
+export type RestaurantEntryPhase = 'tour' | 'choose' | 'lead' | 'room'
 
 export function useRestaurantEntry() {
   const [phase, setPhase] = useState<RestaurantEntryPhase>(() => {
@@ -50,18 +50,21 @@ export function useRestaurantEntry() {
   })
   const [lookId, setLookId] = useState<string | null>(() => readRestaurantLook())
 
-  const finishTour = () => setPhase('choose')
+  const finishTour = useCallback(() => setPhase('choose'), [])
 
-  const pickLook = (id: string) => {
+  const pickLook = useCallback((id: string) => {
     writeRestaurantLook(id)
     setLookId(id)
-    setPhase('room')
-  }
+    setPhase('lead')
+  }, [])
+
+  const finishLead = useCallback(() => setPhase('room'), [])
 
   return {
     phase,
     look: lookById(lookId),
     finishTour,
     pickLook,
+    finishLead,
   }
 }

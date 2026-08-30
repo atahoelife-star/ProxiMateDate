@@ -1,5 +1,6 @@
 import { RESTAURANT_ARRIVAL } from '../../data/arrival'
 import { lookThumb } from '../../lib/restaurantLook'
+import { playHostVoice } from '../../lib/hostVoice'
 
 type RestaurantRoomChooserProps = {
   onPick: (id: string) => void
@@ -16,7 +17,10 @@ export function RestaurantRoomChooser({ onPick }: RestaurantRoomChooserProps) {
             <button
               key={beat.id}
               type="button"
-              onClick={() => onPick(beat.id)}
+              onClick={() => {
+                playHostVoice()
+                onPick(beat.id)
+              }}
               className="group relative aspect-[4/5] min-h-[140px] sm:min-h-[180px] rounded-xl overflow-hidden border border-white/15 hover:border-[#C9A962] focus:outline-none focus:border-[#C9A962]"
             >
               <img src={lookThumb(beat)} alt="" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-300" />

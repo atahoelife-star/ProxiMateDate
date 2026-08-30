@@ -6,6 +6,7 @@ import { DinnerMenus } from '../components/dateroom/DinnerMenus'
 import { WaiterVideoTile } from '../components/dateroom/WaiterVideoTile'
 import { ArrivalSequence } from '../components/dateroom/ArrivalSequence'
 import { RestaurantRoomChooser } from '../components/dateroom/RestaurantRoomChooser'
+import { HostLeadIn } from '../components/dateroom/HostLeadIn'
 import { lookBackdrop, lookThumb, useRestaurantEntry } from '../lib/restaurantLook'
 import { RoomChrome } from '../components/dateroom/RoomChrome'
 import { PrivateChatPanel } from '../components/dateroom/PrivateChatPanel'
@@ -27,7 +28,7 @@ import { useDemoChat } from '../lib/demoChat'
 import { roomFromWindow, useRoomClock, useRoomQuerySync } from '../lib/roomSession'
 
 export function RestaurantDatePage() {
-  const { phase, look, finishTour, pickLook } = useRestaurantEntry()
+  const { phase, look, finishTour, pickLook, finishLead } = useRestaurantEntry()
   const { chatMessages, chatInput, setChatInput, sendChatMessage, pickSuggestedLine, roomMessage } = useDemoChat()
   const [partnerName, setPartnerName] = useState('Emma')
   const roomTime = useRoomClock()
@@ -173,6 +174,7 @@ export function RestaurantDatePage() {
         <ArrivalSequence beats={RESTAURANT_ARRIVAL} storageKey="pd-arrival-restaurant" onDone={finishTour} />
       )}
       {phase === 'choose' && <RestaurantRoomChooser onPick={pickLook} />}
+      {phase === 'lead' && <HostLeadIn look={look} onDone={finishLead} />}
 
       {phase === 'room' && (
       <>

@@ -1,0 +1,4 @@
+host-right-this-way.mp3
+  Short seating line (“Right this way.”) generated with Microsoft Edge neural TTS
+  Voice: en-GB-SoniaNeural, spoken as a host, not as a UI label.
+  Used only after the guest picks a dining room.
