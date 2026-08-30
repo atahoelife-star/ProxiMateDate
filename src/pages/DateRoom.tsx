@@ -74,7 +74,8 @@ export function DateRoomPage() {
             <br />
             for 2.5 hours.
           </span>
-          <span className="block">Free Date Night is 30 minutes. Pay with a card on Stripe before those paid rooms start.</span>
+          <span className="block">Free Date Night is 30 minutes. No card to start.</span>
+          <span className="block">Restaurant and movie night: pay with a card on Stripe before those rooms start.</span>
         </p>
       </div>
       <div className="grid md:grid-cols-3 gap-6">

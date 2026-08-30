@@ -7,6 +7,8 @@ const PREMIUM_KEY = 'pd-paid-premium'
 
 export type PaidRoom = 'dinner' | 'movie'
 
+/** Free Date Night is never gated. Only restaurant and movie night use this. */
+
 function readFlag(key: string) {
   try {
     return sessionStorage.getItem(key) === '1'

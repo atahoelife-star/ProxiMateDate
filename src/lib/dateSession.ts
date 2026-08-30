@@ -11,6 +11,7 @@ import {
   formatRemaining,
   remainingFromStart,
   resolveSessionStart,
+  clockIsDead,
 } from './dateClock'
 import { hasPremiumAccess } from './roomAccess'
 import { followFromWindow } from './roomSession'
@@ -89,6 +90,28 @@ export function grantFreeExtend(roomId: string) {
   writeNumber(freeExtraKey(roomId), readNumber(freeExtraKey(roomId), 0) + FREE_EXTEND_MS)
 }
 
+export function clearFreeClock(roomId: string) {
+  try {
+    localStorage.removeItem(freeStartKey(roomId))
+    localStorage.removeItem(freeExtraKey(roomId))
+  } catch {
+    /* private mode */
+  }
+}
+
+/** Host opening /date-night must not land on a leftover expired Stripe screen. */
+export function freeClockIsDeadOnEntry(roomId: string, opts?: ClockOpts) {
+  if (followFromWindow()) return false
+  const extraMs = Math.max(readNumber(freeExtraKey(roomId), 0), opts?.remoteExtraMs ?? 0)
+  const start = resolveSessionStart({
+    isHost: opts?.isHost ?? true,
+    remoteStartedAt: opts?.remoteStartedAt ?? 0,
+    queryStartedAt: startedFromQuery(),
+    cachedStartedAt: readNumber(freeStartKey(roomId), 0),
+  })
+  return clockIsDead(FREE_SESSION_MS, start, Date.now(), extraMs)
+}
+
 export function consumeFreeExtendReturn(roomId: string) {
   if (typeof window === 'undefined') return false
   const params = new URLSearchParams(window.location.search)
@@ -133,13 +156,24 @@ export type FreeSessionState = {
 
 export function useFreeDateSession(roomId: string, opts?: ClockOpts): FreeSessionState {
   const isHost = opts?.isHost ?? !followFromWindow()
+  const follow = followFromWindow()
   const remoteStartedAt = opts?.remoteStartedAt ?? 0
   const remoteExtraMs = opts?.remoteExtraMs ?? 0
-  const [now, setNow] = useState(() => {
+  const [dropDeadOnEntry] = useState(() => {
     consumeFreeExtendReturn(roomId)
-    applyRemoteFreeClock(roomId, remoteStartedAt, remoteExtraMs)
-    return Date.now()
+    const extra = Math.max(readNumber(freeExtraKey(roomId), 0), remoteExtraMs)
+    const tentative = resolveSessionStart({
+      isHost,
+      remoteStartedAt,
+      queryStartedAt: startedFromQuery(),
+      cachedStartedAt: readNumber(freeStartKey(roomId), 0),
+    })
+    const dead = !follow && clockIsDead(FREE_SESSION_MS, tentative, Date.now(), extra)
+    if (dead) clearFreeClock(roomId)
+    else applyRemoteFreeClock(roomId, remoteStartedAt, remoteExtraMs)
+    return dead
   })
+  const [now, setNow] = useState(() => Date.now())
 
   useEffect(() => {
     const id = window.setInterval(() => setNow(Date.now()), 250)
@@ -147,15 +181,18 @@ export function useFreeDateSession(roomId: string, opts?: ClockOpts): FreeSessio
   }, [roomId])
 
   useEffect(() => {
+    if (dropDeadOnEntry) return
     applyRemoteFreeClock(roomId, remoteStartedAt, remoteExtraMs)
-  }, [roomId, remoteStartedAt, remoteExtraMs])
+  }, [dropDeadOnEntry, roomId, remoteStartedAt, remoteExtraMs])
 
-  const extraMs = Math.max(readNumber(freeExtraKey(roomId), 0), remoteExtraMs)
+  const extraMs = dropDeadOnEntry
+    ? 0
+    : Math.max(readNumber(freeExtraKey(roomId), 0), remoteExtraMs)
   const start = resolveSessionStart({
     isHost,
-    remoteStartedAt,
-    queryStartedAt: startedFromQuery(),
-    cachedStartedAt: readNumber(freeStartKey(roomId), 0),
+    remoteStartedAt: dropDeadOnEntry ? 0 : remoteStartedAt,
+    queryStartedAt: dropDeadOnEntry ? 0 : startedFromQuery(),
+    cachedStartedAt: dropDeadOnEntry ? 0 : readNumber(freeStartKey(roomId), 0),
   })
   if (start > 0) peekStart(freeStartKey(roomId), start)
   const { remainingMs, waiting } = remainingFromStart(FREE_SESSION_MS, start, now, extraMs)

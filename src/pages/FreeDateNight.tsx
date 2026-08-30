@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { RoomChrome } from '../components/dateroom/RoomChrome'
 import { PrivateChatPanel } from '../components/dateroom/PrivateChatPanel'
@@ -7,15 +7,32 @@ import { JoinNameModal } from '../components/dateroom/JoinNameModal'
 import { HostRibbon } from '../components/dateroom/HostRibbon'
 import { WaitlistForm } from '../components/WaitlistForm'
 import { chatMomentForEvening } from '../data/suggestedLines'
-import { roomFromWindow, useRoomQuerySync } from '../lib/roomSession'
-import { useFreeDateSession } from '../lib/dateSession'
+import { followFromWindow, roomFromWindow, useRoomQuerySync } from '../lib/roomSession'
+import { clearFreeClock, freeClockIsDeadOnEntry, useFreeDateSession } from '../lib/dateSession'
 import { useLiveChat, useLiveSeat } from '../lib/liveRoom'
 import { useUsPhotos } from '../lib/datePhotos'
 import { startStripeCheckout } from '../lib/stripeCheckout'
+import { newRoomId } from '../lib/watchSync'
 
+/** Free Date Night is never behind Stripe/Premium. Only restaurant and movie night gate on pay. */
 export function FreeDateNightPage() {
+  const [roomId, setRoomId] = useState(() => {
+    const id = roomFromWindow()
+    if (freeClockIsDeadOnEntry(id, { isHost: !followFromWindow() })) {
+      clearFreeClock(id)
+      return newRoomId()
+    }
+    return id
+  })
+  const recycle = useCallback(() => {
+    clearFreeClock(roomId)
+    setRoomId(newRoomId())
+  }, [roomId])
+  return <FreeDateNightRoom key={roomId} roomId={roomId} onRecycle={recycle} />
+}
+
+function FreeDateNightRoom({ roomId, onRecycle }: { roomId: string; onRecycle: () => void }) {
   const navigate = useNavigate()
-  const [roomId] = useState(roomFromWindow)
   const { seat, myName, join, rename, photoScope } = useLiveSeat(roomId)
   const { photos } = useUsPhotos(photoScope)
   const live = useLiveChat(roomId, seat, myName, photos.you, { armClock: seat === 'guest' })
@@ -31,8 +48,20 @@ export function FreeDateNightPage() {
   const [waitlist, setWaitlist] = useState(false)
   const [checkoutError, setCheckoutError] = useState(false)
   const [dismissedExtraMs, setDismissedExtraMs] = useState<number | null>(null)
+  const sawRunning = useRef(false)
 
   useRoomQuerySync(roomId, session.startedAt > 0 ? { started: String(session.startedAt) } : undefined)
+
+  useEffect(() => {
+    if (!session.waiting && !session.expired) sawRunning.current = true
+  }, [session.waiting, session.expired])
+
+  useEffect(() => {
+    if (followFromWindow()) return
+    if (!session.expired) return
+    if (sawRunning.current) return
+    onRecycle()
+  }, [onRecycle, session.expired])
 
   useEffect(() => {
     if (session.extraMs > 0) live.sendExtend(session.extraMs)

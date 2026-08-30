@@ -29,7 +29,9 @@ export function expectedTime(state: WatchState, now = Date.now()): number {
 }
 
 export function newRoomId(): string {
-  return Math.random().toString(36).slice(2, 8)
+  const a = Math.random().toString(36).slice(2, 10)
+  const b = Math.random().toString(36).slice(2, 10)
+  return `${a}${b}`.replace(/[^a-z0-9]/gi, '').slice(0, 16) || 'room'
 }
 
 export function readWatchState(roomId: string): WatchState | null {
