@@ -15,6 +15,22 @@ export function earliestStart(...times: number[]) {
   return Math.min(...valid)
 }
 
+/**
+ * Host never invents a start (opening the room must not burn minutes).
+ * The shared start comes from the guest entering, via the live room or invite URL.
+ */
+export function resolveSessionStart(opts: {
+  isHost: boolean
+  remoteStartedAt?: number
+  queryStartedAt?: number
+  cachedStartedAt?: number
+}) {
+  const shared = earliestStart(opts.remoteStartedAt ?? 0, opts.queryStartedAt ?? 0)
+  if (shared > 0) return shared
+  if (opts.isHost) return 0
+  return earliestStart(opts.cachedStartedAt ?? 0)
+}
+
 /** Remaining milliseconds until the shared date ends. Elapsed is never returned. */
 export function remainingFromStart(budgetMs: number, startedAt: number, now: number, extraMs = 0) {
   const total = Math.max(0, budgetMs + extraMs)

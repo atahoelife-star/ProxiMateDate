@@ -10,6 +10,7 @@ import {
   earliestStart,
   formatRemaining,
   remainingFromStart,
+  resolveSessionStart,
 } from './dateClock'
 import { hasPremiumAccess } from './roomAccess'
 import { followFromWindow } from './roomSession'
@@ -150,7 +151,13 @@ export function useFreeDateSession(roomId: string, opts?: ClockOpts): FreeSessio
   }, [roomId, remoteStartedAt, remoteExtraMs])
 
   const extraMs = Math.max(readNumber(freeExtraKey(roomId), 0), remoteExtraMs)
-  const start = earliestStart(peekStart(freeStartKey(roomId), startedFromQuery()), remoteStartedAt)
+  const start = resolveSessionStart({
+    isHost,
+    remoteStartedAt,
+    queryStartedAt: startedFromQuery(),
+    cachedStartedAt: readNumber(freeStartKey(roomId), 0),
+  })
+  if (start > 0) peekStart(freeStartKey(roomId), start)
   const { remainingMs, waiting } = remainingFromStart(FREE_SESSION_MS, start, now, extraMs)
   return {
     remainingMs,
@@ -204,7 +211,13 @@ export function usePaidDateSession(
 
   const budget = combo ? PREMIUM_SESSION_MS : kind === 'dinner' ? DINNER_SESSION_MS : MOVIE_SESSION_MS
   const budgetLabel = combo ? '3 hours' : kind === 'dinner' ? '90 minutes' : '2.5 hours'
-  const start = earliestStart(peekStart(paidKey(kind, roomId), startedFromQuery()), remoteStartedAt)
+  const start = resolveSessionStart({
+    isHost,
+    remoteStartedAt,
+    queryStartedAt: startedFromQuery(),
+    cachedStartedAt: readNumber(paidKey(kind, roomId), 0),
+  })
+  if (start > 0) peekStart(paidKey(kind, roomId), start)
   const { remainingMs, waiting } = remainingFromStart(budget, start, now)
   const labelMode = combo || kind === 'movie' ? 'hours' : 'minutes'
 

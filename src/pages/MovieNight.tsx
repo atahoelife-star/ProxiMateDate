@@ -32,7 +32,7 @@ function MovieNightSession() {
   const [roomId] = useState(roomFromWindow)
   const { seat, myName, join, rename, photoScope } = useLiveSeat(roomId)
   const { photos } = useUsPhotos(photoScope)
-  const live = useLiveChat(roomId, seat, myName, photos.you, { armClock: seat === 'guest' && arrived })
+  const live = useLiveChat(roomId, seat, myName, photos.you, { armClock: seat === 'guest' })
   const session = usePaidDateSession('movie', roomId, arrived, {
     isHost: seat === 'host',
     remoteStartedAt: live.remoteStartedAt,

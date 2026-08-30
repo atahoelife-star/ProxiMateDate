@@ -359,6 +359,7 @@ export function useLiveChat(
   }, [roomId])
 
   useEffect(() => {
+    // Only the guest arms the shared clock. Host opening the room must not POST start.
     if (!roomId || !armClock) return
     const startedAt = Date.now()
     const wire: StartWire = { kind: 'start', startedAt }

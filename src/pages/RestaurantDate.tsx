@@ -48,7 +48,7 @@ function RestaurantDateSession() {
   const [roomId] = useState(roomFromWindow)
   const { seat, myName, join, rename, photoScope } = useLiveSeat(roomId)
   const { photos } = useUsPhotos(photoScope)
-  const live = useLiveChat(roomId, seat, myName, photos.you, { armClock: seat === 'guest' && phase === 'room' })
+  const live = useLiveChat(roomId, seat, myName, photos.you, { armClock: seat === 'guest' })
   const session = usePaidDateSession('dinner', roomId, phase === 'room', {
     isHost: seat === 'host',
     remoteStartedAt: live.remoteStartedAt,
