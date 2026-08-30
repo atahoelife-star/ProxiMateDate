@@ -1,10 +1,10 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import type { ArrivalBeat } from '../../data/arrival'
 import { lookThumb } from '../../lib/restaurantLook'
 import { stopHostVoice } from '../../lib/hostVoice'
 
-const LEAD_MS = 3400
+const LEAD_MS = 4200
 
 type HostLeadInProps = {
   look: ArrivalBeat
@@ -12,22 +12,37 @@ type HostLeadInProps = {
 }
 
 export function HostLeadIn({ look, onDone }: HostLeadInProps) {
+  const videoRef = useRef<HTMLVideoElement>(null)
+
   useEffect(() => {
     const timer = window.setTimeout(onDone, LEAD_MS)
     return () => window.clearTimeout(timer)
   }, [onDone])
 
+  useEffect(() => {
+    const el = videoRef.current
+    if (!el) return
+    el.muted = true
+    el.playsInline = true
+    el.playbackRate = 1
+    void el.play().catch(() => {})
+  }, [])
+
   const chosen = lookThumb(look)
 
   return (
     <div className="fixed inset-0 z-[195] bg-[#0F0A0D]" role="dialog" aria-label="Host seating you">
-      <motion.img
-        src="/images/arrival/restaurant/host-stand.jpg"
-        alt=""
+      <motion.video
+        ref={videoRef}
+        src="/videos/waiter-idle.mp4"
+        poster="/images/arrival/restaurant/host.jpg"
+        muted
+        playsInline
+        autoPlay
         className="absolute inset-0 w-full h-full object-cover"
-        initial={{ opacity: 1, scale: 1.06 }}
-        animate={{ opacity: 0, scale: 1.12 }}
-        transition={{ duration: 1.7, delay: 0.85, ease: 'easeInOut' }}
+        initial={{ opacity: 1, scale: 1.04 }}
+        animate={{ opacity: 0, scale: 1.1 }}
+        transition={{ duration: 1.8, delay: 1.15, ease: 'easeInOut' }}
       />
       <motion.img
         src={chosen}
@@ -35,7 +50,7 @@ export function HostLeadIn({ look, onDone }: HostLeadInProps) {
         className="absolute inset-0 w-full h-full object-cover"
         initial={{ opacity: 0, scale: 1.1 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 1.5, delay: 1.15, ease: 'easeOut' }}
+        transition={{ duration: 1.55, delay: 1.45, ease: 'easeOut' }}
       />
       <div className="absolute inset-0 bg-gradient-to-t from-[#0F0A0D]/30 via-transparent to-[#0F0A0D]/15 pointer-events-none" />
       <button

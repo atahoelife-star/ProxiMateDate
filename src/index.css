@@ -429,6 +429,114 @@ select.input option {
   z-index: 1;
 }
 
+.date-room-bg.date-room-seated::before {
+  animation: eveningWarm 11s ease-out forwards;
+}
+
+.date-room-bg.date-room-seated::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background: radial-gradient(ellipse at 50% 80%, rgba(201, 169, 98, 0.16) 0%, transparent 62%);
+  animation: eveningLamp 14s ease-out forwards;
+}
+
+@keyframes eveningWarm {
+  from { opacity: 0.4; filter: saturate(0.8) hue-rotate(-8deg); }
+  to { opacity: 1; filter: saturate(1.15) hue-rotate(0deg); }
+}
+
+@keyframes eveningLamp {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.table-linen {
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(201, 169, 98, 0.1), transparent 55%),
+    linear-gradient(180deg, rgba(36, 22, 20, 0.28), rgba(12, 8, 8, 0.48));
+  border: 1px solid rgba(201, 169, 98, 0.2);
+  border-radius: 10px;
+  padding: 1.35rem 1rem 1.6rem;
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.35);
+}
+
+.table-menu {
+  background: linear-gradient(180deg, rgba(255, 248, 236, 0.98) 0%, rgba(236, 214, 180, 0.97) 100%);
+  color: #2c2118;
+  border: 1px solid #c4a46a;
+  border-radius: 2px;
+  box-shadow:
+    0 16px 28px rgba(0, 0, 0, 0.4),
+    inset 0 0 0 7px #3d2a1c;
+}
+
+.table-menu:hover {
+  transform: none;
+  border-color: #c4a46a;
+}
+
+.menu-kicker {
+  color: #8a6d32;
+  letter-spacing: 0.16em;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.menu-ink { color: #2c2118; }
+.menu-muted { color: #6d5346; }
+.menu-gold { color: #8a6d32; }
+
+.menu-course {
+  color: #9a4d66;
+  letter-spacing: 0.14em;
+  font-size: 11px;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.menu-add {
+  font-size: 12px;
+  padding: 0.35rem 0.75rem;
+  border: 1px solid #c4a46a;
+  border-radius: 9999px;
+  color: #2c2118;
+  background: rgba(255, 248, 236, 0.7);
+}
+
+.menu-add:hover {
+  background: #8a6d32;
+  color: #fff8ec;
+}
+
+.menu-select {
+  background: #fff8ec;
+  border: 1px solid #c4a46a;
+  color: #2c2118;
+  padding: 0.7rem 1rem;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, #8a6d32 50%),
+    linear-gradient(135deg, #8a6d32 50%, transparent 50%);
+  background-position: calc(100% - 18px) 50%, calc(100% - 12px) 50%;
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+  padding-right: 2.25rem;
+}
+
+.menu-select:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(138, 109, 50, 0.18);
+}
+
+.menu-select option {
+  background: #fff8ec;
+  color: #2c2118;
+}
+
 /* Section dividers */
 .section-divider {
   height: 1px;
@@ -456,6 +564,10 @@ select.input option {
 
 @media (prefers-reduced-motion: reduce) {
   .arrival-media {
+    animation: none;
+  }
+  .date-room-bg.date-room-seated::before,
+  .date-room-bg.date-room-seated::after {
     animation: none;
   }
 }

@@ -8,6 +8,7 @@ import { ArrivalSequence } from '../components/dateroom/ArrivalSequence'
 import { RestaurantRoomChooser } from '../components/dateroom/RestaurantRoomChooser'
 import { HostLeadIn } from '../components/dateroom/HostLeadIn'
 import { lookBackdrop, lookThumb, useRestaurantEntry } from '../lib/restaurantLook'
+import { useDiningAmbience } from '../lib/diningAmbience'
 import { RoomChrome } from '../components/dateroom/RoomChrome'
 import { PrivateChatPanel } from '../components/dateroom/PrivateChatPanel'
 import { InviteDateModal } from '../components/dateroom/InviteDateModal'
@@ -29,6 +30,7 @@ import { roomFromWindow, useRoomClock, useRoomQuerySync } from '../lib/roomSessi
 
 export function RestaurantDatePage() {
   const { phase, look, finishTour, pickLook, finishLead } = useRestaurantEntry()
+  const { muted: diningMuted, toggleMute: toggleDiningMute } = useDiningAmbience(phase === 'room')
   const { chatMessages, chatInput, setChatInput, sendChatMessage, pickSuggestedLine, roomMessage } = useDemoChat()
   const [partnerName, setPartnerName] = useState('Emma')
   const roomTime = useRoomClock()
@@ -160,9 +162,14 @@ export function RestaurantDatePage() {
     },
   ]
 
+  const dessertClipForTable = () => {
+    const desserts = [...youOrder, ...partnerOrder, ...tableOrder].filter((line) => line.course === 'dessert')
+    return desserts.length > 0 ? clipForTable(desserts) : 'dessert'
+  }
+
   return (
     <div
-      className="date-room-bg min-h-[calc(100vh-80px)] relative overflow-hidden"
+      className={`date-room-bg min-h-[calc(100vh-80px)] relative overflow-hidden${phase === 'room' ? ' date-room-seated' : ''}`}
       style={{
         backgroundImage: `linear-gradient(rgba(15,10,13,0.55), rgba(15,10,13,0.78)), url('${lookThumb(look)}')`,
         backgroundSize: 'cover',
@@ -187,6 +194,7 @@ export function RestaurantDatePage() {
           setInviteStep('options')
           setShowInviteModal(true)
         }}
+        sound={{ muted: diningMuted, onToggle: toggleDiningMute }}
       />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pt-8 pb-16">
@@ -281,7 +289,11 @@ export function RestaurantDatePage() {
                     type="button"
                     onClick={() => {
                       const all = [...youOrder, ...partnerOrder, ...tableOrder]
-                      const clip = action.title.startsWith('Set the plates') && all.length > 0 ? clipForTable(all) : action.clip
+                      const clip = action.title.startsWith('Set the plates') && all.length > 0
+                        ? clipForTable(all)
+                        : action.title.startsWith('Bring dessert')
+                          ? dessertClipForTable()
+                          : action.clip
                       playWaiter(clip, action.title, action.message)
                       setShowWaiterMenu(false)
                     }}
