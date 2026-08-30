@@ -1,6 +1,7 @@
 import { Peer, type DataConnection } from 'peerjs'
 import { useEffect, useRef, useState } from 'react'
 import type { ChatMsg } from './demoChat'
+import { earliestStart } from './dateClock'
 import { followFromWindow, writeFollowQuery } from './roomSession'
 
 const CLIENT_KEY = 'pd-client-id'
@@ -69,7 +70,9 @@ type ChatWire = {
 
 type ExtendWire = { kind: 'extend'; extraMs: number }
 
-type Wire = HelloMsg | ChatWire | ExtendWire
+type StartWire = { kind: 'start'; startedAt: number }
+
+type Wire = HelloMsg | ChatWire | ExtendWire | StartWire
 
 type SeatSnap = { name: string; photo?: string | null; startedAt: number; extraMs: number; clientId?: string }
 
@@ -226,9 +229,10 @@ export function useLiveChat(
   roomId: string,
   seat: Seat,
   myName: string,
-  session: { startedAt: number; extraMs: number },
   youPhoto?: string | null,
+  options?: { armClock?: boolean },
 ) {
+  const armClock = options?.armClock ?? false
   const [chatMessages, setChatMessages] = useState<ChatMsg[]>(() => readStored(roomId))
   const [chatInput, setChatInput] = useState('')
   const [partnerName, setPartnerName] = useState('')
@@ -238,17 +242,31 @@ export function useLiveChat(
   const [linked, setLinked] = useState(false)
   const conns = useRef<DataConnection[]>([])
   const myNameRef = useRef(myName)
-  const sessionRef = useRef(session)
   const seatRef = useRef(seat)
   const youPhotoRef = useRef(youPhoto)
+  const startedAtRef = useRef(0)
+  const extraMsRef = useRef(0)
   const afterRef = useRef(0)
+  const [armedAt, setArmedAt] = useState(0)
+  const clockStart = earliestStart(remoteStartedAt, armedAt)
 
   useEffect(() => {
     myNameRef.current = myName
-    sessionRef.current = session
     seatRef.current = seat
     youPhotoRef.current = youPhoto
+    startedAtRef.current = clockStart
+    extraMsRef.current = remoteExtraMs
   })
+
+  const adoptStart = (startedAt: number) => {
+    if (!(startedAt > 0)) return
+    setRemoteStartedAt((prev) => (prev > 0 ? Math.min(prev, startedAt) : startedAt))
+  }
+
+  const adoptExtra = (extraMs: number) => {
+    if (!(extraMs > 0)) return
+    setRemoteExtraMs((prev) => (extraMs > prev ? extraMs : prev))
+  }
 
   const upsert = (msg: ChatMsg) => {
     setChatMessages((prev) => {
@@ -280,13 +298,17 @@ export function useLiveChat(
       const name = payload.name?.trim()
       if (name) setPartnerName(name)
       if (payload.photo) setPartnerPhoto(payload.photo)
-      if (payload.startedAt > 0) setRemoteStartedAt(payload.startedAt)
-      if (payload.extraMs > 0) setRemoteExtraMs(payload.extraMs)
+      adoptStart(payload.startedAt)
+      adoptExtra(payload.extraMs)
       setLinked(true)
       return
     }
+    if (payload.kind === 'start') {
+      adoptStart(payload.startedAt)
+      return
+    }
     if (payload.kind === 'extend') {
-      setRemoteExtraMs(payload.extraMs)
+      adoptExtra(payload.extraMs)
       return
     }
     if (payload.kind !== 'chat') return
@@ -308,8 +330,8 @@ export function useLiveChat(
       setLinked(true)
     }
     if (them?.photo) setPartnerPhoto(them.photo)
-    if (snap.startedAt > 0) setRemoteStartedAt(snap.startedAt)
-    if (snap.extraMs > 0) setRemoteExtraMs(snap.extraMs)
+    adoptStart(snap.startedAt)
+    adoptExtra(snap.extraMs)
     for (const msg of snap.messages || []) {
       ingest(
         { kind: 'chat', id: msg.id, seat: msg.seat, name: msg.name, text: msg.text },
@@ -319,7 +341,43 @@ export function useLiveChat(
   }
 
   useEffect(() => {
-    if (!roomId || !myName.trim()) return
+    if (!roomId) return
+    let cancelled = false
+    const pull = () => {
+      void pullLive(roomId, afterRef.current).then((snap) => {
+        if (!snap || cancelled) return
+        ingestSnap(snap)
+      })
+    }
+    pull()
+    const poll = window.setInterval(pull, 900)
+    return () => {
+      cancelled = true
+      window.clearInterval(poll)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [roomId])
+
+  useEffect(() => {
+    if (!roomId || !armClock) return
+    const startedAt = Date.now()
+    const wire: StartWire = { kind: 'start', startedAt }
+    const timer = window.setTimeout(() => {
+      setArmedAt((prev) => (prev > 0 ? prev : startedAt))
+    }, 0)
+    void postLive(roomId, wire)
+    try {
+      const ch = new BroadcastChannel(`pd-live:${roomId}`)
+      ch.postMessage(wire)
+      ch.close()
+    } catch {
+      /* unsupported */
+    }
+    return () => window.clearTimeout(timer)
+  }, [roomId, armClock])
+
+  useEffect(() => {
+    if (!roomId) return
     let peer: Peer | null = null
     let channel: BroadcastChannel | null = null
     let cancelled = false
@@ -328,27 +386,17 @@ export function useLiveChat(
       kind: 'hello',
       seat,
       name: myNameRef.current,
-      startedAt: sessionRef.current.startedAt,
-      extraMs: sessionRef.current.extraMs,
+      startedAt: startedAtRef.current,
+      extraMs: extraMsRef.current,
       photo: youPhotoRef.current,
     })
-
-    void postLive(roomId, hello())
-
-    const poll = window.setInterval(() => {
-      if (cancelled) return
-      void pullLive(roomId, afterRef.current).then((snap) => {
-        if (!snap || cancelled) return
-        ingestSnap(snap)
-      })
-    }, 900)
 
     const attach = (conn: DataConnection) => {
       if (conns.current.includes(conn)) return
       conns.current.push(conn)
       conn.on('open', () => {
         setLinked(true)
-        conn.send(hello())
+        if (myNameRef.current.trim()) conn.send(hello())
       })
       conn.on('data', (data) => ingest(data as Wire, false))
       conn.on('close', () => {
@@ -389,7 +437,6 @@ export function useLiveChat(
 
     return () => {
       cancelled = true
-      window.clearInterval(poll)
       window.clearInterval(retry)
       channel?.close()
       for (const conn of conns.current) conn.close()
@@ -397,7 +444,7 @@ export function useLiveChat(
       peer?.destroy()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [roomId, seat, myName])
+  }, [roomId, seat])
 
   useEffect(() => {
     if (!myName.trim()) return
@@ -405,12 +452,12 @@ export function useLiveChat(
       kind: 'hello',
       seat,
       name: myName,
-      startedAt: session.startedAt,
-      extraMs: session.extraMs,
+      startedAt: startedAtRef.current,
+      extraMs: extraMsRef.current,
       photo: youPhoto,
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [myName, session.startedAt, session.extraMs, youPhoto, roomId, seat])
+  }, [myName, clockStart, remoteExtraMs, youPhoto, roomId, seat])
 
   const sendChatMessage = () => {
     const text = chatInput.trim()
@@ -433,6 +480,7 @@ export function useLiveChat(
   }
 
   const sendExtend = (extraMs: number) => {
+    adoptExtra(extraMs)
     broadcast({ kind: 'extend', extraMs })
   }
 
@@ -441,8 +489,8 @@ export function useLiveChat(
       kind: 'hello',
       seat,
       name: myName,
-      startedAt: session.startedAt,
-      extraMs: session.extraMs,
+      startedAt: startedAtRef.current,
+      extraMs: extraMsRef.current,
       photo,
     })
   }
@@ -457,7 +505,7 @@ export function useLiveChat(
     partnerName,
     partnerPhoto,
     linked,
-    remoteStartedAt,
+    remoteStartedAt: clockStart,
     remoteExtraMs,
     sendExtend,
     sendPhoto,

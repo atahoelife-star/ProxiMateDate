@@ -16,7 +16,7 @@ import {
   useRoomQuerySync,
 } from '../lib/roomSession'
 import { usePaidRoom } from '../lib/roomAccess'
-import { applyRemotePaidClock, usePaidDateSession } from '../lib/dateSession'
+import { usePaidDateSession } from '../lib/dateSession'
 import { useLiveChat, useLiveSeat } from '../lib/liveRoom'
 import { useUsPhotos } from '../lib/datePhotos'
 import { RoomPaywall } from '../components/dateroom/RoomPaywall'
@@ -32,9 +32,11 @@ function MovieNightSession() {
   const [roomId] = useState(roomFromWindow)
   const { seat, myName, join, rename, photoScope } = useLiveSeat(roomId)
   const { photos } = useUsPhotos(photoScope)
-  const session = usePaidDateSession('movie', roomId, arrived)
-  const live = useLiveChat(roomId, seat, myName, { startedAt: session.startedAt, extraMs: 0 }, photos.you)
-  applyRemotePaidClock('movie', roomId, live.remoteStartedAt)
+  const live = useLiveChat(roomId, seat, myName, photos.you, { armClock: seat === 'guest' && arrived })
+  const session = usePaidDateSession('movie', roomId, arrived, {
+    isHost: seat === 'host',
+    remoteStartedAt: live.remoteStartedAt,
+  })
   const dateName = live.partnerName || 'your date'
   const {
     chatMessages,
