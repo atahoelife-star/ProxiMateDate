@@ -20,9 +20,12 @@ import { WaiterQuickOrder } from '../components/dateroom/WaiterQuickOrder'
 import { RESTAURANT_ARRIVAL } from '../data/arrival'
 import { formatPrice, orderTotal, type OrderLine, type RestaurantId } from '../data/menus'
 import {
+  clipForLatest,
   clipForOrder,
   clipForTable,
   clipToPlay,
+  isMyServeSeat,
+  mineToServe,
   presenceAfterService,
   WAITER_CLIPS,
   type WaiterClip,
@@ -42,7 +45,7 @@ export function RestaurantDatePage() {
 }
 
 function RestaurantDateSession() {
-  const { phase, look, lookId, finishTour, pickLook, finishLead, changeRoom, stayHere } = useRestaurantEntry()
+  const { phase, look, lookId, finishTour, pickLook, finishLead, changeRoom, stayHere, forceTour } = useRestaurantEntry()
   const navigate = useNavigate()
   const { muted: diningMuted, toggleMute: toggleDiningMute, fadeOutAndStop } = useDiningAmbience(phase === 'room')
   const [roomId] = useState(roomFromWindow)
@@ -108,13 +111,15 @@ function RestaurantDateSession() {
     else if (full.seat === 'partner') setPartnerOrder((prev) => [...prev, full])
     else setTableOrder((prev) => [...prev, full])
 
-    const clip = clipForOrder(full)
-    const who = full.seat === 'table' ? 'the table' : full.seat === 'you' ? 'you' : dateName
-    playWaiter(
-      clip,
-      WAITER_CLIPS[clip].label,
-      `The waiter brings ${full.name} for ${who} (${full.restaurantName})${full.side ? ` with ${full.side}` : ''}. Demo only — nothing is cooked or charged.`,
-    )
+    if (isMyServeSeat(full.seat)) {
+      const clip = clipForOrder(full)
+      const who = full.seat === 'table' ? 'the table' : 'you'
+      playWaiter(
+        clip,
+        WAITER_CLIPS[clip].label,
+        `The waiter brings ${full.name} for ${who} (${full.restaurantName})${full.side ? ` with ${full.side}` : ''}. Demo only — nothing is cooked or charged.`,
+      )
+    }
   }
 
   const removeOrderLine = (lineId: string) => {
@@ -129,20 +134,36 @@ function RestaurantDateSession() {
     myMessageCount: chatMessages.filter((m) => m.sender === 'me').length,
   })
 
+  const myPlate = mineToServe(youOrder, tableOrder)
+
   const sendTableToWaiter = () => {
-    const all = [...youOrder, ...partnerOrder, ...tableOrder]
-    if (all.length === 0) {
-      toast.message('Nothing to serve yet', { description: 'Add dishes from either menu first.' })
+    if (myPlate.length === 0) {
+      toast.message('Nothing to serve yet', { description: 'Add dishes from your menu first. Their plate plays on their screen.' })
       return
     }
-    const clip = clipForTable(all)
-    const summary = all.map((l) => `${l.name} (${l.restaurantName})`).join('; ')
+    const clip = clipForTable(myPlate)
+    const summary = myPlate.map((l) => `${l.name} (${l.restaurantName})`).join('; ')
     playWaiter(
       clip,
-      'Serving this table',
-      `The waiter takes the mixed table: ${summary}. Total ${formatPrice(orderTotal(all))} — demo only, no kitchen, no card.`,
+      'Serving your plate',
+      `The waiter brings your order: ${summary}. Total ${formatPrice(orderTotal(myPlate))} — demo only, no kitchen, no card.`,
     )
     setShowWaiterMenu(false)
+  }
+
+  const openWaiter = () => {
+    setShowWaiterMenu(true)
+    if (myPlate.length === 0) {
+      playWaiter('greet', 'Waiter at the table', 'The waiter steps into frame.')
+      return
+    }
+    const line = myPlate[myPlate.length - 1]
+    const clip = clipForLatest(myPlate)
+    playWaiter(
+      clip,
+      WAITER_CLIPS[clip].label,
+      `The waiter brings ${line.name} (${line.restaurantName}).`,
+    )
   }
 
   const waiterActions: { title: string; message: string; clip: WaiterClip }[] = [
@@ -161,26 +182,11 @@ function RestaurantDateSession() {
       message: 'Champagne is poured. Watch the live waiter at your table.',
       clip: 'champagne',
     },
-    {
-      title: 'Set the plates from both kitchens',
-      message: 'Plates from The Verdant Ember and The Silver Sage can land on the same table.',
-      clip: 'vegan',
-    },
-    {
-      title: 'Bring dessert',
-      message: 'Soufflé or crème brûlée — from either menu — is set down for you.',
-      clip: 'dessert',
-    },
   ]
-
-  const dessertClipForTable = () => {
-    const desserts = [...youOrder, ...partnerOrder, ...tableOrder].filter((line) => line.course === 'dessert')
-    return desserts.length > 0 ? clipForTable(desserts) : 'dessert'
-  }
 
   return (
     <div
-      className={`date-room-bg min-h-[calc(100vh-80px)] relative overflow-hidden${phase === 'room' ? ' date-room-seated' : ''}`}
+      className={`date-room-bg min-h-[calc(100vh-80px)] relative ${phase === 'room' ? 'date-room-seated overflow-x-hidden' : 'overflow-hidden'}`}
       style={{
         backgroundImage: `linear-gradient(rgba(15,10,13,0.55), rgba(15,10,13,0.78)), url('${lookThumb(look)}')`,
         backgroundSize: 'cover',
@@ -190,7 +196,7 @@ function RestaurantDateSession() {
     >
       <HostRibbon show={seat === 'host'} />
       {phase === 'tour' && (
-        <ArrivalSequence beats={RESTAURANT_ARRIVAL} storageKey="pd-arrival-restaurant" onDone={finishTour} />
+        <ArrivalSequence beats={RESTAURANT_ARRIVAL} storageKey="pd-arrival-restaurant" forcePlay={forceTour} onDone={finishTour} />
       )}
       {phase === 'choose' && (
         <RestaurantRoomChooser
@@ -264,17 +270,17 @@ function RestaurantDateSession() {
           </div>
         </div>
 
-        <div className="mt-7">
+        <div className="mt-7 flex flex-col sm:flex-row gap-3 sm:items-center">
           <button
             type="button"
-            onClick={() => {
-              setShowWaiterMenu(true)
-              playWaiter('greet', 'Waiter at the table', 'The waiter steps into frame.')
-            }}
+            onClick={openWaiter}
             className="btn btn-outline py-[19px] text-[15px] flex items-center justify-center gap-3 border-[#C9A962] hover:bg-[#C9A962] hover:text-[#0F0A0D] w-full sm:w-auto px-8"
           >
             <Sparkles className="w-5 h-5" /> Call Waiter
           </button>
+          <a href="#dinner-menus" className="text-[#C9A962] underline text-sm text-center sm:text-left">
+            Verdant Ember and Silver Sage menus
+          </a>
         </div>
 
         <DinnerMenus
@@ -306,25 +312,53 @@ function RestaurantDateSession() {
                 </div>
                 <h3 className="text-[#F8F4ED] text-2xl">Good evening. How may I serve you?</h3>
                 <p className="text-[#A8988A] text-sm mt-1">
-                  Service plays on the Waiter video tile. I can take The Verdant Ember and The Silver Sage in one visit.
+                  Your starter, entrée, and dessert — the serving video matches what you ordered. Ribeye plays steak. Cauliflower plays the plant plate. Their dishes play on their screen.
                 </p>
               </div>
-              <button type="button" className="btn btn-gold w-full mb-4 py-3" onClick={sendTableToWaiter}>
-                Serve everything on this table
-              </button>
+              {myPlate.length > 0 && (
+                <div className="mb-5">
+                  <div className="text-xs tracking-widest text-[#C9A962] mb-3">SERVE WHAT YOU ORDERED</div>
+                  <div className="grid gap-2 mb-3">
+                    {myPlate.map((line) => {
+                      const clip = clipForOrder(line)
+                      return (
+                        <button
+                          key={line.lineId}
+                          type="button"
+                          onClick={() => {
+                            playWaiter(
+                              clip,
+                              WAITER_CLIPS[clip].label,
+                              `The waiter brings ${line.name} (${line.restaurantName}).`,
+                            )
+                            setShowWaiterMenu(false)
+                          }}
+                          className="text-left p-4 rounded-2xl border border-[#C9A962]/40 hover:border-[#C9A962] hover:bg-[#221C21] transition"
+                        >
+                          <div className="text-[#EDE4D9] text-[15px]">{line.name}</div>
+                          <div className="text-[#A8988A] text-xs mt-1">
+                            {line.course === 'appetizer' ? 'Starter' : line.course === 'entree' ? 'Entrée' : 'Dessert'}
+                            {' · '}
+                            {line.restaurantName}
+                            {' · '}
+                            {WAITER_CLIPS[clip].label}
+                          </div>
+                        </button>
+                      )
+                    })}
+                  </div>
+                  <button type="button" className="btn btn-gold w-full mb-4 py-3" onClick={sendTableToWaiter}>
+                    Serve everything you ordered
+                  </button>
+                </div>
+              )}
               <div className="grid gap-3">
                 {waiterActions.map((action) => (
                   <button
                     key={action.title}
                     type="button"
                     onClick={() => {
-                      const all = [...youOrder, ...partnerOrder, ...tableOrder]
-                      const clip = action.title.startsWith('Set the plates') && all.length > 0
-                        ? clipForTable(all)
-                        : action.title.startsWith('Bring dessert')
-                          ? dessertClipForTable()
-                          : action.clip
-                      playWaiter(clip, action.title, action.message)
+                      playWaiter(action.clip, action.title, action.message)
                       setShowWaiterMenu(false)
                     }}
                     className="text-left p-5 rounded-2xl border border-[#3A2F36] hover:border-[#E8A0B8] hover:bg-[#221C21] transition"

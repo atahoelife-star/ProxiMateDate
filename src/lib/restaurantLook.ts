@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react'
 import { RESTAURANT_ARRIVAL, type ArrivalBeat } from '../data/arrival'
 import { shouldSkipArrival } from './arrivalGate'
+import { clearFreshDinnerArrival, shouldForceDinnerArrival } from './roomAccess'
 
 export const RESTAURANT_LOOK_KEY = 'pd-restaurant-look'
 
@@ -57,12 +58,14 @@ export function useRestaurantEntry() {
     if (typeof window === 'undefined') return 'tour'
     const params = new URLSearchParams(window.location.search)
     if (params.get('arrive') === '1') return 'tour'
-    if (readRestaurantLook()) return 'room'
+    if (shouldForceDinnerArrival()) return 'tour'
     if (params.get('follow') === '1') return 'room'
+    if (readRestaurantLook()) return 'room'
     if (shouldSkipArrival('pd-arrival-restaurant')) return 'choose'
     return 'tour'
   })
   const [lookId, setLookId] = useState<string | null>(() => readRestaurantLook())
+  const [forceTour] = useState(() => shouldForceDinnerArrival())
 
   const finishTour = useCallback(() => setPhase('choose'), [])
 
@@ -73,7 +76,10 @@ export function useRestaurantEntry() {
     setPhase('lead')
   }, [])
 
-  const finishLead = useCallback(() => setPhase('room'), [])
+  const finishLead = useCallback(() => {
+    clearFreshDinnerArrival()
+    setPhase('room')
+  }, [])
 
   /** Back to the thumbnail picker. Tour stays marked done; current look stays until they pick another. */
   const changeRoom = useCallback(() => setPhase('choose'), [])
@@ -89,5 +95,6 @@ export function useRestaurantEntry() {
     finishLead,
     changeRoom,
     stayHere,
+    forceTour,
   }
 }

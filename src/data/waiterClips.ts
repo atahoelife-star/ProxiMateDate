@@ -127,6 +127,20 @@ export function clipForTable(lines: Pick<OrderLine, 'course' | 'restaurantId' | 
   return clips[0] ?? 'greet'
 }
 
+/** This browser’s plate only — partner dishes play on their screen. */
+export function mineToServe(you: OrderLine[], table: OrderLine[]): OrderLine[] {
+  return [...you, ...table]
+}
+
+export function clipForLatest(lines: Pick<OrderLine, 'course' | 'restaurantId' | 'itemId'>[]): WaiterClip {
+  if (lines.length === 0) return 'greet'
+  return clipForOrder(lines[lines.length - 1])
+}
+
+export function isMyServeSeat(seat: OrderLine['seat']): boolean {
+  return seat === 'you' || seat === 'table'
+}
+
 export function clipForMenuCourse(course: Course): WaiterClip {
   return course === 'dessert' ? 'dessert' : 'vegan'
 }

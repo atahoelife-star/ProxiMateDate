@@ -7,7 +7,7 @@ Host / staff
 
 Matched
   Call Waiter / greet → waiter-idle.mp4 (same waitress)
-  Post-pick seating → CSS grand front doors into the chosen room (not a waiter clip)
+  Post-pick seating → grand-doors-{look}.mp4 (photoreal double doors into that dining room)
   Wine / rosé → waiter-pour-champagne.mp4 (faceless pour; see below)
   Champagne → waiter-pour-champagne.mp4
   All Verdant Ember savory plates → waiter-vegan.mp4 (existing house plant plate)

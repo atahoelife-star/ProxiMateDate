@@ -9,6 +9,9 @@ export type PaidRoom = 'dinner' | 'movie'
 
 /** Free Date Night is never gated. Only restaurant and movie night use this. */
 
+const FRESH_DINNER_ARRIVAL = 'pd-fresh-dinner-arrival'
+let dinnerArrivalForced = false
+
 function readFlag(key: string) {
   try {
     return sessionStorage.getItem(key) === '1'
@@ -38,6 +41,37 @@ export function grantPaidPlan(plan: PaidPlanId) {
   if (plan === 'movie') writeFlag(MOVIE_KEY)
 }
 
+/** Stripe success / QA `?paid=1` skips the paywall only — not the dining-room tour. */
+export function markFreshDinnerArrival() {
+  dinnerArrivalForced = true
+  try {
+    sessionStorage.setItem(FRESH_DINNER_ARRIVAL, '1')
+  } catch {
+    /* private mode */
+  }
+}
+
+export function shouldForceDinnerArrival() {
+  if (dinnerArrivalForced) return true
+  if (typeof window === 'undefined') return false
+  const params = new URLSearchParams(window.location.search)
+  if (params.get('paid') === '1') return true
+  try {
+    return sessionStorage.getItem(FRESH_DINNER_ARRIVAL) === '1'
+  } catch {
+    return false
+  }
+}
+
+export function clearFreshDinnerArrival() {
+  dinnerArrivalForced = false
+  try {
+    sessionStorage.removeItem(FRESH_DINNER_ARRIVAL)
+  } catch {
+    /* private mode */
+  }
+}
+
 function isFollowerJoin() {
   if (typeof window === 'undefined') return false
   return new URLSearchParams(window.location.search).get('follow') === '1'
@@ -64,7 +98,9 @@ export function consumePaidReturn(room: PaidRoom) {
   if (typeof window === 'undefined') return false
   const params = new URLSearchParams(window.location.search)
   if (params.get('paid') !== '1') return hasRoomAccess(room)
-  grantPaidPlan(planFromQuery(params.get('plan'), room))
+  const plan = planFromQuery(params.get('plan'), room)
+  grantPaidPlan(plan)
+  if (room === 'dinner' || plan === 'dinner' || plan === 'premium') markFreshDinnerArrival()
   params.delete('paid')
   params.delete('plan')
   const qs = params.toString()
@@ -76,7 +112,9 @@ export function consumeChooserPaidReturn() {
   if (typeof window === 'undefined') return false
   const params = new URLSearchParams(window.location.search)
   if (params.get('paid') !== '1') return false
-  grantPaidPlan(planFromQuery(params.get('plan'), 'dinner'))
+  const plan = planFromQuery(params.get('plan'), 'dinner')
+  grantPaidPlan(plan)
+  if (plan === 'dinner' || plan === 'premium') markFreshDinnerArrival()
   params.delete('paid')
   params.delete('plan')
   const qs = params.toString()
