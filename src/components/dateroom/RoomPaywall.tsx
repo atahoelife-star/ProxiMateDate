@@ -29,9 +29,11 @@ export function RoomPaywall({ room }: RoomPaywallProps) {
   const premium = PLANS.find((p) => p.id === 'premium')
   const [busy, setBusy] = useState<PaidPlanId | null>(null)
   const [waitlist, setWaitlist] = useState<PaidPlanId | null>(null)
+  const [checkoutError, setCheckoutError] = useState(false)
 
   const pay = async (planId: PaidPlanId) => {
     setBusy(planId)
+    setCheckoutError(false)
     const returnTo = room === 'dinner' ? '/restaurant' : '/movie-night'
     const result = await startStripeCheckout(planId, {
       returnTo: planId === 'premium' ? '/date-room' : returnTo,
@@ -39,6 +41,7 @@ export function RoomPaywall({ room }: RoomPaywallProps) {
     })
     setBusy(null)
     if (result === 'waitlist') setWaitlist(planId)
+    if (result === 'error') setCheckoutError(true)
   }
 
   return (
@@ -56,6 +59,9 @@ export function RoomPaywall({ room }: RoomPaywallProps) {
         </div>
       ) : (
         <div className="space-y-3">
+          {checkoutError && (
+            <p className="text-[#E8A0B8] text-sm">Couldn’t open Stripe. Tap pay to try again.</p>
+          )}
           <button
             type="button"
             className="btn btn-gold w-full py-4"

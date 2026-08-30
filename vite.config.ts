@@ -95,4 +95,13 @@ function liveRoomPlugin(): Plugin {
 
 export default defineConfig({
   plugins: [react(), tailwindcss(), liveRoomPlugin()],
+  server: {
+    proxy: {
+      '/api/create-checkout': {
+        target: 'https://www.proximatedate.com',
+        changeOrigin: true,
+        secure: true,
+      },
+    },
+  },
 })
