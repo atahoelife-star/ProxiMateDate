@@ -2,33 +2,25 @@ import { useState } from 'react'
 import {
   courseLabel,
   formatPrice,
-  getRestaurant,
   orderTotal,
-  type Course,
   type MenuItem,
   type OrderLine,
-  type RestaurantId,
-  type Seat,
+  type Restaurant,
   RESTAURANTS,
 } from '../../data/menus'
 import { Check, UtensilsCrossed, X } from 'lucide-react'
 
 type DinnerMenusProps = {
   partnerName: string
-  youRestaurant: RestaurantId
-  partnerRestaurant: RestaurantId
-  onYouRestaurant: (id: RestaurantId) => void
-  onPartnerRestaurant: (id: RestaurantId) => void
   youOrder: OrderLine[]
-  partnerOrder: OrderLine[]
   tableOrder: OrderLine[]
   onAdd: (line: Omit<OrderLine, 'lineId'>) => void
   onRemove: (lineId: string) => void
 }
 
-const COURSES: Course[] = ['appetizer', 'entree', 'dessert']
+const COURSES = ['appetizer', 'entree', 'dessert'] as const
 
-export function DinnerMenus(props: DinnerMenusProps) {
+export function DinnerMenus({ partnerName, youOrder, tableOrder, onAdd, onRemove }: DinnerMenusProps) {
   return (
     <section className="mt-10 table-linen scroll-mt-28" id="dinner-menus">
       <div className="flex items-center gap-3 mb-3">
@@ -37,57 +29,37 @@ export function DinnerMenus(props: DinnerMenusProps) {
         <div className="flex-1 h-px bg-[#C9A962]/30" />
       </div>
       <p className="text-[#D4C4B4] text-sm mb-6 max-w-3xl">
-        Both menus sit on this table — The Verdant Ember and The Silver Sage Steakhouse. Each of you orders on your own screen. Call Waiter brings what you picked, not their plate. Shared “for two” dishes are for the table.
+        Both menus sit on this table — The Verdant Ember and The Silver Sage Steakhouse. Add to your
+        plate. {partnerName === 'your date' ? 'Your date' : partnerName} orders on their screen. Call
+        Waiter brings what you picked — ribeye plays steak, cauliflower plays the plant plate. Their
+        dishes play on their screen, not yours.
       </p>
 
       <div className="grid lg:grid-cols-2 gap-6">
-        <SeatMenu
-          seat="you"
-          heading="YOU"
-          restaurantId={props.youRestaurant}
-          onRestaurant={props.onYouRestaurant}
-          order={props.youOrder}
-          onAdd={props.onAdd}
-          onRemove={props.onRemove}
-        />
-        <SeatMenu
-          seat="partner"
-          heading={props.partnerName.toUpperCase()}
-          restaurantId={props.partnerRestaurant}
-          onRestaurant={props.onPartnerRestaurant}
-          order={props.partnerOrder}
-          onAdd={props.onAdd}
-          onRemove={props.onRemove}
-        />
+        {RESTAURANTS.map((restaurant) => (
+          <KitchenMenu key={restaurant.id} restaurant={restaurant} onAdd={onAdd} />
+        ))}
       </div>
 
-      <TableOrder lines={props.tableOrder} onRemove={props.onRemove} onAdd={props.onAdd} />
+      <div className="table-menu p-7 mt-6">
+        <SeatCheck order={youOrder} heading="Your plate — served on this screen" onRemove={onRemove} />
+      </div>
+
+      <TableOrder lines={tableOrder} onRemove={onRemove} onAdd={onAdd} />
     </section>
   )
 }
 
-function SeatMenu({
-  seat,
-  heading,
-  restaurantId,
-  onRestaurant,
-  order,
+function KitchenMenu({
+  restaurant,
   onAdd,
-  onRemove,
 }: {
-  seat: 'you' | 'partner'
-  heading: string
-  restaurantId: RestaurantId
-  onRestaurant: (id: RestaurantId) => void
-  order: OrderLine[]
+  restaurant: Restaurant
   onAdd: (line: Omit<OrderLine, 'lineId'>) => void
-  onRemove: (lineId: string) => void
 }) {
-  const restaurant = getRestaurant(restaurantId)
   const [pendingEntree, setPendingEntree] = useState<MenuItem | null>(null)
 
   const addItem = (item: MenuItem, side?: string) => {
-    const targetSeat: Seat = item.forTwo ? 'table' : seat
     onAdd({
       restaurantId: restaurant.id,
       restaurantName: restaurant.name,
@@ -97,7 +69,8 @@ function SeatMenu({
       course: item.course,
       forTwo: item.forTwo,
       side,
-      seat: targetSeat,
+      // This screen’s order — even a “for two” dish plays here, not on their plate.
+      seat: 'you',
     })
     setPendingEntree(null)
   }
@@ -106,7 +79,7 @@ function SeatMenu({
     <div className="table-menu p-7 flex flex-col min-h-[28rem]">
       <div className="flex items-start justify-between gap-3 mb-4">
         <div>
-          <div className="menu-kicker">{heading}</div>
+          <div className="menu-kicker">ON YOUR PLATE</div>
           <h3 className="menu-ink text-2xl mt-1">{restaurant.name}</h3>
           <p className="menu-muted text-sm mt-1">
             {restaurant.cuisine} · {restaurant.city}
@@ -114,18 +87,6 @@ function SeatMenu({
         </div>
       </div>
 
-      <label className="menu-kicker mb-1.5 block">RESTAURANT</label>
-      <select
-        className="menu-select w-full mb-5"
-        value={restaurantId}
-        onChange={(e) => onRestaurant(e.target.value as RestaurantId)}
-      >
-        {RESTAURANTS.map((r) => (
-          <option key={r.id} value={r.id}>
-            {r.name}
-          </option>
-        ))}
-      </select>
       <p className="menu-muted text-sm mb-5 italic">{restaurant.tagline}</p>
 
       {COURSES.map((course) => (
@@ -194,8 +155,6 @@ function SeatMenu({
           </div>
         </div>
       )}
-
-      <SeatCheck order={order} heading={`${heading} — this plate`} onRemove={onRemove} />
     </div>
   )
 }
@@ -259,7 +218,8 @@ function TableOrder({
         <h3 className="menu-ink text-xl">Shared for the table</h3>
       </div>
       <p className="menu-muted text-sm mb-4">
-        Cauliflower for two from The Verdant Ember, or the tomahawk from The Silver Sage — both can sit on this table in one session.
+        Shared dishes stay on this table. Call Waiter still plays your own plate first — their
+        cauliflower or your ribeye, each on the screen that ordered it.
       </p>
       <div className="grid sm:grid-cols-2 gap-3 mb-5">
         {shared.map(({ restaurant, item }) => (

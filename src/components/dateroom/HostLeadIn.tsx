@@ -3,11 +3,12 @@ import type { ArrivalBeat } from '../../data/arrival'
 import { lookThumb } from '../../lib/restaurantLook'
 import { playHostVoice, stopHostVoice } from '../../lib/hostVoice'
 
-/** Photoreal double doors into the chosen dining room — never waiter/kitchen swinging doors. */
+/** Photoreal wood/glass restaurant double doors into the chosen dining room.
+ *  Never waiter/kitchen swinging doors, never the mustard CSS leaf swing. */
 const HOST_AFTER_MS = 1550
-const DONE_AFTER_PLAYING_MS = 6200
+const DONE_AFTER_PLAYING_MS = 7400
 const REDUCED_DONE_MS = 1400
-const PLAY_FALLBACK_MS = 10000
+const PLAY_FALLBACK_MS = 11000
 const CLOSED_DOORS = '/images/arrival/restaurant/grand-doors.jpg'
 
 type HostLeadInProps = {
@@ -17,15 +18,6 @@ type HostLeadInProps = {
 
 function prefersReducedMotion() {
   return typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
-}
-
-function DoorLeaf({ side }: { side: 'left' | 'right' }) {
-  return (
-    <div className={`ge-door ge-door-${side === 'left' ? 'l' : 'r'}`} aria-hidden>
-      <div className="ge-door-face" />
-      <div className="ge-door-edge" />
-    </div>
-  )
 }
 
 function doorClip(look: ArrivalBeat) {
@@ -77,9 +69,9 @@ export function HostLeadIn({ look, onDone }: HostLeadInProps) {
     >
       {!useCss ? (
         <>
-          <img className="ge-room absolute inset-0 w-full h-full object-cover" src={CLOSED_DOORS} alt="" />
+          <img className="ge-room" src={CLOSED_DOORS} alt="" />
           <video
-            className="ge-room absolute inset-0 w-full h-full object-cover"
+            className="ge-room"
             src={src}
             poster={CLOSED_DOORS}
             autoPlay
@@ -98,22 +90,8 @@ export function HostLeadIn({ look, onDone }: HostLeadInProps) {
         </>
       ) : (
         <>
-          <div className={`ge-interior${open ? ' is-revealed' : ''}`}>
-            <img className="ge-room" src={interior} alt="" />
-            <div className="ge-veil" />
-            <div className="ge-rays" />
-          </div>
-          <div className="ge-stage">
-            <div className="ge-arch">
-              <div className="ge-transom" />
-              <div className="ge-portal">
-                <div className="ge-seam" />
-                <DoorLeaf side="left" />
-                <DoorLeaf side="right" />
-              </div>
-              <div className="ge-threshold" />
-            </div>
-          </div>
+          <img className="ge-room" src={interior} alt="" />
+          <img className={`ge-room ge-closed-poster${open ? ' is-fading' : ''}`} src={CLOSED_DOORS} alt="" />
           <div className="ge-vignette" />
         </>
       )}

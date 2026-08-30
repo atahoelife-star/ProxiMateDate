@@ -46,14 +46,24 @@ waiter-dessert.mp4
   https://www.pexels.com/video/creme-brulee-caramelization-with-torch-31750575/
 
 cinema-popcorn-machine.mp4
-  Coverr — “Popcorn maker” (coverr-popcorn-maker-9220)
-  Free commercial rights.
-  https://coverr.co/videos/popcorn-maker
-  Cinema arrival popcorn beat: glass-box popper with corn tumbling out. Not a still bucket, not tomatoes.
+  Wikimedia Commons — File:Movie theater popcorn machine.jpg
+  Photo: Tim Evanson (Flickr), CC BY-SA 2.0
+  https://commons.wikimedia.org/wiki/File:Movie_theater_popcorn_machine.jpg
+  https://www.flickr.com/photos/timevanson/39250257231/
+  Real Cretors theater-lobby popper, Valley View, Ohio. Landscape pan from the
+  tilted kettle into the overflowing glass bin. Not the Coverr kettle-macro
+  (coverr-popcorn-maker-9220). Not Mixkit #25466 (Restricted / personal use).
+  No commercial-free video of a wide lobby machine pouring was found; this is
+  a Ken Burns of the real machine with a full bin, kettle already dumped.
 
 grand-doors-host.mp4 / grand-doors-tables.mp4 / grand-doors-yours.mp4 / grand-doors-sit.mp4
-  Photoreal hotel double doors (Pexels photo #277559)
-  opening into the seated dining-room still for that thumbnail.
-  https://www.pexels.com/photo/277559/
-  After the thumbnail pick only. Not kitchen/service swinging doors.
+  Pexels video #17422251 — “The entrance to a building with a wooden door”
+  https://www.pexels.com/video/the-entrance-to-a-building-with-a-wooden-door-17422251/
+  Photoreal dark-wood + glass restaurant double doors, looking into a real dining
+  room (bar, tables, waiter, warm light). Landscape crop, then xfade into the
+  chosen table still (host-stand / dining-room / your-table / sit-down).
+  Pexels License — free for commercial use.
+  After the thumbnail pick only, including restaurant QA ?paid=1.
+  Not used: Mixkit 21817 (hotel guest-room door + suitcase); kitchen swinging
+  doors; Pexels photo #277559 mustard-yellow door still / CSS leaf swing.
 

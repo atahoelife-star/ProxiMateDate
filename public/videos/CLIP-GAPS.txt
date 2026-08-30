@@ -4,10 +4,13 @@ Host / staff
   Tour stays rooms only (no walk-in captions).
   After the thumbnail pick: grand hotel double doors open into the chosen dining room, then the host says “Right this way” (audio only). Do not play waiter-idle, kitchen swinging doors, or a zoomed service-door loop on this beat.
   Call Waiter still uses waiter-idle.mp4 (Pexels #6327644) — that waitress is the only staff face on purpose. Food and pour clips are close-ups from the house set (plates, torch, glasses) — no extra waiter characters.
+  Serving is per screen: this browser’s plate only. Ribeye/filet → steak clip. Cauliflower and other Verdant Ember plates → plant plate. Partner dishes never play here.
 
 Matched
   Call Waiter / greet → waiter-idle.mp4 (same waitress)
-  Post-pick seating → grand-doors-{look}.mp4 (photoreal double doors into that dining room)
+  Post-pick seating → grand-doors-{look}.mp4 (Pexels #17422251 wood+glass restaurant
+  double doors looking into a real dining room, then xfade into the chosen table.
+  Not mustard CSS doors, not kitchen swinging doors, not Mixkit 21817 guest-room.)
   Wine / rosé → waiter-pour-champagne.mp4 (faceless pour; see below)
   Champagne → waiter-pour-champagne.mp4
   All Verdant Ember savory plates → waiter-vegan.mp4 (existing house plant plate)
@@ -24,3 +27,12 @@ Intentionally not forced
 
 Do not use waiter-set-plate.mp4 for menu items (sliders).
 Do not use waiter-pour-wine.mp4 on screen — different man in a grey plaid suit, different dining room. Cast consistency over a second sommelier. File stays on disk.
+
+Movie-night popcorn beat
+  cinema-popcorn-machine.mp4 is a landscape Ken Burns of a real Cretors
+  theater-lobby machine (Commons, Tim Evanson, CC BY-SA 2.0): tilted kettle
+  over a BIG glass bin already piled with popcorn. Gregory rejected the
+  Coverr kettle-macro as way too zoomed in on the maker.
+  No Pexels / Coverr / Mixkit Standard / Pixabay clip shows a wide lobby
+  popper with corn pouring into a bin. Mixkit #25466 is Restricted (personal
+  use only) and still a tight kettle. Do not ship Getty / Storyblocks.
