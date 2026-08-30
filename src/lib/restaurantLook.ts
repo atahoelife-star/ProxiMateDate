@@ -60,11 +60,19 @@ export function useRestaurantEntry() {
 
   const finishLead = useCallback(() => setPhase('room'), [])
 
+  /** Back to the thumbnail picker. Tour stays marked done; current look stays until they pick another. */
+  const changeRoom = useCallback(() => setPhase('choose'), [])
+
+  const stayHere = useCallback(() => setPhase('room'), [])
+
   return {
     phase,
     look: lookById(lookId),
+    lookId,
     finishTour,
     pickLook,
     finishLead,
+    changeRoom,
+    stayHere,
   }
 }

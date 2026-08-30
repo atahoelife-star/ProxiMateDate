@@ -30,7 +30,7 @@ import { useDemoChat } from '../lib/demoChat'
 import { roomFromWindow, useRoomClock, useRoomQuerySync } from '../lib/roomSession'
 
 export function RestaurantDatePage() {
-  const { phase, look, finishTour, pickLook, finishLead } = useRestaurantEntry()
+  const { phase, look, lookId, finishTour, pickLook, finishLead, changeRoom, stayHere } = useRestaurantEntry()
   const navigate = useNavigate()
   const { muted: diningMuted, toggleMute: toggleDiningMute, fadeOutAndStop } = useDiningAmbience(phase === 'room')
   const { chatMessages, chatInput, setChatInput, sendChatMessage, pickSuggestedLine, roomMessage } = useDemoChat()
@@ -182,7 +182,13 @@ export function RestaurantDatePage() {
       {phase === 'tour' && (
         <ArrivalSequence beats={RESTAURANT_ARRIVAL} storageKey="pd-arrival-restaurant" onDone={finishTour} />
       )}
-      {phase === 'choose' && <RestaurantRoomChooser onPick={pickLook} />}
+      {phase === 'choose' && (
+        <RestaurantRoomChooser
+          onPick={pickLook}
+          currentId={lookId}
+          onStay={lookId ? stayHere : undefined}
+        />
+      )}
       {phase === 'lead' && <HostLeadIn look={look} onDone={finishLead} />}
 
       {phase === 'room' && (
@@ -198,6 +204,11 @@ export function RestaurantDatePage() {
         }}
         sound={{ muted: diningMuted, onToggle: toggleDiningMute }}
         onEnd={() => fadeOutAndStop(() => navigate('/'))}
+        onChangeRoom={() => {
+          setWaiterServing(false)
+          setWaiterClip('idle')
+          changeRoom()
+        }}
       />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pt-8 pb-16">

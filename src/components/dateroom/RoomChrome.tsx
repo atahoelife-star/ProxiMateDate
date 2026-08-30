@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Clock, UserPlus, Volume2, VolumeX } from 'lucide-react'
+import { Clock, LayoutGrid, UserPlus, Volume2, VolumeX } from 'lucide-react'
 
 type RoomChromeProps = {
   title: string
@@ -9,9 +9,10 @@ type RoomChromeProps = {
   onInvite: () => void
   sound?: { muted: boolean; onToggle: () => void }
   onEnd?: () => void
+  onChangeRoom?: () => void
 }
 
-export function RoomChrome({ title, subtitle, banner, roomTime, onInvite, sound, onEnd }: RoomChromeProps) {
+export function RoomChrome({ title, subtitle, banner, roomTime, onInvite, sound, onEnd, onChangeRoom }: RoomChromeProps) {
   return (
     <>
       <div className="relative z-10 px-4 sm:px-6 py-3 bg-[#C9A962] text-[#0F0A0D] text-sm text-center tracking-wide">
@@ -30,6 +31,15 @@ export function RoomChrome({ title, subtitle, banner, roomTime, onInvite, sound,
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-3">
+          {onChangeRoom && (
+            <button
+              type="button"
+              onClick={onChangeRoom}
+              className="btn btn-outline px-4 py-2 text-sm flex items-center gap-2 border-[#C9A962] hover:bg-[#C9A962] hover:text-[#0F0A0D]"
+            >
+              <LayoutGrid className="w-4 h-4" /> Change dining room
+            </button>
+          )}
           {sound && (
             <button
               type="button"
