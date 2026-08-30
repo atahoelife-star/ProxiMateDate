@@ -48,7 +48,7 @@ export function ArrivalSequence({ beats, storageKey, onDone }: ArrivalSequencePr
   if (!beat) return null
 
   return (
-    <div className="fixed inset-0 z-[200] bg-[#0F0A0D] text-[#F8F4ED]" role="dialog" aria-label="Walking in">
+    <div className="fixed inset-0 z-[200] bg-[#0F0A0D]" role="dialog" aria-label="Arrival">
       <AnimatePresence mode="wait">
         <motion.div
           key={beat.id}
@@ -77,24 +77,9 @@ export function ArrivalSequence({ beats, storageKey, onDone }: ArrivalSequencePr
               alt=""
             />
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0F0A0D] via-[#0F0A0D]/25 to-[#0F0A0D]/40" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0F0A0D]/35 via-transparent to-[#0F0A0D]/20" />
         </motion.div>
       </AnimatePresence>
-
-      <div className="absolute bottom-10 left-0 right-0 z-10 px-6 text-center">
-        <div className="text-[#C9A962] text-xs tracking-[4px] mb-3">WALKING IN</div>
-        <div className="font-serif text-3xl sm:text-4xl">{beat.caption}</div>
-        <div className="mt-6 flex justify-center gap-2" aria-hidden>
-          {beats.map((item, i) => (
-            <span
-              key={item.id}
-              className={`h-1.5 rounded-full transition-all ${
-                i === index ? 'w-8 bg-[#C9A962]' : i < index ? 'w-3 bg-[#C9A962]/50' : 'w-3 bg-white/25'
-              }`}
-            />
-          ))}
-        </div>
-      </div>
 
       <button
         type="button"
