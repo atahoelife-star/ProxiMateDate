@@ -55,9 +55,10 @@ export const CINEMA_ARRIVAL: ArrivalBeat[] = [
   },
   {
     id: 'popcorn',
-    src: '/images/arrival/cinema/popcorn.jpg',
-    kind: 'image',
-    durationMs: 2600,
+    src: '/videos/cinema-popcorn-machine.mp4',
+    kind: 'video',
+    poster: '/images/arrival/cinema/popcorn.jpg',
+    durationMs: 4800,
   },
   {
     id: 'seats',
