@@ -15,7 +15,7 @@ const COPY: Record<'dinner' | 'movie', { kicker: string; title: string; plan: Pa
     kicker: 'MOVIE NIGHT',
     title: 'Movie Night',
     plan: 'movie',
-    blurb: 'Pay $14.99 with a card on Stripe. Then the theater walk-in starts — 2.5 hours. Your date can join on the follow link without paying again.',
+    blurb: 'Pay $14.99 with a card on Stripe. Then the theater walk-in starts for 2.5 hours. Your date can join on the follow link without paying again.',
   },
 }
 

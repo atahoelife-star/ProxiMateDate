@@ -18,7 +18,7 @@ const rooms = [
     to: '/date-night',
     icon: MessageCircle,
     title: 'Free Date Night',
-    desc: 'Simple together time. Just chat. Free for 30 minutes, then $2.99 to extend.',
+    desc: 'Simple together time. Just chat. Free for 30 minutes. Then $2.99 to extend.',
   },
 ]
 
@@ -46,9 +46,20 @@ export function HomePage() {
             even when far apart
           </h1>
 
-          <p className="max-w-xl mx-auto text-xl text-[#EDE4D9]/90 mb-10">
-            Three rooms. Restaurant dinner is $9.99 for 90 minutes. Movie night is $14.99 for 2.5 hours. Free date night lasts 30 minutes.
-          </p>
+          <div className="max-w-xl mx-auto text-xl text-[#EDE4D9]/90 mb-10 space-y-3">
+            <p>Three rooms.</p>
+            <p>
+              Restaurant dinner is $9.99
+              <br />
+              for 90 minutes.
+            </p>
+            <p>
+              Movie night is $14.99
+              <br />
+              for 2.5 hours.
+            </p>
+            <p>Free date night is 30 minutes.</p>
+          </div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/restaurant" className="btn btn-gold text-base px-10 py-4 group">
@@ -99,7 +110,7 @@ export function HomePage() {
         </div>
         <div className="card p-8 md:p-12">
           <p className="text-[#EDE4D9] leading-relaxed text-lg">
-            ProxiMateDate is a long-distance date night from A Tahoe Life / Gregory Barrett. If you miss dinner across a table — vegan on one side, steak on the other — the restaurant room is for you. Movie night is Watch Together. Free date night is just talking: 30 minutes, then $2.99 to extend.
+            ProxiMateDate is a long-distance date night from A Tahoe Life / Gregory Barrett. If you miss dinner across a table — vegan on one side, steak on the other — the restaurant room is for you. Movie night is Watch Together. Free date night is just talking for 30 minutes. Then $2.99 to extend.
           </p>
           <p className="text-[#A8988A] mt-6 leading-relaxed">
             Orders stay with you; they do not go to a kitchen. YouTube uses Google’s official player. Netflix stays on your own apps. Dinner and movie night are paid with a card on Stripe.

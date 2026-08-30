@@ -4,7 +4,7 @@ export type Plan = {
   id: PlanId
   name: string
   price: string
-  period: string
+  duration: string
   popular: boolean
   description: string
   features: string[]
@@ -18,13 +18,13 @@ export const PLANS: Plan[] = [
     id: 'free',
     name: 'Candlelight Chat',
     price: 'Free',
-    period: 'open now',
+    duration: 'for 30 minutes',
     popular: false,
-    description: 'Free for 30 minutes, then $2.99 to extend.',
+    description: 'Free for 30 minutes. Then $2.99 to extend.',
     features: [
       'Private chat',
       'Invite link (copy URL)',
-      '30 minutes free — host can extend $2.99',
+      'Free for 30 minutes. Host can extend for $2.99',
       'No menus',
       'No movie player',
     ],
@@ -36,9 +36,9 @@ export const PLANS: Plan[] = [
     id: 'dinner',
     name: 'Virtual Dinner Date',
     price: '$9.99',
-    period: 'one time',
+    duration: 'for 90 minutes',
     popular: true,
-    description: 'Pay $9.99 with a card on Stripe. Then walk in and sit down. 90 minutes at the table.',
+    description: 'Pay $9.99 with a card on Stripe. Then walk in and sit down for 90 minutes at the table.',
     features: [
       'Walk-in, then a seated 1x dining room',
       '90 minutes after you sit',
@@ -54,7 +54,7 @@ export const PLANS: Plan[] = [
     id: 'movie',
     name: 'Movie Night',
     price: '$14.99',
-    period: 'one time',
+    duration: 'for 2.5 hours',
     popular: false,
     description: 'Pay $14.99 with a card on Stripe. Then Watch Together for 2.5 hours.',
     features: [
@@ -72,7 +72,7 @@ export const PLANS: Plan[] = [
     id: 'premium',
     name: 'Premium Romance',
     price: '$24.99',
-    period: 'one time',
+    duration: 'for 3 hours',
     popular: false,
     description: 'Dinner + movie in one payment. Unlocks both paid rooms for 3 hours in this browser.',
     features: [
