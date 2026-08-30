@@ -31,7 +31,7 @@ import { chatMomentForEvening } from '../data/suggestedLines'
 import { roomFromWindow, useRoomQuerySync } from '../lib/roomSession'
 import { usePaidRoom } from '../lib/roomAccess'
 import { applyRemotePaidClock, usePaidDateSession } from '../lib/dateSession'
-import { readSeatName, seatFromWindow, useLiveChat, writeSeatName } from '../lib/liveRoom'
+import { readSeatName, seatFromWindow, takeSeat, useLiveChat, writeSeatName } from '../lib/liveRoom'
 import { useUsPhotos } from '../lib/datePhotos'
 import { RoomPaywall } from '../components/dateroom/RoomPaywall'
 
@@ -46,8 +46,8 @@ function RestaurantDateSession() {
   const navigate = useNavigate()
   const { muted: diningMuted, toggleMute: toggleDiningMute, fadeOutAndStop } = useDiningAmbience(phase === 'room')
   const [roomId] = useState(roomFromWindow)
-  const seat = seatFromWindow()
-  const [myName, setMyName] = useState(() => readSeatName(roomId, seat))
+  const [seat, setSeat] = useState(seatFromWindow)
+  const [myName, setMyName] = useState(() => readSeatName(roomId, seatFromWindow()))
   const photoScope = `${roomId}-${seat}`
   const { photos } = useUsPhotos(photoScope)
   const session = usePaidDateSession('dinner', roomId, phase === 'room')
@@ -202,7 +202,7 @@ function RestaurantDateSession() {
 
       {phase === 'room' && (
       <>
-      <HostRibbon show={session.isHost} />
+      <HostRibbon show={seat === 'host'} />
       <RoomChrome
         title="Restaurant Date"
         subtitle="Two kitchens, one table"
@@ -358,8 +358,10 @@ function RestaurantDateSession() {
       <JoinNameModal
         open={!myName}
         onSave={(name) => {
-          writeSeatName(roomId, seat, name)
-          setMyName(name)
+          void takeSeat(roomId, name, seat).then((next) => {
+            setSeat(next)
+            setMyName(name.trim())
+          })
         }}
         photoScope={photoScope}
         onYouPhoto={live.sendPhoto}

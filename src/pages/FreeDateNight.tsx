@@ -9,15 +9,15 @@ import { WaitlistForm } from '../components/WaitlistForm'
 import { chatMomentForEvening } from '../data/suggestedLines'
 import { roomFromWindow, useRoomQuerySync } from '../lib/roomSession'
 import { applyRemoteFreeClock, useFreeDateSession } from '../lib/dateSession'
-import { readSeatName, seatFromWindow, useLiveChat, writeSeatName } from '../lib/liveRoom'
+import { readSeatName, seatFromWindow, takeSeat, useLiveChat, writeSeatName } from '../lib/liveRoom'
 import { useUsPhotos } from '../lib/datePhotos'
 import { startStripeCheckout } from '../lib/stripeCheckout'
 
 export function FreeDateNightPage() {
   const navigate = useNavigate()
   const [roomId] = useState(roomFromWindow)
-  const seat = seatFromWindow()
-  const [myName, setMyName] = useState(() => readSeatName(roomId, seat))
+  const [seat, setSeat] = useState(seatFromWindow)
+  const [myName, setMyName] = useState(() => readSeatName(roomId, seatFromWindow()))
   const photoScope = `${roomId}-${seat}`
   const { photos } = useUsPhotos(photoScope)
   const session = useFreeDateSession(roomId)
@@ -54,8 +54,10 @@ export function FreeDateNightPage() {
     session.isHost && !session.waiting && session.warn && !session.expired && dismissedExtraMs !== session.extraMs
 
   const saveName = (name: string) => {
-    writeSeatName(roomId, seat, name)
-    setMyName(name)
+    void takeSeat(roomId, name, seat).then((next) => {
+      setSeat(next)
+      setMyName(name.trim())
+    })
   }
 
   return (
@@ -68,7 +70,7 @@ export function FreeDateNightPage() {
         backgroundAttachment: 'fixed',
       }}
     >
-      <HostRibbon show={session.isHost} />
+      <HostRibbon show={seat === 'host'} />
       <RoomChrome
         title="Free Date Night"
         subtitle="Simple together time"
@@ -136,7 +138,10 @@ export function FreeDateNightPage() {
             myName={myName}
             onRename={() => {
               const next = window.prompt('Your name tonight?', myName)
-              if (next) saveName(next)
+              if (next) {
+                writeSeatName(roomId, seat, next)
+                setMyName(next.trim())
+              }
             }}
             messages={live.chatMessages}
             input={live.chatInput}

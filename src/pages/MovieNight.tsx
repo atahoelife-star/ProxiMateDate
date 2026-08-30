@@ -18,7 +18,7 @@ import {
 } from '../lib/roomSession'
 import { usePaidRoom } from '../lib/roomAccess'
 import { applyRemotePaidClock, usePaidDateSession } from '../lib/dateSession'
-import { readSeatName, seatFromWindow, useLiveChat, writeSeatName } from '../lib/liveRoom'
+import { readSeatName, seatFromWindow, takeSeat, useLiveChat, writeSeatName } from '../lib/liveRoom'
 import { useUsPhotos } from '../lib/datePhotos'
 import { RoomPaywall } from '../components/dateroom/RoomPaywall'
 
@@ -31,8 +31,8 @@ export function MovieNightPage() {
 function MovieNightSession() {
   const { arrived, markArrived } = useArrivalGate('pd-arrival-cinema')
   const [roomId] = useState(roomFromWindow)
-  const seat = seatFromWindow()
-  const [myName, setMyName] = useState(() => readSeatName(roomId, seat))
+  const [seat, setSeat] = useState(seatFromWindow)
+  const [myName, setMyName] = useState(() => readSeatName(roomId, seatFromWindow()))
   const photoScope = `${roomId}-${seat}`
   const { photos } = useUsPhotos(photoScope)
   const session = usePaidDateSession('movie', roomId, arrived)
@@ -77,7 +77,7 @@ function MovieNightSession() {
     >
       {!arrived && <ArrivalSequence beats={CINEMA_ARRIVAL} storageKey="pd-arrival-cinema" onDone={markArrived} />}
 
-      <HostRibbon show={session.isHost} />
+      <HostRibbon show={seat === 'host'} />
       <RoomChrome
         title="Movie Night"
         subtitle="Watch Together"
@@ -154,8 +154,10 @@ function MovieNightSession() {
       <JoinNameModal
         open={!myName}
         onSave={(name) => {
-          writeSeatName(roomId, seat, name)
-          setMyName(name)
+          void takeSeat(roomId, name, seat).then((next) => {
+            setSeat(next)
+            setMyName(name.trim())
+          })
         }}
         photoScope={photoScope}
         onYouPhoto={live.sendPhoto}

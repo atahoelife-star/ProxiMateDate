@@ -41,8 +41,10 @@ export function WatchChatOverlay({
       {messages.map((msg) => (
         <div key={msg.id} className={`flex ${msg.sender === 'me' ? 'justify-end' : 'justify-start'}`}>
           <div className={`chat-bubble overlay-chat ${msg.sender === 'me' ? 'me' : msg.sender === 'partner' ? 'date' : 'system'}`}>
-            {msg.sender === 'partner' && msg.name && (
-              <span className="block text-[#C9A962] text-[10px] mb-0.5 tracking-wider">{msg.name}</span>
+            {msg.sender === 'system' ? null : (
+              <span className="block text-[#C9A962] text-[10px] mb-0.5 tracking-wider">
+                {msg.name || (msg.sender === 'me' ? 'You' : partnerName)}
+              </span>
             )}
             {msg.text}
           </div>

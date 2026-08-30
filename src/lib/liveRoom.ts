@@ -1,7 +1,7 @@
 import { Peer, type DataConnection } from 'peerjs'
 import { useEffect, useRef, useState } from 'react'
 import type { ChatMsg } from './demoChat'
-import { followFromWindow } from './roomSession'
+import { followFromWindow, writeFollowQuery } from './roomSession'
 
 export type Seat = 'host' | 'guest'
 
@@ -105,6 +105,25 @@ async function pullLive(roomId: string, after: number): Promise<RoomSnap | null>
   }
 }
 
+/** Keep host/guest seats apart. A second person on the host URL still sits as guest. */
+export async function takeSeat(roomId: string, name: string, preferred: Seat): Promise<Seat> {
+  const trimmed = name.trim()
+  if (!trimmed) return preferred
+  if (preferred === 'guest' || followFromWindow()) {
+    writeSeatName(roomId, 'guest', trimmed)
+    return 'guest'
+  }
+  const snap = await pullLive(roomId, 0)
+  const hostName = snap?.seats?.host?.name?.trim() || ''
+  if (hostName && hostName !== trimmed) {
+    writeFollowQuery(roomId)
+    writeSeatName(roomId, 'guest', trimmed)
+    return 'guest'
+  }
+  writeSeatName(roomId, 'host', trimmed)
+  return 'host'
+}
+
 export function useLiveChat(
   roomId: string,
   seat: Seat,
@@ -160,7 +179,8 @@ export function useLiveChat(
   const ingest = (payload: Wire, fromSelf: boolean) => {
     if (payload.kind === 'hello') {
       if (payload.seat === seatRef.current) return
-      setPartnerName(payload.name)
+      const name = payload.name?.trim()
+      if (name) setPartnerName(name)
       if (payload.photo) setPartnerPhoto(payload.photo)
       if (payload.startedAt > 0) setRemoteStartedAt(payload.startedAt)
       if (payload.extraMs > 0) setRemoteExtraMs(payload.extraMs)
@@ -185,8 +205,8 @@ export function useLiveChat(
   const ingestSnap = (snap: RoomSnap) => {
     const other: Seat = seatRef.current === 'host' ? 'guest' : 'host'
     const them = snap.seats?.[other]
-    if (them?.name) {
-      setPartnerName(them.name)
+    if (them?.name?.trim()) {
+      setPartnerName(them.name.trim())
       setLinked(true)
     }
     if (them?.photo) setPartnerPhoto(them.photo)
