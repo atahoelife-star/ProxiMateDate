@@ -66,6 +66,8 @@ export function useRestaurantEntry() {
   })
   const [lookId, setLookId] = useState<string | null>(() => readRestaurantLook())
   const [forceTour] = useState(() => shouldForceDinnerArrival())
+  /** Fresh Stripe/QA arrival: they must tap a thumbnail and walk the doors. Stay is only after sit. */
+  const [mustEnterThroughDoors, setMustEnterThroughDoors] = useState(() => shouldForceDinnerArrival())
 
   const finishTour = useCallback(() => setPhase('choose'), [])
 
@@ -78,6 +80,7 @@ export function useRestaurantEntry() {
 
   const finishLead = useCallback(() => {
     clearFreshDinnerArrival()
+    setMustEnterThroughDoors(false)
     setPhase('room')
   }, [])
 
@@ -96,5 +99,6 @@ export function useRestaurantEntry() {
     changeRoom,
     stayHere,
     forceTour,
+    mustEnterThroughDoors,
   }
 }
