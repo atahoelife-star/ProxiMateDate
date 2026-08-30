@@ -18,7 +18,7 @@ import { HostRibbon } from '../components/dateroom/HostRibbon'
 import { SessionWrapNotice } from '../components/dateroom/SessionWrapNotice'
 import { WaiterQuickOrder } from '../components/dateroom/WaiterQuickOrder'
 import { RESTAURANT_ARRIVAL } from '../data/arrival'
-import { formatPrice, orderTotal, type OrderLine, type RestaurantId } from '../data/menus'
+import { formatPrice, orderTotal, type OrderLine } from '../data/menus'
 import {
   clipForLatest,
   clipForOrder,
@@ -71,10 +71,7 @@ function RestaurantDateSession() {
   const [inviteStep, setInviteStep] = useState<'options' | 'success'>('options')
   const [wrapDismissed, setWrapDismissed] = useState(false)
 
-  const [youRestaurant, setYouRestaurant] = useState<RestaurantId>('verdant-ember')
-  const [partnerRestaurant, setPartnerRestaurant] = useState<RestaurantId>('silver-sage')
   const [youOrder, setYouOrder] = useState<OrderLine[]>([])
-  const [partnerOrder, setPartnerOrder] = useState<OrderLine[]>([])
   const [tableOrder, setTableOrder] = useState<OrderLine[]>([])
   const [waiterClip, setWaiterClip] = useState<WaiterClip>('idle')
   const [waiterServing, setWaiterServing] = useState(false)
@@ -109,8 +106,7 @@ function RestaurantDateSession() {
   const addOrderLine = (line: Omit<OrderLine, 'lineId'>) => {
     const full: OrderLine = { ...line, lineId: `${line.itemId}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}` }
     if (full.seat === 'you') setYouOrder((prev) => [...prev, full])
-    else if (full.seat === 'partner') setPartnerOrder((prev) => [...prev, full])
-    else setTableOrder((prev) => [...prev, full])
+    else if (full.seat === 'table') setTableOrder((prev) => [...prev, full])
 
     if (isMyServeSeat(full.seat)) {
       const clip = clipForOrder(full)
@@ -125,7 +121,6 @@ function RestaurantDateSession() {
 
   const removeOrderLine = (lineId: string) => {
     setYouOrder((prev) => prev.filter((l) => l.lineId !== lineId))
-    setPartnerOrder((prev) => prev.filter((l) => l.lineId !== lineId))
     setTableOrder((prev) => prev.filter((l) => l.lineId !== lineId))
   }
 
@@ -286,12 +281,7 @@ function RestaurantDateSession() {
 
         <DinnerMenus
           partnerName={dateName}
-          youRestaurant={youRestaurant}
-          partnerRestaurant={partnerRestaurant}
-          onYouRestaurant={setYouRestaurant}
-          onPartnerRestaurant={setPartnerRestaurant}
           youOrder={youOrder}
-          partnerOrder={partnerOrder}
           tableOrder={tableOrder}
           onAdd={addOrderLine}
           onRemove={removeOrderLine}
@@ -368,12 +358,7 @@ function RestaurantDateSession() {
                   </button>
                 ))}
               </div>
-              <WaiterQuickOrder
-                youRestaurant={youRestaurant}
-                partnerRestaurant={partnerRestaurant}
-                partnerName={dateName}
-                onAdd={addOrderLine}
-              />
+              <WaiterQuickOrder partnerName={dateName} onAdd={addOrderLine} />
               <div className="text-center mt-8 text-xs text-[#7A6B5F] tracking-widest">Demo service — local state only</div>
             </motion.div>
           </div>

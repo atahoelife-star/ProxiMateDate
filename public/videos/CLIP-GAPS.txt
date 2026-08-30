@@ -4,6 +4,7 @@ Host / staff
   Tour stays rooms only (no walk-in captions).
   After the thumbnail pick: grand hotel double doors open into the chosen dining room, then the host says “Right this way” (audio only). Do not play waiter-idle, kitchen swinging doors, or a zoomed service-door loop on this beat.
   Call Waiter still uses waiter-idle.mp4 (Pexels #6327644) — that waitress is the only staff face on purpose. Food and pour clips are close-ups from the house set (plates, torch, glasses) — no extra waiter characters.
+  Serving is per screen: this browser’s plate only. Ribeye/filet → steak clip. Cauliflower and other Verdant Ember plates → plant plate. Partner dishes never play here.
 
 Matched
   Call Waiter / greet → waiter-idle.mp4 (same waitress)

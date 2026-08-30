@@ -1,26 +1,20 @@
-import { courseLabel, getRestaurant, RESTAURANTS, type Course, type OrderLine, type RestaurantId } from '../../data/menus'
+import { courseLabel, RESTAURANTS, type Course, type OrderLine } from '../../data/menus'
 
 const COURSES: Course[] = ['appetizer', 'entree', 'dessert']
 
 export function WaiterQuickOrder({
-  youRestaurant,
-  partnerRestaurant,
   partnerName,
   onAdd,
 }: {
-  youRestaurant: RestaurantId
-  partnerRestaurant: RestaurantId
   partnerName: string
   onAdd: (line: Omit<OrderLine, 'lineId'>) => void
 }) {
-  const yours = getRestaurant(youRestaurant)
-  const theirs = getRestaurant(partnerRestaurant)
   return (
     <div className="mt-6 pt-6 border-t border-[#3A2F36]">
       <div className="text-xs tracking-widest text-[#C9A962] mb-3">ORDER STARTER, ENTRÉE, OR DESSERT</div>
       <p className="text-[#A8988A] text-xs mb-4">
-        Order for your plate from both kitchens. {yours.name} is selected for you
-        {theirs.name !== yours.name ? `; ${partnerName} picks ${theirs.name} on their screen` : ''}. The serving video matches your dish.
+        Order for your plate from both kitchens. {partnerName} orders on their screen. The serving
+        video matches your dish — not theirs.
       </p>
       {COURSES.map((course) => (
         <div key={course} className="mb-5">
@@ -45,7 +39,7 @@ export function WaiterQuickOrder({
                           price: item.price,
                           course: item.course,
                           forTwo: item.forTwo,
-                          seat: item.forTwo ? 'table' : 'you',
+                          seat: 'you',
                         })
                       }
                     >

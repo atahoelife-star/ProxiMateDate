@@ -127,9 +127,14 @@ export function clipForTable(lines: Pick<OrderLine, 'course' | 'restaurantId' | 
   return clips[0] ?? 'greet'
 }
 
-/** This browser’s plate only — partner dishes play on their screen. */
+/**
+ * This browser’s plate only. Partner dishes never belong here.
+ * Personal orders win so Gregory’s ribeye is not replaced by a shared cauliflower.
+ * Shared table dishes play only when this person has not ordered their own food.
+ */
 export function mineToServe(you: OrderLine[], table: OrderLine[]): OrderLine[] {
-  return [...you, ...table]
+  if (you.length > 0) return you
+  return table
 }
 
 export function clipForLatest(lines: Pick<OrderLine, 'course' | 'restaurantId' | 'itemId'>[]): WaiterClip {
