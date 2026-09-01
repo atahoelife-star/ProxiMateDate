@@ -56,6 +56,14 @@ cinema-popcorn-machine.mp4
   No commercial-free video of a wide lobby machine pouring was found; this is
   a Ken Burns of the real machine with a full bin, kettle already dumped.
 
+landing-demo.mp4
+  Silent ~18s home/Get Started loop for ad landings. Not behind a paywall.
+  Beats: grand-doors-tables.mp4 (photoreal wood+glass doors into the dining
+  room) → waiter-set-plate.mp4 (plated food arriving — not an empty plate) →
+  cinema-popcorn-machine.mp4 (wide Cretors lobby bin). No score. Sources
+  already credited above. waiter-steak.mp4 was not used here: landscape crop
+  of that portrait clip is an empty plate until the last instant.
+
 grand-doors-host.mp4 / grand-doors-tables.mp4 / grand-doors-yours.mp4 / grand-doors-sit.mp4
   Pexels video #17422251 — “The entrance to a building with a wooden door”
   https://www.pexels.com/video/the-entrance-to-a-building-with-a-wooden-door-17422251/

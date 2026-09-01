@@ -1,10 +1,16 @@
 import { Link } from 'react-router-dom'
 import { PageShell } from '../components/PageShell'
 import { WaitlistForm } from '../components/WaitlistForm'
+import { LandingDemo, LandingDemoCtas } from '../components/LandingDemo'
 
 export function GetStartedPage() {
   return (
     <PageShell kicker="GET STARTED" title="Join ProxiMateDate">
+      <p>A look at dinner and movie night. No sign-in.</p>
+      <LandingDemo className="my-6" />
+      <div className="mb-8">
+        <LandingDemoCtas size="md" />
+      </div>
       <p>
         <Link to="/date-night" className="text-[#C9A962] underline">
           Free Date Night
@@ -12,9 +18,13 @@ export function GetStartedPage() {
         is 30 minutes. The host can extend for $2.99.
       </p>
       <p>
-        Dinner is $9.99 for 90 minutes.
+        Dinner is $9.99
         <br />
-        Movie night is $14.99 for 2.5 hours. Pay with a card on Stripe — see{' '}
+        for 90 minutes.
+        <br />
+        Movie night is $14.99
+        <br />
+        for 2.5 hours. Pay with a card on Stripe — see{' '}
         <Link to="/pricing" className="text-[#C9A962] underline">
           Pricing
         </Link>
