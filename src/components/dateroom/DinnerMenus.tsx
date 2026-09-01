@@ -31,8 +31,8 @@ export function DinnerMenus({ partnerName, youOrder, tableOrder, onAdd, onRemove
       <p className="text-[#D4C4B4] text-sm mb-6 max-w-3xl">
         Both menus sit on this table — The Verdant Ember and The Silver Sage Steakhouse. Add to your
         plate. {partnerName === 'your date' ? 'Your date' : partnerName} orders on their screen. Call
-        Waiter brings what you picked — ribeye plays steak, cauliflower plays the plant plate. Their
-        dishes play on their screen, not yours.
+        Waiter brings the serving clip for the dish you picked. Their dishes play on their screen,
+        not yours.
       </p>
 
       <div className="grid lg:grid-cols-2 gap-6">

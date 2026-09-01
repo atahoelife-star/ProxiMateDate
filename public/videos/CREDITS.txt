@@ -20,7 +20,91 @@ waiter-idle.mp4
 waiter-pour-wine.mp4
   Pexels #8764590 — Pavel Danilyuk, “Sommelier Pouring the Wine in a Glass”
   https://www.pexels.com/video/sommelier-pouring-the-wine-in-a-glass-8764590/
-  On disk only. Not played — different waiter/room than the hostess. Wine uses the faceless champagne pour instead.
+  On disk only. Not played — different waiter/room than the hostess.
+
+waiter-wine.mp4
+  Mixkit #41247 — “Pouring wine into a glass in close-up view” (red wine)
+  Mixkit Stock Video Free License
+  https://mixkit.co/free-stock-video/pouring-wine-into-a-glass-in-close-up-view-41247/
+  Wine / rosé action. Not the champagne bottle pop.
+
+waiter-champagne-pop.mp4
+  Mixkit #51549 — “Close up shot of a champagne bottle popping the cork…”
+  Mixkit Stock Video Free License
+  https://mixkit.co/free-stock-video/close-up-shot-of-a-champagne-bottle-popping-the-cork-51549/
+  plus Mixkit #51631 — “A champagne bottle fills up a flute glass till the foam…”
+  Mixkit Stock Video Free License
+  https://mixkit.co/free-stock-video/a-champagne-bottle-fills-up-a-flute-glass-till-the-51631/
+  Stitched: bottle pop + foam spew, then pour into a flute. Not Mixkit #41264.
+
+waiter-carpaccio-oyster.mp4
+  Pexels photo #5848419 — Polina Tankilevitch, sliced white mushrooms
+  https://www.pexels.com/photo/sliced-mushrooms-on-white-surface-5848419/
+  Ken Burns still. Thin mushroom slices for Marinated King Oyster Carpaccio.
+  Not beef. Not the sautéed mushroom plate.
+
+waiter-carpaccio-beef.mp4
+  Mixkit #2429 — “Beef carpaccio”
+  Mixkit Stock Video Free License
+  https://mixkit.co/free-stock-video/beef-carpaccio-2429/
+
+waiter-mushroom-plate.mp4
+  Pexels photo #29935504 — khezez, sautéed mushrooms in an oval dish
+  https://www.pexels.com/photo/delicious-sauteed-mushrooms-in-oval-dish-29935504/
+  Ken Burns still. Wild Mushroom Medley (both kitchens). Not carpaccio.
+
+waiter-polenta.mp4
+  Pexels photo #33173599 — Maria M., grilled polenta
+  https://www.pexels.com/photo/grilled-polenta-on-plaid-tablecloth-33173599/
+  Ken Burns still.
+
+waiter-medallion.mp4
+  Pexels photo #28996097 — Fernando Hung, stir-fried mushrooms with greens
+  https://www.pexels.com/photo/stir-fried-mushrooms-with-greens-on-decorative-plate-28996097/
+  Ken Burns still. Seared King Oyster Medallion.
+
+waiter-eggplant.mp4
+  Pexels photo #23359717 — Zehra Yılmaz, baked stuffed eggplant
+  https://www.pexels.com/photo/close-up-of-a-meal-23359717/
+  Ken Burns still. Grilled Eggplant & Beluga Lentil Steak.
+
+waiter-cauliflower.mp4
+  Pexels photo #6544500 — Alesia Kozik, baked cauliflower
+  https://www.pexels.com/photo/a-plate-of-baked-cauliflower-6544500/
+  Ken Burns still. Whole roasted cauliflower centerpiece.
+
+waiter-palm.mp4
+  Pexels photo #18303023 — Matheus Alves, seared cake with cream
+  https://www.pexels.com/photo/small-meal-on-plate-18303023/
+  Ken Burns still. Mushroom Medallion & Hearts of Palm.
+
+waiter-foie.mp4
+  Pexels photo #37767594 — Dark Astraal, foie gras plate
+  https://www.pexels.com/photo/gurmansky-tanier-foie-gras-v-olmiccii-37767594/
+  Ken Burns still. Pan-seared Foie Gras.
+
+waiter-filet.mp4
+  Pexels photo #34433608 — Nadin Sh, grilled filet mignon on a white plate
+  https://www.pexels.com/photo/juicy-grilled-filet-mignon-on-white-plate-34433608/
+  Ken Burns still. 8oz Center-Cut Filet Mignon.
+
+waiter-ribeye.mp4
+  Pexels video #32082663 — Lucas Porras, grilled steak slicing
+  https://www.pexels.com/video/grilled-steak-slicing-on-wooden-table-outdoors-32082663/
+  16oz Dry-Aged Bone-In Ribeye. Steak is the shot; no tomahawk bone.
+
+waiter-tomahawk.mp4
+  Pexels video #8523251 — RDNE Stock project, tomahawk on a grill
+  https://www.pexels.com/video/close-up-video-of-a-person-grilling-steak-8523251/
+  plus Pexels photo #37121068 — Arti.tic, tomahawk held over a skillet
+  https://www.pexels.com/photo/delicious-grilled-tomahawk-steak-presentation-37121068/
+  Stitched: long-bone tomahawk on the grill, then held for service.
+  Not waiter-steak.mp4 (empty plate until the last instant).
+
+waiter-surf.mp4
+  Pexels photo #24246106 — Change C.C., lobster with vegetables
+  https://www.pexels.com/photo/a-plate-with-lobster-and-vegetables-24246106/
+  Ken Burns still. Classic Steak & Lobster — lobster half (see CLIP-GAPS).
 
 waiter-vegan.mp4
   Mixkit #2430 — “Gourmet dish and a waiter” (plated greens)
@@ -40,6 +124,7 @@ waiter-pour-champagne.mp4
   Mixkit #41264 — “Serving champagne in a glass in a very close shot”
   Mixkit Stock Video Free License
   https://mixkit.co/free-stock-video/serving-champagne-in-a-glass-in-a-very-close-shot-41264/
+  On disk only. Champagne now uses waiter-champagne-pop.mp4. Wine uses waiter-wine.mp4.
 
 waiter-dessert.mp4
   Pexels #31750575 — Dominik Zítka, “Crème Brûlée Caramelization with Torch”

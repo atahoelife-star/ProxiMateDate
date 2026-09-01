@@ -1,9 +1,52 @@
 import type { Course, OrderLine, RestaurantId } from './menus'
 
-export type WaiterClip = 'idle' | 'greet' | 'wine' | 'vegan' | 'steak' | 'champagne' | 'dessert' | 'chocolate'
+export type WaiterClip =
+  | 'idle'
+  | 'greet'
+  | 'wine'
+  | 'champagne'
+  | 'dessert'
+  | 'chocolate'
+  | 'carpaccio-oyster'
+  | 'polenta'
+  | 'mushroom'
+  | 'medallion'
+  | 'eggplant'
+  | 'cauliflower'
+  | 'palm'
+  | 'carpaccio-beef'
+  | 'foie'
+  | 'filet'
+  | 'ribeye'
+  | 'tomahawk'
+  | 'surf'
+  | 'vegan'
+  | 'steak'
 
 /** Evening memory, earliest to latest. Visual idle is the locked dining-room look, not these clips. */
-export const EVENING_STAGES: WaiterClip[] = ['idle', 'greet', 'wine', 'vegan', 'steak', 'champagne', 'dessert', 'chocolate']
+export const EVENING_STAGES: WaiterClip[] = [
+  'idle',
+  'greet',
+  'wine',
+  'vegan',
+  'carpaccio-oyster',
+  'polenta',
+  'mushroom',
+  'medallion',
+  'eggplant',
+  'cauliflower',
+  'palm',
+  'steak',
+  'carpaccio-beef',
+  'foie',
+  'filet',
+  'ribeye',
+  'tomahawk',
+  'surf',
+  'champagne',
+  'dessert',
+  'chocolate',
+]
 
 export const WAITER_CLIPS: Record<
   WaiterClip,
@@ -20,25 +63,13 @@ export const WAITER_CLIPS: Record<
     presenceLabel: 'Ready for your order',
   },
   wine: {
-    // Faceless pour from the house set. waiter-pour-wine.mp4 is a different
-    // sommelier in another room — kept on disk, not shown (cast).
-    src: '/videos/waiter-pour-champagne.mp4',
+    src: '/videos/waiter-wine.mp4',
     label: 'Pouring wine',
     presenceLabel: 'Wine on the table',
   },
-  vegan: {
-    src: '/videos/waiter-vegan.mp4',
-    label: 'Setting a plant plate',
-    presenceLabel: 'Verdant Ember at the table',
-  },
-  steak: {
-    src: '/videos/waiter-steak.mp4',
-    label: 'Serving steak',
-    presenceLabel: 'Steak on the table',
-  },
   champagne: {
-    src: '/videos/waiter-pour-champagne.mp4',
-    label: 'Pouring champagne',
+    src: '/videos/waiter-champagne-pop.mp4',
+    label: 'Popping champagne',
     presenceLabel: 'Champagne on the table',
   },
   dessert: {
@@ -51,37 +82,115 @@ export const WAITER_CLIPS: Record<
     label: 'Serving chocolate dessert',
     presenceLabel: 'Soufflé at the table',
   },
+  'carpaccio-oyster': {
+    src: '/videos/waiter-carpaccio-oyster.mp4',
+    label: 'Serving king oyster carpaccio',
+    presenceLabel: 'Carpaccio at the table',
+  },
+  polenta: {
+    src: '/videos/waiter-polenta.mp4',
+    label: 'Serving seared polenta',
+    presenceLabel: 'Polenta at the table',
+  },
+  mushroom: {
+    src: '/videos/waiter-mushroom-plate.mp4',
+    label: 'Serving wild mushrooms',
+    presenceLabel: 'Mushrooms at the table',
+  },
+  medallion: {
+    src: '/videos/waiter-medallion.mp4',
+    label: 'Serving oyster medallion',
+    presenceLabel: 'Medallion at the table',
+  },
+  eggplant: {
+    src: '/videos/waiter-eggplant.mp4',
+    label: 'Serving grilled eggplant',
+    presenceLabel: 'Eggplant at the table',
+  },
+  cauliflower: {
+    src: '/videos/waiter-cauliflower.mp4',
+    label: 'Serving roasted cauliflower',
+    presenceLabel: 'Cauliflower at the table',
+  },
+  palm: {
+    src: '/videos/waiter-palm.mp4',
+    label: 'Serving mushroom medallion',
+    presenceLabel: 'Medallion at the table',
+  },
+  'carpaccio-beef': {
+    src: '/videos/waiter-carpaccio-beef.mp4',
+    label: 'Serving beef carpaccio',
+    presenceLabel: 'Carpaccio at the table',
+  },
+  foie: {
+    src: '/videos/waiter-foie.mp4',
+    label: 'Serving foie gras',
+    presenceLabel: 'Foie gras at the table',
+  },
+  filet: {
+    src: '/videos/waiter-filet.mp4',
+    label: 'Serving filet mignon',
+    presenceLabel: 'Filet at the table',
+  },
+  ribeye: {
+    src: '/videos/waiter-ribeye.mp4',
+    label: 'Serving ribeye',
+    presenceLabel: 'Ribeye at the table',
+  },
+  tomahawk: {
+    src: '/videos/waiter-tomahawk.mp4',
+    label: 'Serving the tomahawk',
+    presenceLabel: 'Tomahawk at the table',
+  },
+  surf: {
+    src: '/videos/waiter-surf.mp4',
+    label: 'Serving steak and lobster',
+    presenceLabel: 'Surf and turf at the table',
+  },
+  vegan: {
+    src: '/videos/waiter-vegan.mp4',
+    label: 'Setting a plant plate',
+    presenceLabel: 'Verdant Ember at the table',
+  },
+  steak: {
+    src: '/videos/waiter-steak.mp4',
+    label: 'Serving steak',
+    presenceLabel: 'Steak on the table',
+  },
 }
 
-/** Source clips are ~7–14s; hold service on that clip for this long (repeat/loop) before returning to the chosen room. */
+/** Source clips are ~7–26s; hold service on that clip for this long (repeat/loop) before returning to the chosen room. */
 export const MIN_SERVICE_MS = 24_000
 
-/** One clip per orderable item. Gaps that would show the wrong plate use greet instead — see public/videos/CLIP-GAPS.txt. */
+/**
+ * One clip per orderable item. Same dish name across kitchens may share a file.
+ * Different dishes never share a file. See public/videos/CLIP-GAPS.txt.
+ */
 export const ITEM_CLIP: Record<string, WaiterClip> = {
-  've-carpaccio': 'vegan',
-  've-polenta': 'vegan',
-  've-mushroom-app': 'vegan',
-  've-medallion': 'vegan',
-  've-lentil': 'vegan',
-  've-cauliflower': 'vegan',
-  've-palm': 'vegan',
+  've-carpaccio': 'carpaccio-oyster',
+  've-polenta': 'polenta',
+  've-mushroom-app': 'mushroom',
+  've-medallion': 'medallion',
+  've-lentil': 'eggplant',
+  've-cauliflower': 'cauliflower',
+  've-palm': 'palm',
   've-souffle': 'chocolate',
   've-brulee': 'dessert',
-  'ss-carpaccio': 'greet',
-  'ss-foie': 'greet',
-  'ss-mushroom-app': 'vegan',
-  'ss-filet': 'steak',
-  'ss-ribeye': 'steak',
-  'ss-tomahawk': 'steak',
-  'ss-surf': 'steak',
+  'ss-carpaccio': 'carpaccio-beef',
+  'ss-foie': 'foie',
+  'ss-mushroom-app': 'mushroom',
+  'ss-filet': 'filet',
+  'ss-ribeye': 'ribeye',
+  'ss-tomahawk': 'tomahawk',
+  'ss-surf': 'surf',
   'ss-souffle': 'chocolate',
   'ss-brulee': 'dessert',
 }
 
-const FOOD_CLIP_SET = new Set<WaiterClip>(['vegan', 'steak', 'dessert', 'chocolate'])
+const DRINK_OR_STAFF = new Set<WaiterClip>(['idle', 'greet', 'wine', 'champagne'])
 
 export function isFoodClip(clip: WaiterClip): boolean {
-  return FOOD_CLIP_SET.has(clip)
+  return !DRINK_OR_STAFF.has(clip)
 }
 
 export function stageIndex(clip: WaiterClip): number {
@@ -89,7 +198,11 @@ export function stageIndex(clip: WaiterClip): number {
 }
 
 export function laterStage(current: WaiterClip, incoming: WaiterClip): WaiterClip {
-  return stageIndex(incoming) > stageIndex(current) ? incoming : current
+  const currentIndex = stageIndex(current)
+  const incomingIndex = stageIndex(incoming)
+  if (incomingIndex < 0) return isFoodClip(incoming) ? incoming : current
+  if (currentIndex < 0) return incoming
+  return incomingIndex > currentIndex ? incoming : current
 }
 
 /** Serving / arrival clip to play. Idle requests become a greet. Food and drinks always play the matching serve. */
@@ -119,12 +232,7 @@ export function clipForOrder(line: {
 
 export function clipForTable(lines: Pick<OrderLine, 'course' | 'restaurantId' | 'itemId'>[]): WaiterClip {
   if (lines.length === 0) return 'greet'
-  const clips = lines.map(clipForOrder)
-  if (clips.includes('chocolate')) return 'chocolate'
-  if (clips.includes('dessert')) return 'dessert'
-  if (clips.includes('steak')) return 'steak'
-  if (clips.includes('vegan')) return 'vegan'
-  return clips[0] ?? 'greet'
+  return clipForLatest(lines)
 }
 
 /**

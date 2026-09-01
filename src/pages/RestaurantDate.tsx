@@ -175,7 +175,7 @@ function RestaurantDateSession() {
     },
     {
       title: 'Pop a bottle of champagne for us',
-      message: 'Champagne is poured. Watch the live waiter at your table.',
+      message: 'The waiter pops a bottle, lets it spray, then pours into a glass.',
       clip: 'champagne',
     },
   ]
@@ -303,7 +303,7 @@ function RestaurantDateSession() {
                 </div>
                 <h3 className="text-[#F8F4ED] text-2xl">Good evening. How may I serve you?</h3>
                 <p className="text-[#A8988A] text-sm mt-1">
-                  Your starter, entrée, and dessert — the serving video matches what you ordered. Ribeye plays steak. Cauliflower plays the plant plate. Their dishes play on their screen.
+                  Your starter, entrée, and dessert — the serving video matches the dish you ordered. Their dishes play on their screen.
                 </p>
               </div>
               {myPlate.length > 0 && (
