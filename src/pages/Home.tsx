@@ -19,7 +19,7 @@ const rooms = [
     to: '/date-night',
     icon: MessageCircle,
     title: 'Free Date Night',
-    desc: 'Simple together time. Just chat. Free for 30 minutes. Then $2.99 to extend.',
+    desc: 'Simple together time. Just chat. Free for 30 minutes.',
   },
 ]
 
@@ -95,7 +95,7 @@ export function HomePage() {
         </div>
         <div className="card p-8 md:p-12">
           <p className="text-[#EDE4D9] leading-relaxed text-lg">
-            ProxiMateDate is a long-distance date night from A Tahoe Life / Gregory Barrett. If you miss dinner across a table — vegan on one side, steak on the other — the restaurant room is for you. Movie night is Watch Together. Free date night is just talking for 30 minutes. Then $2.99 to extend.
+            This site is for couples who are away from each other and still want an evening together. If you miss dinner across a table — vegan on one side, steak on the other — the restaurant room is for you. Movie night is Watch Together. Free date night is just talking for a little while.
           </p>
           <p className="text-[#A8988A] mt-6 leading-relaxed">
             Orders stay with you; they do not go to a kitchen. YouTube uses Google’s official player. Netflix stays on your own apps. Dinner and movie night are paid with a card on Stripe.

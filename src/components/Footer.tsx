@@ -24,7 +24,7 @@ export function Footer() {
         </nav>
         <p className="text-center">
           Made with love for couples everywhere • ProxiMateDate © {new Date().getFullYear()}
-          <span className="block mt-1">A Tahoe Life / Gregory Barrett · atahoelife@gmail.com</span>
+          <span className="block mt-1">atahoelife@gmail.com</span>
         </p>
       </div>
     </footer>
