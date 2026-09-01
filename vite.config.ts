@@ -1,8 +1,11 @@
-import { defineConfig, type Plugin } from 'vite'
+import { defineConfig, loadEnv, type Plugin } from 'vite'
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { applyEvent, claimSeatOnRoom, loadRoom, roomIdFrom, saveRoom, snapshotAfter } from './api/live-room-store.js'
+import { getRoomStartCounts, isRoomStartKind, recordRoomStart } from './api/room-start-store.js'
+import { authorizeStats } from './api/stats-auth.js'
+import { collectPaidCheckoutCounts } from './api/stats-stripe.js'
 
 function readJson(req: IncomingMessage): Promise<Record<string, unknown>> {
   return new Promise((resolve) => {
@@ -31,6 +34,64 @@ function send(res: ServerResponse, status: number, body: unknown) {
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
   res.end(JSON.stringify(body))
+}
+
+function statsApiPlugin(): Plugin {
+  return {
+    name: 'pd-stats-api',
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        const path = (req.originalUrl || req.url || '').split('?')[0]
+        if (path !== '/api/room-start' && path !== '/api/stats') {
+          next()
+          return
+        }
+        void (async () => {
+          if (req.method === 'OPTIONS') {
+            res.statusCode = 204
+            res.setHeader('Access-Control-Allow-Origin', '*')
+            res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+            res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-stats-key')
+            res.end()
+            return
+          }
+          if (path === '/api/room-start') {
+            if (req.method !== 'POST') {
+              send(res, 405, { error: 'method_not_allowed' })
+              return
+            }
+            const body = await readJson(req)
+            const kind = String(body.kind || '')
+            const room = roomIdFrom(body.room)
+            if (!isRoomStartKind(kind) || !room) {
+              send(res, 400, { error: 'bad_start' })
+              return
+            }
+            const result = recordRoomStart(kind, room)
+            send(res, 200, { ok: true, recorded: result.recorded })
+            return
+          }
+          if (req.method !== 'GET') {
+            send(res, 405, { error: 'method_not_allowed' })
+            return
+          }
+          const url = new URL(req.originalUrl || req.url || '', 'http://localhost')
+          const auth = authorizeStats({
+            url: url.pathname + url.search,
+            headers: req.headers,
+            query: Object.fromEntries(url.searchParams.entries()),
+          })
+          if (!auth.ok) {
+            send(res, auth.status, { error: auth.error })
+            return
+          }
+          const roomStarts = getRoomStartCounts()
+          const stripe = await collectPaidCheckoutCounts()
+          send(res, 200, { roomStarts, stripe })
+        })().catch(() => next())
+      })
+    },
+  }
 }
 
 function liveRoomPlugin(): Plugin {
@@ -93,15 +154,21 @@ function liveRoomPlugin(): Plugin {
   }
 }
 
-export default defineConfig({
-  plugins: [react(), tailwindcss(), liveRoomPlugin()],
-  server: {
-    proxy: {
-      '/api/create-checkout': {
-        target: 'https://www.proximatedate.com',
-        changeOrigin: true,
-        secure: true,
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '')
+  for (const key of ['STATS_KEY', 'STRIPE_SECRET_KEY', 'PUBLIC_SITE_URL'] as const) {
+    if (env[key] && !process.env[key]) process.env[key] = env[key]
+  }
+  return {
+    plugins: [react(), tailwindcss(), liveRoomPlugin(), statsApiPlugin()],
+    server: {
+      proxy: {
+        '/api/create-checkout': {
+          target: 'https://www.proximatedate.com',
+          changeOrigin: true,
+          secure: true,
+        },
       },
     },
-  },
+  }
 })

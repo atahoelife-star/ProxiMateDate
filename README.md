@@ -32,7 +32,7 @@ npm install
 npm run dev
 ```
 
-`npm run build` type-checks and emits `dist/`. Local Vite has no `/api` routes, so paid Pricing buttons fall through to the email waitlist.
+`npm run build` type-checks and emits `dist/`. Local Vite serves `/api/live-room`, `/api/room-start`, and `/api/stats`. Paid Pricing buttons still need `STRIPE_SECRET_KEY` on Vercel; without it they collect a waitlist email.
 
 Cloudflare Workers Git builds (if connected) need this Wrangler file and a dashboard **Build command** of `npm run build`. They serve the SPA only; Stripe Checkout is the Vercel function.
 
@@ -45,6 +45,7 @@ Paid plans: Dinner **$9.99**, Movie Night **$14.99**, Premium Romance **$24.99**
 3. In the [Vercel project](https://vercel.com) → Settings → Environment Variables, add:
    - `STRIPE_SECRET_KEY` = that secret
    - optional `PUBLIC_SITE_URL` = `https://www.proximatedate.com` (used for success/cancel URLs)
+   - `STATS_KEY` = a long random password for the private counts page (never `VITE_`)
    - `VERCEL_PREVIEW_FEEDBACK_ENABLED` = `0` (documented toolbar disable for preview branches)
 4. Same Vercel project → Settings → General → **Vercel Toolbar** → **Production: Off** (and Preview: Off). Customers must never see the comments / draft / feedback bubble on proximatedate.com. `vercel.json` also sends `x-vercel-skip-toolbar: 1`, and `index.html` removes the `vercel-live-feedback` widget if the platform still injects it.
 
@@ -53,3 +54,13 @@ Paid plans: Dinner **$9.99**, Movie Night **$14.99**, Premium Romance **$24.99**
 6. If the key is missing, the API returns 503 and the site collects a waitlist email instead. No card fields are rendered on proximatedate.com.
 
 Checkout success returns to the matching room (`/restaurant`, `/movie-night`, `/date-night` for extend, or `/date-room`) with `?paid=1&plan=…`, which unlocks that room (or both, for Premium) in this browser. Extend adds 30 minutes to the free date night clock. If the key is missing, we never render a card form on this site — waitlist email only.
+
+## Private evening counts (Gregory only)
+
+This page is not linked from the public nav, footer, or homepage. Customers and ad landings never see it.
+
+1. In Vercel → Settings → Environment Variables, set `STATS_KEY` to a long random password. Do not prefix it with `VITE_`.
+2. Redeploy production.
+3. Open `https://www.proximatedate.com/stats?key=` plus that same value. You can also type the password on `/stats`. HTTP Basic uses the same password.
+
+The page shows unique room starts this website recorded (Free Date Night, Dinner, Movie Night) and, when `STRIPE_SECRET_KEY` is present, paid Checkout sessions (dinner $9.99, movie $14.99, premium $24.99, extend $2.99). Free dates never hit Stripe unless someone extends. Counts are never invented: if Stripe is missing, paid rows stay blank instead of showing zero. Room starts can reset if the host moves servers.

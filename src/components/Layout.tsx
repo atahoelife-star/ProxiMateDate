@@ -5,7 +5,11 @@ import { Footer } from './Footer'
 
 export function Layout() {
   const { pathname, hash } = useLocation()
-  const immersive = pathname === '/restaurant' || pathname === '/movie-night' || pathname === '/date-night'
+  const immersive =
+    pathname === '/restaurant' ||
+    pathname === '/movie-night' ||
+    pathname === '/date-night' ||
+    pathname === '/stats'
 
   useEffect(() => {
     if (hash) {

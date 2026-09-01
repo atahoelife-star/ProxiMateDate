@@ -13,6 +13,7 @@ import { PrivacyPage } from './pages/Privacy'
 import { TermsPage } from './pages/Terms'
 import { SignInPage } from './pages/SignIn'
 import { GetStartedPage } from './pages/GetStarted'
+import { StatsPage } from './pages/Stats'
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
           <Route path="/terms" element={<TermsPage />} />
           <Route path="/signin" element={<SignInPage />} />
           <Route path="/get-started" element={<GetStartedPage />} />
+          <Route path="/stats" element={<StatsPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>

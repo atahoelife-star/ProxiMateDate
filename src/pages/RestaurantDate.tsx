@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { toast } from 'sonner'
@@ -37,6 +37,7 @@ import { usePaidDateSession } from '../lib/dateSession'
 import { useLiveChat, useLiveSeat } from '../lib/liveRoom'
 import { useUsPhotos } from '../lib/datePhotos'
 import { RoomPaywall } from '../components/dateroom/RoomPaywall'
+import { reportRoomStart } from '../lib/roomStarts'
 
 export function RestaurantDatePage() {
   const allowed = usePaidRoom('dinner')
@@ -81,6 +82,11 @@ function RestaurantDateSession() {
   const [waiterStage, setWaiterStage] = useState<WaiterClip>('idle')
 
   useRoomQuerySync(roomId, session.startedAt > 0 ? { started: String(session.startedAt) } : undefined)
+
+  useEffect(() => {
+    if (phase !== 'room') return
+    reportRoomStart('dinner', roomId)
+  }, [phase, roomId])
 
   const playWaiter = (requested: WaiterClip, note: string, chat?: string) => {
     const play = clipToPlay(waiterPresenceRef.current, requested)

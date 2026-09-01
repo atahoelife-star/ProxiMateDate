@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { WatchStage } from '../components/dateroom/WatchTogether'
 import { ArrivalSequence } from '../components/dateroom/ArrivalSequence'
 import { useArrivalGate } from '../lib/arrivalGate'
@@ -20,6 +20,7 @@ import { usePaidDateSession } from '../lib/dateSession'
 import { useLiveChat, useLiveSeat } from '../lib/liveRoom'
 import { useUsPhotos } from '../lib/datePhotos'
 import { RoomPaywall } from '../components/dateroom/RoomPaywall'
+import { reportRoomStart } from '../lib/roomStarts'
 
 export function MovieNightPage() {
   const allowed = usePaidRoom('movie')
@@ -57,6 +58,11 @@ function MovieNightSession() {
   const [wrapDismissed, setWrapDismissed] = useState(false)
 
   useRoomQuerySync(roomId, session.startedAt > 0 ? { started: String(session.startedAt) } : undefined)
+
+  useEffect(() => {
+    if (!arrived) return
+    reportRoomStart('movie', roomId)
+  }, [arrived, roomId])
 
   const chatMoment = chatMomentForEvening({
     watching: watchingMovie,

@@ -124,6 +124,7 @@ export default async function handler(req, res) {
       ],
       success_url: withSessionQuery(origin, successPath, body?.returnTo, planId),
       cancel_url: cancelUrl(origin, body?.cancelTo, '/pricing'),
+      metadata: { plan: planId },
     })
 
     if (!session.url) {

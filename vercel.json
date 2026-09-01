@@ -2,7 +2,7 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
     {
-      "source": "/((?!api/|videos/|images/|audio/|favicon.svg|icons.svg|assets/).*)",
+      "source": "/((?!api/|videos/|images/|audio/|favicon.svg|icons.svg|robots.txt|assets/).*)",
       "destination": "/index.html"
     }
   ],
@@ -12,6 +12,20 @@
       "headers": [
         { "key": "x-vercel-skip-toolbar", "value": "1" },
         { "key": "x-vercel-toolbar", "value": "0" }
+      ]
+    },
+    {
+      "source": "/stats",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow, noarchive" },
+        { "key": "Cache-Control", "value": "no-store" }
+      ]
+    },
+    {
+      "source": "/api/stats",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow, noarchive" },
+        { "key": "Cache-Control", "value": "no-store" }
       ]
     }
   ]

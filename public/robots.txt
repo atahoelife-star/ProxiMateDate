@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: /stats
+Disallow: /api/stats
+Disallow: /api/room-start

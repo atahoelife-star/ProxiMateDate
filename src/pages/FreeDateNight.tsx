@@ -13,6 +13,7 @@ import { useLiveChat, useLiveSeat } from '../lib/liveRoom'
 import { useUsPhotos } from '../lib/datePhotos'
 import { startStripeCheckout } from '../lib/stripeCheckout'
 import { newRoomId } from '../lib/watchSync'
+import { reportRoomStart } from '../lib/roomStarts'
 
 /** Free Date Night is never behind Stripe/Premium. Only restaurant and movie night gate on pay. */
 export function FreeDateNightPage() {
@@ -51,6 +52,11 @@ function FreeDateNightRoom({ roomId, onRecycle }: { roomId: string; onRecycle: (
   const sawRunning = useRef(false)
 
   useRoomQuerySync(roomId, session.startedAt > 0 ? { started: String(session.startedAt) } : undefined)
+
+  useEffect(() => {
+    if (!myName) return
+    reportRoomStart('free', roomId)
+  }, [myName, roomId])
 
   useEffect(() => {
     if (!session.waiting && !session.expired) sawRunning.current = true
