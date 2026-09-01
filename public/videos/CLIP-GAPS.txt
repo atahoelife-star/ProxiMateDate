@@ -36,3 +36,10 @@ Movie-night popcorn beat
   No Pexels / Coverr / Mixkit Standard / Pixabay clip shows a wide lobby
   popper with corn pouring into a bin. Mixkit #25466 is Restricted (personal
   use only) and still a tight kettle. Do not ship Getty / Storyblocks.
+
+Landing demo (home / Get Started)
+  Uses waiter-set-plate.mp4 for the meal beat — food on the platter, not an
+  empty plate. waiter-steak.mp4 stays off the landing reel: a 16:9 crop of
+  that portrait clip is an empty plate until the last instant. Full unique
+  per-item waiter pass (champagne pop, carpaccio vs mushrooms, tomahawk) is
+  a separate ship.

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
-import { ArrowRight, Clapperboard, Heart, MessageCircle, UtensilsCrossed } from 'lucide-react'
+import { Clapperboard, Heart, MessageCircle, UtensilsCrossed } from 'lucide-react'
+import { LandingDemo, LandingDemoCtas } from '../components/LandingDemo'
 
 const rooms = [
   {
@@ -25,28 +26,29 @@ const rooms = [
 export function HomePage() {
   return (
     <div>
-      <div className="relative h-[92vh] min-h-[620px] flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0">
-          <img
-            src="/images/hero.jpg"
-            alt="Romantic couple connecting across distance"
-            className="w-full h-full object-cover opacity-70"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#0F0A0D]/70 via-[#0F0A0D]/75 to-[#0F0A0D]" />
-        </div>
+      <div className="relative pt-12 pb-16 md:pt-16 md:pb-20 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-[#1A1418] via-[#0F0A0D] to-[#0F0A0D]" />
 
-        <div className="relative z-10 max-w-4xl px-6 text-center">
+        <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
           <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full border border-[#C9A962]/30 bg-white/5 text-sm mb-6">
             <Heart className="w-4 h-4 text-[#E8A0B8]" /> A long-distance date night, in the browser
           </div>
 
-          <h1 className="text-[#F8F4ED] mb-6 leading-none">
+          <h1 className="text-[#F8F4ED] mb-4 leading-none">
             Stay close,
             <br />
             even when far apart
           </h1>
 
-          <div className="max-w-xl mx-auto text-xl text-[#EDE4D9]/90 mb-10 space-y-3">
+          <p className="max-w-xl mx-auto text-lg text-[#EDE4D9]/90 mb-8">
+            A look at dinner and movie night. No sign-in. Loops while you watch.
+          </p>
+
+          <LandingDemo className="max-w-4xl mx-auto mb-8" />
+
+          <LandingDemoCtas />
+
+          <div className="max-w-md mx-auto text-lg text-[#EDE4D9]/90 mt-10 space-y-3">
             <p>Three rooms.</p>
             <p>
               Restaurant dinner is $9.99
@@ -61,24 +63,7 @@ export function HomePage() {
             <p>Free date night is 30 minutes.</p>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/restaurant" className="btn btn-gold text-base px-10 py-4 group">
-              Restaurant Date
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition" />
-            </Link>
-            <Link to="/movie-night" className="btn btn-outline text-base px-10 py-4">
-              Movie Night
-            </Link>
-            <Link to="/date-night" className="btn btn-outline text-base px-10 py-4">
-              Free Date Night
-            </Link>
-          </div>
-
           <div className="mt-8 text-xs tracking-[2px] text-[#A8988A]">PAY WITH A CARD ON STRIPE</div>
-        </div>
-
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center text-xs text-[#A8988A]">
-          SCROLL TO DISCOVER <ArrowRight className="w-3 h-3 rotate-90 mt-1" />
         </div>
       </div>
 
@@ -123,14 +108,7 @@ export function HomePage() {
           <Heart className="w-9 h-9 text-[#E8A0B8] mx-auto mb-6" />
           <h2 className="text-[#F8F4ED] mb-4">Your next date night is waiting.</h2>
           <p className="text-lg text-[#A8988A] mb-8">Try free date night for 30 minutes, or pay for dinner or movie night with a card on Stripe.</p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link to="/pricing" className="btn btn-rose text-base px-10 py-4">
-              See pricing
-            </Link>
-            <Link to="/get-started" className="btn btn-outline text-base px-10 py-4">
-              Get started
-            </Link>
-          </div>
+          <LandingDemoCtas size="md" />
         </div>
       </div>
     </div>
