@@ -3,43 +3,48 @@ Serving-clip gaps (honest plates only — no wrong food).
 Host / staff
   Tour stays rooms only (no walk-in captions).
   After the thumbnail pick: grand hotel double doors open into the chosen dining room, then the host says “Right this way” (audio only). Do not play waiter-idle, kitchen swinging doors, or a zoomed service-door loop on this beat.
-  Call Waiter still uses waiter-idle.mp4 (Pexels #6327644) — that waitress is the only staff face on purpose. Food and pour clips are close-ups from the house set (plates, torch, glasses) — no extra waiter characters.
-  Serving is per screen: this browser’s plate only. Ribeye/filet → steak clip. Cauliflower and other Verdant Ember plates → plant plate. Partner dishes never play here.
+  Call Waiter still uses waiter-idle.mp4 (Pexels #6327644) — that waitress is the only staff face on purpose.
+  Serving is per screen: this browser’s plate only. Partner dishes never play here.
 
-Matched
-  Call Waiter / greet → waiter-idle.mp4 (same waitress)
-  Post-pick seating → grand-doors-{look}.mp4 (Pexels #17422251 wood+glass restaurant
-  double doors looking into a real dining room, then xfade into the chosen table.
-  Not mustard CSS doors, not kitchen swinging doors, not Mixkit 21817 guest-room.)
-  Wine / rosé → waiter-pour-champagne.mp4 (faceless pour; see below)
-  Champagne → waiter-pour-champagne.mp4
-  All Verdant Ember savory plates → waiter-vegan.mp4 (existing house plant plate)
-  Filet, ribeye, tomahawk → waiter-steak.mp4
-  Crème brûlée (both kitchens) → waiter-dessert.mp4 (torch, not salad)
-  Dark chocolate soufflé (both kitchens) → waiter-chocolate.mp4 (chocolate dessert being served)
+Matched — unique file per dish (same dish name across kitchens may share)
+  Call Waiter / greet → waiter-idle.mp4
+  Wine / rosé → waiter-wine.mp4 (Mixkit #41247 red-wine pour). Not the champagne pop.
+  Champagne → waiter-champagne-pop.mp4 (Mixkit #51549 pop + foam spew, then #51631 bottle into flute)
+  Marinated King Oyster Carpaccio → waiter-carpaccio-oyster.mp4 (thin mushroom slices)
+  Japanese A5 Wagyu Beef Carpaccio → waiter-carpaccio-beef.mp4 (Mixkit #2429 plated beef carpaccio)
+  Wild Mushroom Medley (both kitchens) → waiter-mushroom-plate.mp4 (sautéed mushrooms in a dish)
+  Seared Saffron Polenta Cake → waiter-polenta.mp4
+  Seared King Oyster Medallion → waiter-medallion.mp4
+  Grilled Eggplant & Beluga Lentil Steak → waiter-eggplant.mp4
+  Whole Roasted Cauliflower Centerpiece for two → waiter-cauliflower.mp4 (whole roasted head)
+  Mushroom Medallion & Hearts of Palm → waiter-palm.mp4
+  Pan-Seared Foie Gras → waiter-foie.mp4
+  8oz Center-Cut Filet Mignon → waiter-filet.mp4 (boneless plated filet)
+  16oz Dry-Aged Bone-In Ribeye → waiter-ribeye.mp4 (large steak being carved)
+  32oz Long-Bone Tomahawk Ribeye for two → waiter-tomahawk.mp4 (long bone on grill, then held for service)
+  Classic Steak & Lobster → waiter-surf.mp4 (lobster plate — see below)
+  Crème brûlée (both kitchens) → waiter-dessert.mp4
+  Dark chocolate soufflé (both kitchens) → waiter-chocolate.mp4
 
-Intentionally not forced
-  Japanese A5 Wagyu Beef Carpaccio — no royalty-free raw-beef carpaccio clip that matches this waiter set. Plays greet (same waitress, no cooked-steak plate).
-  Pan-Seared Foie Gras — no matching foie clip in this lighting/service style. Plays greet.
-  Classic Steak & Lobster — free lobster/surf clips we found were Mixkit Restricted (personal use only) or unrelated footage. Plays the steak clip (the beef half).
-  Whole roasted cauliflower, polenta cake, king-oyster carpaccio — no item-specific plated clip that matches the existing close-up service look. They keep the Verdant Ember plant-plate clip.
-  waiter-steak.mp4 is the existing house steak file (dark wood, same set). Grill/kitchen steak stock did not match this service look, so it was not swapped.
+Intentionally not forced / remaining gaps
+  Classic Steak & Lobster — no royalty-free commercial clip that shows steak AND lobster on one plate. Mixkit #22881 (steak and lobster) is Restricted / personal use only. The surf clip is a lobster plate so the dish is not an empty plate or a generic steak. The beef half is not in this file.
+  Pan-Seared Foie Gras — no matching seared-liver service video in this lighting. Ken Burns of a plated foie terrine (Pexels #37767594). Not greet. Not steak.
+  Marinated King Oyster Carpaccio — no royalty-free plated king-oyster carpaccio video. Ken Burns of thin mushroom slices (not beef, not the sautéed medley).
+  Mushroom Medallion & Hearts of Palm — no hearts-of-palm video. Ken Burns of a seared round plated cake. Not the chopsticks medallion file and not the sautéed medley.
+  Several Verdant Ember / Silver Sage savory clips are Ken Burns of Pexels stills when no matching Standard-license video existed. The still is the named dish, not a substitute plate.
+  waiter-steak.mp4 (empty plate until the last instant) is no longer mapped to any menu item.
+  waiter-pour-champagne.mp4 (Mixkit #41264 close pour) is no longer used for wine or champagne.
+  waiter-pour-wine.mp4 stays off screen — different sommelier, different room.
 
-Do not use waiter-set-plate.mp4 for menu items (sliders).
-Do not use waiter-pour-wine.mp4 on screen — different man in a grey plaid suit, different dining room. Cast consistency over a second sommelier. File stays on disk.
+Do not use waiter-set-plate.mp4 for menu items (sliders). Landing demo still uses it.
+Do not use Mixkit Restricted clips (personal use only), Getty, or Storyblocks.
 
 Movie-night popcorn beat
   cinema-popcorn-machine.mp4 is a landscape Ken Burns of a real Cretors
-  theater-lobby machine (Commons, Tim Evanson, CC BY-SA 2.0): tilted kettle
-  over a BIG glass bin already piled with popcorn. Gregory rejected the
-  Coverr kettle-macro as way too zoomed in on the maker.
+  theater-lobby machine (Commons, Tim Evanson, CC BY-SA 2.0).
   No Pexels / Coverr / Mixkit Standard / Pixabay clip shows a wide lobby
-  popper with corn pouring into a bin. Mixkit #25466 is Restricted (personal
-  use only) and still a tight kettle. Do not ship Getty / Storyblocks.
+  popper with corn pouring into a bin. Mixkit #25466 is Restricted.
 
 Landing demo (home / Get Started)
-  Uses waiter-set-plate.mp4 for the meal beat — food on the platter, not an
-  empty plate. waiter-steak.mp4 stays off the landing reel: a 16:9 crop of
-  that portrait clip is an empty plate until the last instant. Full unique
-  per-item waiter pass (champagne pop, carpaccio vs mushrooms, tomahawk) is
-  a separate ship.
+  Unchanged: grand-doors-tables.mp4 → waiter-set-plate.mp4 → cinema-popcorn-machine.mp4.
+  Not waiter-steak.mp4. Ships for ad traffic on the logged-out home and Get Started pages.
