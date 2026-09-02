@@ -175,10 +175,16 @@ export function WatchStage({
     if (floaterRef.current.open()) paintFloater()
   }
 
-  /** Chat first in this click, then YouTube. Reversing that spends the gesture and the floater never appears. */
-  const openYoutubeAndChat = (videoId: string) => {
-    openFloater()
-    window.open(youtubeWatchUrl(videoId), '_blank', 'noopener,noreferrer')
+  /** One window.open per click. A second open is blocked, or it replaces the chat popup with YouTube. */
+  const openOfficialYoutube = (videoId: string) => {
+    const watch = window.open(youtubeWatchUrl(videoId), 'pd-youtube-watch')
+    if (watch) {
+      try {
+        watch.opener = null
+      } catch {
+        /* ignore */
+      }
+    }
   }
 
   const startVideo = (raw: string, title?: string) => {
@@ -202,9 +208,8 @@ export function WatchStage({
       startVideo(raw, title)
       return
     }
-    openFloater()
     startVideo(raw, title)
-    window.open(youtubeWatchUrl(id), '_blank', 'noopener,noreferrer')
+    openOfficialYoutube(id)
   }
 
   const stopWatching = () => {
@@ -243,7 +248,7 @@ export function WatchStage({
 
   const onPlayClick = () => {
     if (openOnYouTube && state) {
-      openYoutubeAndChat(state.videoId)
+      openOfficialYoutube(state.videoId)
       return
     }
     if (pastedId && (!state || pastedId !== state.videoId)) {
