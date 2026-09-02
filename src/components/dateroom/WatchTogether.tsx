@@ -53,7 +53,6 @@ export function WatchStage({
   const [state, setState] = useState<WatchState | null>(() => bootWatchState(roomId, initialVideoId, isFollower))
   const [duration, setDuration] = useState(0)
   const [displayTime, setDisplayTime] = useState(0)
-  const [floaterDocked, setFloaterDocked] = useState(false)
 
   const hostRef = useRef<YTPlayerHandle | null>(null)
   const applying = useRef(false)
@@ -173,13 +172,7 @@ export function WatchStage({
   }
 
   const openFloater = () => {
-    if (floaterRef.current.open()) {
-      paintFloater()
-      setFloaterDocked(false)
-      return true
-    }
-    setFloaterDocked(true)
-    return false
+    if (floaterRef.current.open()) paintFloater()
   }
 
   /** Chat first in this click, then YouTube. Reversing that spends the gesture and the floater never appears. */
@@ -216,7 +209,6 @@ export function WatchStage({
 
   const stopWatching = () => {
     floaterRef.current.close()
-    setFloaterDocked(false)
     hostRef.current = null
     setState(null)
     setEmbedBlocked(false)
@@ -433,7 +425,7 @@ export function WatchStage({
         )}
       </div>
 
-      {floaterDocked && state && (
+      {state && (
         <div className="fixed bottom-4 right-4 z-[80] w-[360px] max-w-[calc(100vw-2rem)] h-[min(520px,70vh)] shadow-[0_20px_50px_-20px_rgba(0,0,0,0.8)]">
           <WatchChatOverlay
             variant="panel"
