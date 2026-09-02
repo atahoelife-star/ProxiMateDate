@@ -211,6 +211,7 @@ export function WatchStage({
     }
     openFloater()
     startVideo(raw, title)
+    window.open(youtubeWatchUrl(id), '_blank', 'noopener,noreferrer')
   }
 
   const stopWatching = () => {
