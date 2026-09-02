@@ -3,7 +3,7 @@ import { toast } from 'sonner'
 import { ExternalLink, Link as LinkIcon, Pause, Play, Volume2, VolumeX, X } from 'lucide-react'
 import { YoutubeEmbed } from './YoutubeEmbed'
 import { OwnAppsCountdown } from './CompanionMode'
-import type { RoomChatMsg } from './WatchChatOverlay'
+import { WatchChatOverlay, type RoomChatMsg } from './WatchChatOverlay'
 import {
   bootWatchState,
   emptyWatchState,
@@ -53,6 +53,7 @@ export function WatchStage({
   const [state, setState] = useState<WatchState | null>(() => bootWatchState(roomId, initialVideoId, isFollower))
   const [duration, setDuration] = useState(0)
   const [displayTime, setDisplayTime] = useState(0)
+  const [floaterDocked, setFloaterDocked] = useState(false)
 
   const hostRef = useRef<YTPlayerHandle | null>(null)
   const applying = useRef(false)
@@ -172,16 +173,19 @@ export function WatchStage({
   }
 
   const openFloater = () => {
-    const pending = floaterRef.current.open()
-    void pending.then((ok) => {
-      if (ok) paintFloater()
-    })
+    if (floaterRef.current.open()) {
+      paintFloater()
+      setFloaterDocked(false)
+      return true
+    }
+    setFloaterDocked(true)
+    return false
   }
 
-  /** YouTube tab + date chat must both start in this click. Awaiting first drops the gesture and the second window is blocked. */
+  /** Chat first in this click, then YouTube. Reversing that spends the gesture and the floater never appears. */
   const openYoutubeAndChat = (videoId: string) => {
-    window.open(youtubeWatchUrl(videoId), '_blank', 'noopener,noreferrer')
     openFloater()
+    window.open(youtubeWatchUrl(videoId), '_blank', 'noopener,noreferrer')
   }
 
   const startVideo = (raw: string, title?: string) => {
@@ -205,12 +209,13 @@ export function WatchStage({
       startVideo(raw, title)
       return
     }
-    openYoutubeAndChat(id)
+    openFloater()
     startVideo(raw, title)
   }
 
   const stopWatching = () => {
     floaterRef.current.close()
+    setFloaterDocked(false)
     hostRef.current = null
     setState(null)
     setEmbedBlocked(false)
@@ -426,6 +431,21 @@ export function WatchStage({
           </>
         )}
       </div>
+
+      {floaterDocked && state && (
+        <div className="fixed bottom-4 right-4 z-[80] w-[360px] max-w-[calc(100vw-2rem)] h-[min(520px,70vh)] shadow-[0_20px_50px_-20px_rgba(0,0,0,0.8)]">
+          <WatchChatOverlay
+            variant="panel"
+            caption="Same thread as the date room."
+            messages={chat.messages}
+            input={chat.input}
+            onInputChange={chat.onInputChange}
+            onSend={chat.onSend}
+            partnerName={partnerName}
+            moment={chatMoment}
+          />
+        </div>
+      )}
 
       {pickerOpen && (
         <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/80 p-6" onClick={() => onPickerOpenChange(false)}>

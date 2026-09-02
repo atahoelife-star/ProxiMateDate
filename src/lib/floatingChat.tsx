@@ -13,12 +13,6 @@ export type FloatingChatProps = {
   moment?: ChatMoment
 }
 
-type PipWindow = Window & {
-  documentPictureInPicture?: {
-    requestWindow: (options?: { width?: number; height?: number }) => Promise<Window>
-  }
-}
-
 function copyStyles(fromDoc: Document, toDoc: Document) {
   for (const node of fromDoc.querySelectorAll('link[rel="stylesheet"], style')) {
     toDoc.head.appendChild(node.cloneNode(true))
@@ -47,20 +41,18 @@ function prepareDocument(win: Window) {
   return mount
 }
 
-function requestChatWindow(): Promise<Window | null> {
+function requestChatWindow(): Window | null {
   const width = 360
   const height = 520
-  const pip = (window as PipWindow).documentPictureInPicture
-  if (pip?.requestWindow) {
-    // Invoke in the current turn so a click gesture still counts; do not window.open after this await.
-    return pip.requestWindow({ width, height }).catch(() => null)
-  }
+  // Must stay synchronous in the Play click. An awaited Picture-in-Picture request
+  // (or a YouTube tab opened first) spends the gesture and the floater never appears.
   const popup = window.open(
     '',
     'proximate-date-chat',
     `popup=yes,width=${width},height=${height},left=24,top=72,resizable=yes,scrollbars=yes`,
   )
-  return Promise.resolve(popup)
+  if (!popup || popup.closed) return null
+  return popup
 }
 
 export class FloatingDateChat {
@@ -72,9 +64,9 @@ export class FloatingDateChat {
     return Boolean(this.win && !this.win.closed)
   }
 
-  async open() {
+  open() {
     if (this.isOpen()) return true
-    const win = await requestChatWindow()
+    const win = requestChatWindow()
     if (!win) return false
     this.win = win
     const mount = prepareDocument(win)
