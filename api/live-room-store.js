@@ -3,8 +3,30 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 const DIR = '/tmp/pd-live-rooms'
 const memory = globalThis.__pdLiveRooms || (globalThis.__pdLiveRooms = new Map())
 
+export function emptyWatch() {
+  return { watching: false, videoId: '', title: '', url: '' }
+}
+
 export function emptyRoom() {
-  return { messages: [], seats: {}, startedAt: 0, extraMs: 0 }
+  return { messages: [], seats: {}, startedAt: 0, extraMs: 0, watch: emptyWatch() }
+}
+
+function youtubeIdFrom(raw) {
+  const id = String(raw || '').trim()
+  if (!/^[a-zA-Z0-9_-]{11}$/.test(id)) return ''
+  return id
+}
+
+function normalizeWatch(raw) {
+  if (!raw || typeof raw !== 'object') return emptyWatch()
+  const videoId = youtubeIdFrom(raw.videoId)
+  if (!raw.watching || !videoId) return emptyWatch()
+  return {
+    watching: true,
+    videoId,
+    title: String(raw.title || 'YouTube').slice(0, 80),
+    url: `https://www.youtube.com/watch?v=${videoId}`,
+  }
 }
 
 export function roomIdFrom(raw) {
@@ -20,6 +42,7 @@ export function applyEvent(state, event) {
     seats: state.seats && typeof state.seats === 'object' ? { ...state.seats } : {},
     startedAt: Number(state.startedAt) || 0,
     extraMs: Number(state.extraMs) || 0,
+    watch: normalizeWatch(state.watch),
   }
   const kind = event.kind
   if (kind === 'hello') {
@@ -67,6 +90,10 @@ export function applyEvent(state, event) {
     const startedAt = Number(event.startedAt) || Date.now()
     if (startedAt > 0 && (next.startedAt === 0 || startedAt < next.startedAt)) next.startedAt = startedAt
   }
+  if (kind === 'watch') {
+    if (event.watching === false) next.watch = emptyWatch()
+    else next.watch = normalizeWatch({ watching: true, videoId: event.videoId, title: event.title })
+  }
   return next
 }
 
@@ -105,6 +132,7 @@ export function snapshotAfter(state, after = 0) {
     seats: state.seats || {},
     startedAt: Number(state.startedAt) || 0,
     extraMs: Number(state.extraMs) || 0,
+    watch: normalizeWatch(state.watch),
   }
 }
 

@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { ChatMsg } from './demoChat'
 import { earliestStart } from './dateClock'
 import { followFromWindow, writeFollowQuery } from './roomSession'
+import { parseYouTubeId } from './youtube'
 
 const CLIENT_KEY = 'pd-client-id'
 
@@ -72,7 +73,20 @@ type ExtendWire = { kind: 'extend'; extraMs: number }
 
 type StartWire = { kind: 'start'; startedAt: number }
 
-type Wire = HelloMsg | ChatWire | ExtendWire | StartWire
+type WatchWire = {
+  kind: 'watch'
+  watching: boolean
+  videoId?: string
+  title?: string
+}
+
+export type RemoteWatch = {
+  watching: boolean
+  videoId: string
+  title: string
+}
+
+type Wire = HelloMsg | ChatWire | ExtendWire | StartWire | WatchWire
 
 type SeatSnap = { name: string; photo?: string | null; startedAt: number; extraMs: number; clientId?: string }
 
@@ -81,6 +95,7 @@ type RoomSnap = {
   seats: Partial<Record<Seat, SeatSnap>>
   startedAt: number
   extraMs: number
+  watch?: { watching?: boolean; videoId?: string; title?: string }
 }
 
 function storageKey(roomId: string) {
@@ -239,6 +254,7 @@ export function useLiveChat(
   const [partnerPhoto, setPartnerPhoto] = useState<string | null>(null)
   const [remoteStartedAt, setRemoteStartedAt] = useState(0)
   const [remoteExtraMs, setRemoteExtraMs] = useState(0)
+  const [remoteWatch, setRemoteWatch] = useState<RemoteWatch>({ watching: false, videoId: '', title: '' })
   const [linked, setLinked] = useState(false)
   const conns = useRef<DataConnection[]>([])
   const myNameRef = useRef(myName)
@@ -311,6 +327,20 @@ export function useLiveChat(
       adoptExtra(payload.extraMs)
       return
     }
+    if (payload.kind === 'watch') {
+      if (payload.watching === false) {
+        setRemoteWatch({ watching: false, videoId: '', title: '' })
+        return
+      }
+      const id = parseYouTubeId(String(payload.videoId || ''))
+      if (!id) return
+      setRemoteWatch({
+        watching: true,
+        videoId: id,
+        title: String(payload.title || 'YouTube').slice(0, 80),
+      })
+      return
+    }
     if (payload.kind !== 'chat') return
     const mine = payload.seat === seatRef.current
     if (mine && fromSelf) return
@@ -332,6 +362,17 @@ export function useLiveChat(
     if (them?.photo) setPartnerPhoto(them.photo)
     adoptStart(snap.startedAt)
     adoptExtra(snap.extraMs)
+    if (snap.watch) {
+      ingest(
+        {
+          kind: 'watch',
+          watching: Boolean(snap.watch.watching),
+          videoId: snap.watch.videoId,
+          title: snap.watch.title,
+        },
+        false,
+      )
+    }
     for (const msg of snap.messages || []) {
       ingest(
         { kind: 'chat', id: msg.id, seat: msg.seat, name: msg.name, text: msg.text },
@@ -485,6 +526,19 @@ export function useLiveChat(
     broadcast({ kind: 'extend', extraMs })
   }
 
+  const sendWatch = (videoId: string, title?: string) => {
+    const id = parseYouTubeId(videoId)
+    if (!id) return
+    const wire: WatchWire = { kind: 'watch', watching: true, videoId: id, title: title || 'YouTube' }
+    setRemoteWatch({ watching: true, videoId: id, title: wire.title || 'YouTube' })
+    broadcast(wire)
+  }
+
+  const sendWatchEnd = () => {
+    setRemoteWatch({ watching: false, videoId: '', title: '' })
+    broadcast({ kind: 'watch', watching: false })
+  }
+
   const sendPhoto = (photo: string | null) => {
     broadcast({
       kind: 'hello',
@@ -509,6 +563,9 @@ export function useLiveChat(
     remoteStartedAt: clockStart,
     remoteExtraMs,
     sendExtend,
+    sendWatch,
+    sendWatchEnd,
+    remoteWatch,
     sendPhoto,
   }
 }

@@ -64,6 +64,10 @@ function MovieNightSession() {
     reportRoomStart('movie', roomId)
   }, [arrived, roomId])
 
+  useEffect(() => {
+    if (live.remoteWatch.watching) markArrived()
+  }, [live.remoteWatch.watching, markArrived])
+
   const chatMoment = chatMomentForEvening({
     watching: watchingMovie,
     waiterClip: 'idle',
@@ -116,6 +120,9 @@ function MovieNightSession() {
               onRoomMessage={roomMessage}
               chatMoment={chatMoment}
               onWatchingChange={setWatchingMovie}
+              remoteWatch={live.remoteWatch}
+              onShareWatch={live.sendWatch}
+              onShareWatchEnd={live.sendWatchEnd}
               chat={{
                 messages: chatMessages,
                 input: chatInput,

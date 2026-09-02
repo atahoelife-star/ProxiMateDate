@@ -15,6 +15,7 @@ import {
 import { parseYouTubeId, ROMANTIC_TRAILERS, youtubeWatchUrl, type YTPlayerHandle } from '../../lib/youtube'
 import { FloatingDateChat } from '../../lib/floatingChat'
 import type { ChatMoment } from '../../data/suggestedLines'
+import type { RemoteWatch } from '../../lib/liveRoom'
 
 type WatchStageProps = {
   roomId: string
@@ -32,6 +33,9 @@ type WatchStageProps = {
   }
   chatMoment: ChatMoment
   onWatchingChange?: (watching: boolean) => void
+  remoteWatch?: RemoteWatch
+  onShareWatch?: (videoId: string, title: string) => void
+  onShareWatchEnd?: () => void
 }
 
 export function WatchStage({
@@ -45,6 +49,9 @@ export function WatchStage({
   chat,
   chatMoment,
   onWatchingChange,
+  remoteWatch,
+  onShareWatch,
+  onShareWatchEnd,
 }: WatchStageProps) {
   const [link, setLink] = useState('')
   const [parseError, setParseError] = useState('')
@@ -53,6 +60,9 @@ export function WatchStage({
   const [state, setState] = useState<WatchState | null>(() => bootWatchState(roomId, initialVideoId, isFollower))
   const [duration, setDuration] = useState(0)
   const [displayTime, setDisplayTime] = useState(0)
+  const [partnerTapNeeded, setPartnerTapNeeded] = useState(false)
+  const awaitingRemoteOpen = useRef(false)
+  const remoteWatchingRef = useRef(false)
 
   const hostRef = useRef<YTPlayerHandle | null>(null)
   const applying = useRef(false)
@@ -159,6 +169,28 @@ export function WatchStage({
     onWatchingChange?.(Boolean(state))
   }, [state, onWatchingChange])
 
+  useEffect(() => {
+    if (!remoteWatch) return
+    if (!remoteWatch.watching) {
+      if (remoteWatchingRef.current && stateRef.current) stopWatching({ remote: true })
+      remoteWatchingRef.current = false
+      return
+    }
+    remoteWatchingRef.current = true
+    if (stateRef.current?.videoId === remoteWatch.videoId) {
+      setLink(youtubeWatchUrl(remoteWatch.videoId))
+      return
+    }
+    applyVideo(remoteWatch.videoId, remoteWatch.title)
+    const opened = openOfficialYoutube(remoteWatch.videoId)
+    awaitingRemoteOpen.current = !opened
+    if (!opened) {
+      /* Embed carries them. If embed is blocked, the large tap is shown. */
+    }
+    // applyVideo / stopWatching are click-path helpers; remote id is the trigger.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [remoteWatch?.watching, remoteWatch?.videoId, remoteWatch?.title])
+
   const paintFloater = () => {
     const c = chatRef.current
     floaterRef.current.render({
@@ -178,43 +210,45 @@ export function WatchStage({
   /** One window.open per click. A second open is blocked, or it replaces the chat popup with YouTube. */
   const openOfficialYoutube = (videoId: string) => {
     const watch = window.open(youtubeWatchUrl(videoId), 'pd-youtube-watch')
-    if (watch) {
-      try {
-        watch.opener = null
-      } catch {
-        /* ignore */
-      }
+    if (!watch || watch.closed) return false
+    try {
+      watch.opener = null
+    } catch {
+      /* ignore */
     }
-  }
-
-  const startVideo = (raw: string, title?: string) => {
-    const id = parseYouTubeId(raw)
-    if (!id) {
-      setParseError('Paste a youtube.com or youtu.be link, then press Play.')
-      return false
-    }
-    setParseError('')
-    setEmbedBlocked(false)
-    hostRef.current = null
-    publish(emptyWatchState(id, title || 'YouTube'))
-    onPickerOpenChange(false)
-    onRoomMessageRef.current(`Watch together: ${title || id}.`)
     return true
   }
 
-  const beginWatch = (raw: string, title?: string) => {
+  const applyVideo = (raw: string, title?: string) => {
     const id = parseYouTubeId(raw)
     if (!id) {
-      startVideo(raw, title)
-      return
+      setParseError('Paste a youtube.com or youtu.be link, then press Play.')
+      return ''
     }
-    startVideo(raw, title)
+    setParseError('')
+    setEmbedBlocked(false)
+    setPartnerTapNeeded(false)
+    hostRef.current = null
+    setLink(youtubeWatchUrl(id))
+    publish(emptyWatchState(id, title || 'YouTube'))
+    onPickerOpenChange(false)
+    return id
+  }
+
+  const beginWatch = (raw: string, title?: string) => {
+    const id = applyVideo(raw, title)
+    if (!id) return
+    awaitingRemoteOpen.current = false
+    onRoomMessageRef.current(`Watch together: ${title || id}.`)
+    onShareWatch?.(id, title || 'YouTube')
     openOfficialYoutube(id)
   }
 
-  const stopWatching = () => {
+  const stopWatching = (opts?: { remote?: boolean }) => {
     floaterRef.current.close()
     hostRef.current = null
+    awaitingRemoteOpen.current = false
+    setPartnerTapNeeded(false)
     setState(null)
     setEmbedBlocked(false)
     setParseError('')
@@ -222,6 +256,7 @@ export function WatchStage({
     const next = new URL(window.location.href)
     next.searchParams.delete('watch')
     window.history.replaceState({}, '', `${next.pathname}${next.search}`)
+    if (!opts?.remote) onShareWatchEnd?.()
   }
 
   const onHostState = (playing: boolean, time: number) => {
@@ -248,7 +283,9 @@ export function WatchStage({
 
   const onPlayClick = () => {
     if (openOnYouTube && state) {
+      onShareWatch?.(state.videoId, state.title)
       openOfficialYoutube(state.videoId)
+      setPartnerTapNeeded(false)
       return
     }
     if (pastedId && (!state || pastedId !== state.videoId)) {
@@ -291,8 +328,7 @@ export function WatchStage({
     if (state?.videoId) url.searchParams.set('watch', state.videoId)
     navigator.clipboard.writeText(url.toString())
     toast.success('Follower room link copied', {
-      description:
-        'Open it in a second tab on this computer to follow this host. Two phones get the same YouTube video; device-to-device lockstep needs a realtime server we have not added yet.',
+      description: 'Open it on their phone or a second browser. The YouTube link is shared in this room.',
     })
   }
 
@@ -345,7 +381,7 @@ export function WatchStage({
                     Trailers
                   </button>
                 )}
-                <button type="button" className="btn btn-ghost text-xs px-3 py-2" onClick={stopWatching}>
+                <button type="button" className="btn btn-ghost text-xs px-3 py-2" onClick={() => stopWatching()}>
                   End watch
                 </button>
               </div>
@@ -396,7 +432,10 @@ export function WatchStage({
                     if (isFollower) applyToPlayer(player, state, true)
                   }}
                   onHostState={isFollower ? undefined : onHostState}
-                  onError={() => setEmbedBlocked(true)}
+                  onError={() => {
+                    setEmbedBlocked(true)
+                    if (awaitingRemoteOpen.current) setPartnerTapNeeded(true)
+                  }}
                 />
                 <div className="video-label pointer-events-none">
                   <div className="live-dot" /> {isFollower ? 'FOLLOW' : 'WATCH'}
@@ -429,6 +468,38 @@ export function WatchStage({
           </>
         )}
       </div>
+
+      {partnerTapNeeded && state && (
+        <div className="fixed inset-0 z-[90] flex flex-col items-center justify-center bg-[#0F0A0D]/95 px-6 py-10">
+          <div className="text-[#C9A962] text-sm tracking-[3px] mb-3">THEY&apos;RE WATCHING</div>
+          <h2 className="text-[#F8F4ED] text-3xl md:text-4xl text-center max-w-lg mb-8">
+            They&apos;re watching — tap to open YouTube
+          </h2>
+          <button
+            type="button"
+            className="btn btn-gold text-xl px-10 py-5 w-full max-w-lg"
+            onClick={() => {
+              openOfficialYoutube(state.videoId)
+              setPartnerTapNeeded(false)
+              awaitingRemoteOpen.current = false
+            }}
+          >
+            Open YouTube
+          </button>
+          <div className="mt-8 w-full max-w-sm h-[min(420px,50vh)]">
+            <WatchChatOverlay
+              variant="panel"
+              caption="Same thread as the date room."
+              messages={chat.messages}
+              input={chat.input}
+              onInputChange={chat.onInputChange}
+              onSend={chat.onSend}
+              partnerName={partnerName}
+              moment={chatMoment}
+            />
+          </div>
+        </div>
+      )}
 
       {state && (
         <div className="fixed bottom-4 right-4 z-[80] w-[360px] max-w-[calc(100vw-2rem)] h-[min(520px,70vh)] shadow-[0_20px_50px_-20px_rgba(0,0,0,0.8)]">
