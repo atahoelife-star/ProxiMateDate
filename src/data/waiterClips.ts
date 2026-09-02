@@ -58,9 +58,9 @@ export const WAITER_CLIPS: Record<
     presenceLabel: 'In the dining room',
   },
   greet: {
-    src: '/videos/waiter-idle.mp4',
-    label: 'Coming to the table',
-    presenceLabel: 'Ready for your order',
+    src: '/videos/waiter-greet.mp4',
+    label: 'Welcoming you at the table',
+    presenceLabel: 'Welcome at the table',
   },
   wine: {
     src: '/videos/waiter-wine.mp4',

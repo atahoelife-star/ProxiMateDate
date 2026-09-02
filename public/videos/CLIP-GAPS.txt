@@ -1,39 +1,37 @@
-Serving-clip gaps (honest plates only — no wrong food).
+Serving-clip audit (honest plates only — no wrong food).
 
 Host / staff
   Tour stays rooms only (no walk-in captions).
   After the thumbnail pick: grand hotel double doors open into the chosen dining room, then the host says “Right this way” (audio only). Do not play waiter-idle, kitchen swinging doors, or a zoomed service-door loop on this beat.
-  Call Waiter still uses waiter-idle.mp4 (Pexels #6327644) — that waitress is the only staff face on purpose.
+  “Greet us at the table” / empty-plate Call Waiter plays waiter-greet.mp4 — a host/waiter welcoming the seated couple at the table. That beat is separate from grand-door seating.
   Serving is per screen: this browser’s plate only. Partner dishes never play here.
 
 Matched — unique file per dish (same dish name across kitchens may share)
-  Call Waiter / greet → waiter-idle.mp4
+  Call Waiter / greet → waiter-greet.mp4 (host/waiter welcoming the couple at the table)
   Wine / rosé → waiter-wine.mp4 (Mixkit #41247 red-wine pour). Not the champagne pop.
   Champagne → waiter-champagne-pop.mp4 (Mixkit #51549 pop + foam spew, then #51631 bottle into flute)
-  Marinated King Oyster Carpaccio → waiter-carpaccio-oyster.mp4 (thin mushroom slices)
+  Marinated King Oyster Carpaccio → waiter-carpaccio-oyster.mp4 (thin king-oyster slices being set down)
   Japanese A5 Wagyu Beef Carpaccio → waiter-carpaccio-beef.mp4 (Mixkit #2429 plated beef carpaccio)
-  Wild Mushroom Medley (both kitchens) → waiter-mushroom-plate.mp4 (sautéed mushrooms in a dish)
+  Wild Mushroom Medley (both kitchens) → waiter-mushroom-plate.mp4 (sautéed mixed mushrooms being served)
   Seared Saffron Polenta Cake → waiter-polenta.mp4
   Seared King Oyster Medallion → waiter-medallion.mp4
   Grilled Eggplant & Beluga Lentil Steak → waiter-eggplant.mp4
   Whole Roasted Cauliflower Centerpiece for two → waiter-cauliflower.mp4 (whole roasted head)
-  Mushroom Medallion & Hearts of Palm → waiter-palm.mp4
-  Pan-Seared Foie Gras → waiter-foie.mp4
-  8oz Center-Cut Filet Mignon → waiter-filet.mp4 (boneless plated filet)
+  Mushroom Medallion & Hearts of Palm → waiter-palm.mp4 (medallion plus white palm rounds)
+  Pan-Seared Foie Gras → waiter-foie.mp4 (seared lobe on brioche)
+  8oz Center-Cut Filet Mignon → waiter-filet.mp4 (Coverr boneless steaks on the grill)
   16oz Dry-Aged Bone-In Ribeye → waiter-ribeye.mp4 (large steak being carved)
   32oz Long-Bone Tomahawk Ribeye for two → waiter-tomahawk.mp4 (long bone on grill, then held for service)
-  Classic Steak & Lobster → waiter-surf.mp4 (lobster plate — see below)
+  Classic Steak & Lobster → waiter-surf.mp4 (steak AND lobster tail on one plate)
   Crème brûlée (both kitchens) → waiter-dessert.mp4
   Dark chocolate soufflé (both kitchens) → waiter-chocolate.mp4
 
-Intentionally not forced / remaining gaps
-  Classic Steak & Lobster — no royalty-free commercial clip that shows steak AND lobster on one plate. Mixkit #22881 (steak and lobster) is Restricted / personal use only. The surf clip is a lobster plate so the dish is not an empty plate or a generic steak. The beef half is not in this file.
-  Pan-Seared Foie Gras — no matching seared-liver service video in this lighting. Ken Burns of a plated foie terrine (Pexels #37767594). Not greet. Not steak.
-  Marinated King Oyster Carpaccio — no royalty-free plated king-oyster carpaccio video. Ken Burns of thin mushroom slices (not beef, not the sautéed medley).
-  Mushroom Medallion & Hearts of Palm — no hearts-of-palm video. Ken Burns of a seared round plated cake. Not the chopsticks medallion file and not the sautéed medley.
-  Several Verdant Ember / Silver Sage savory clips are Ken Burns of Pexels stills when no matching Standard-license video existed. The still is the named dish, not a substitute plate.
-  waiter-steak.mp4 (empty plate until the last instant) is no longer mapped to any menu item.
-  waiter-pour-champagne.mp4 (Mixkit #41264 close pour) is no longer used for wine or champagne.
+No remaining menu-item serving gaps.
+  Mixkit #22881 (steak and lobster on one stock plate) is Restricted / personal use only — not used.
+  Mixkit #24405 / #24406 (waiter taking an order / couple talking to waiter) are Restricted — not used.
+  waiter-idle.mp4 stays on disk for arrival stills; it is no longer the greet clip.
+  waiter-steak.mp4 (empty plate until the last instant) is not mapped to any menu item.
+  waiter-pour-champagne.mp4 (Mixkit #41264 close pour) is not used for wine or champagne.
   waiter-pour-wine.mp4 stays off screen — different sommelier, different room.
 
 Do not use waiter-set-plate.mp4 for menu items (sliders). Landing demo still uses it.

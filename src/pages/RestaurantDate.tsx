@@ -156,7 +156,7 @@ function RestaurantDateSession() {
   const openWaiter = () => {
     setShowWaiterMenu(true)
     if (myPlate.length === 0) {
-      playWaiter('greet', 'Waiter at the table', 'The waiter steps into frame.')
+      playWaiter('greet', 'Waiter at the table', 'The waiter welcomes you at the table.')
       return
     }
     const line = myPlate[myPlate.length - 1]
@@ -171,7 +171,7 @@ function RestaurantDateSession() {
   const waiterActions: { title: string; message: string; clip: WaiterClip }[] = [
     {
       title: 'Greet us at the table',
-      message: 'The waiter arrives, nods to both of you, and waits for the mixed order.',
+      message: 'The waiter comes to your table, welcomes you both, and makes sure you are seated.',
       clip: 'greet',
     },
     {
