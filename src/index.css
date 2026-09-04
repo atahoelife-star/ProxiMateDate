@@ -712,7 +712,8 @@ select.input option {
 .fall-leaf-static {
   position: absolute;
   display: block;
-  opacity: 0.55;
+  opacity: 0.78;
+  filter: drop-shadow(0 1px 1px rgba(20, 8, 4, 0.45));
   will-change: transform;
 }
 .fall-leaf {
@@ -722,7 +723,7 @@ select.input option {
   animation-iteration-count: infinite;
 }
 .fall-leaf-static {
-  opacity: 0.4;
+  opacity: 0.55;
   transform: rotate(var(--leaf-rot, 0deg));
 }
 @keyframes fall-drift {
@@ -731,7 +732,7 @@ select.input option {
     opacity: 0;
   }
   10% {
-    opacity: 0.6;
+    opacity: 0.78;
   }
   100% {
     transform: translate3d(22px, 108vh, 0) rotate(calc(var(--leaf-rot, 0deg) + 140deg));
@@ -747,8 +748,15 @@ select.input option {
 @media (prefers-reduced-motion: reduce) {
   .fall-leaf {
     animation: none;
-    top: 28%;
-    opacity: 0.4;
+    top: auto;
+    bottom: 18%;
+    opacity: 0.55;
     transform: rotate(var(--leaf-rot, 0deg));
+  }
+  .fall-leaf:nth-child(odd) {
+    bottom: 42%;
+  }
+  .fall-leaf:nth-child(3n) {
+    bottom: 8%;
   }
 }
