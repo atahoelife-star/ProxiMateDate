@@ -722,7 +722,7 @@ select.input option {
   animation-iteration-count: infinite;
 }
 .fall-leaf-static {
-  opacity: 0.28;
+  opacity: 0.4;
   transform: rotate(var(--leaf-rot, 0deg));
 }
 @keyframes fall-drift {
@@ -748,7 +748,7 @@ select.input option {
   .fall-leaf {
     animation: none;
     top: 28%;
-    opacity: 0.28;
+    opacity: 0.4;
     transform: rotate(var(--leaf-rot, 0deg));
   }
 }
