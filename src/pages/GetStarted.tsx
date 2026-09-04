@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { PageShell } from '../components/PageShell'
 import { WaitlistForm } from '../components/WaitlistForm'
 import { LandingDemo, LandingDemoCtas } from '../components/LandingDemo'
+import { LIST_PRICE } from '../data/prices'
 
 export function GetStartedPage() {
   return (
@@ -18,11 +19,11 @@ export function GetStartedPage() {
         is 30 minutes. The host can extend for $2.99.
       </p>
       <p>
-        Dinner is $9.99
+        Dinner is {LIST_PRICE.dinner}
         <br />
         for 90 minutes.
         <br />
-        Movie night is $14.99
+        Movie night is {LIST_PRICE.movie}
         <br />
         for 2.5 hours. Pay with a card on Stripe — see{' '}
         <Link to="/pricing" className="text-[#C9A962] underline">

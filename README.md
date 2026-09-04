@@ -6,8 +6,8 @@ Website-only long-distance date night at [proximatedate.com](https://www.proxima
 
 Three rooms:
 
-- **Restaurant** (`/restaurant`): **$9.99** before the walk-in (host, tables, sit down), then dual menus and waiter serving videos. **90 minutes after you sit.** LIVE idle is a seated 1x dining room.
-- **Movie Night** (`/movie-night`): **$14.99** before the walk-in (ticket booth, lobby, popcorn, seats), then Watch Together for **2.5 hours**. Official YouTube IFrame Player (`youtube.com/iframe_api`). Paste a youtube.com / youtu.be link, then press Play. Floating chat opens with Play. Netflix stays on your own accounts as companion mode.
+- **Restaurant** (`/restaurant`): **$7.99** before the walk-in (host, tables, sit down), then dual menus and waiter serving videos. **90 minutes after you sit.** LIVE idle is a seated 1x dining room.
+- **Movie Night** (`/movie-night`): **$11.99** before the walk-in (ticket booth, lobby, popcorn, seats), then Watch Together for **2.5 hours**. Official YouTube IFrame Player (`youtube.com/iframe_api`). Paste a youtube.com / youtu.be link, then press Play. Floating chat opens with Play. Netflix stays on your own accounts as companion mode.
 - **Free Date Night** (`/date-night`): **free for 30 minutes**. Remaining time is on the clock. About three minutes before cutoff the **host** (not the guest) can pay **$2.99** on Stripe Checkout to extend. If they do not, the date ends at 30:00. No menus, no movie player.
 - **Dates chooser** (`/date-room`): picks a room. Old Watch Together follower links (`?watch=` / `?follow=1`) redirect to movie night. Guest `?follow=1` links skip a second payment.
 
@@ -15,7 +15,7 @@ Other:
 
 - **Companion mode:** countdown + chat while each person uses their own Netflix / Hulu / Disney+ / Prime app. No unofficial stream URLs. We do not bypass YouTube age-restriction.
 - **Waitlist:** Sign In / Get Started / Contact post to FormSubmit (`atahoelife@gmail.com`, subject **ProxiMateDate waitlist**).
-- **Pricing:** Dinner **$9.99** (90 minutes), Movie Night **$14.99** (2.5 hours), Premium Romance **$24.99** (both paid rooms, 3 hours). Candlelight Chat is free for 30 minutes, then **$2.99** to extend (host only). Paid rooms use Stripe Checkout when a secret key is configured. This site never collects raw card numbers and does not send people to PayPal, Venmo, or Cash App. If the key is missing, paid buttons collect a waitlist email.
+- **Pricing:** Dinner **$7.99** (90 minutes), Movie Night **$11.99** (2.5 hours), Premium Romance **$19.99** (both paid rooms, 3 hours). The first paid evening in a browser is 50% off (`$3.99` / `$5.99` / `$9.99`). Candlelight Chat is free for 30 minutes, then **$2.99** to extend (host only). Paid rooms use Stripe Checkout when a secret key is configured. This site never collects raw card numbers and does not send people to PayPal, Venmo, or Cash App. If the key is missing, paid buttons collect a waitlist email.
 
 ### Watch Together sync (limitation)
 
@@ -38,7 +38,9 @@ Cloudflare Workers Git builds (if connected) need this Wrangler file and a dashb
 
 ## Stripe Checkout (website only)
 
-Paid plans: Dinner **$9.99**, Movie Night **$14.99**, Premium Romance **$24.99** (unlocks both for 3 hours). Candlelight Chat is free for 30 minutes; extend is **$2.99**. Restaurant and movie night are gated until Checkout succeeds in this browser (`?paid=1`). Extend returns to `/date-night?paid=1&plan=extend`.
+Paid plans: Dinner **$7.99**, Movie Night **$11.99**, Premium Romance **$19.99** (unlocks both for 3 hours). The first paid dinner, movie, or premium checkout in a browser is 50% off (**$3.99** / **$5.99** / **$9.99**). After that success, later checkouts in the same browser charge list price. The flag is `localStorage` `pd-first-date-used` plus cookie `pd_first_paid=1` (and any existing paid-room session flag). Extend stays **$2.99** and is never discounted. Candlelight Chat is free for 30 minutes. Restaurant and movie night are gated until Checkout succeeds in this browser (`?paid=1`). Extend returns to `/date-night?paid=1&plan=extend`.
+
+Checkout line items use `price_data.unit_amount` (no leftover $9.99 / $14.99 / $24.99 Prices). Amounts live in `api/plan-amounts.js`.
 
 1. Create a Stripe account at [https://dashboard.stripe.com/register](https://dashboard.stripe.com/register).
 2. From Developers → API keys, copy the **Secret key** (`sk_test_…` for testing, `sk_live_…` for production). Never put this in the frontend repo.
@@ -63,4 +65,4 @@ This page is not linked from the public nav, footer, or homepage. Customers and 
 2. Redeploy production.
 3. Open `https://www.proximatedate.com/stats?key=` plus that same value. You can also type the password on `/stats`. HTTP Basic uses the same password.
 
-The page shows unique room starts this website recorded (Free Date Night, Dinner, Movie Night) and, when `STRIPE_SECRET_KEY` is present, paid Checkout sessions (dinner $9.99, movie $14.99, premium $24.99, extend $2.99). It also lists recent private feedback from ended dates and the footer form. Feedback is never shown on the public site, homepage, or nav. There is no mailer: notes are stored with room starts on this server (they can reset if the host moves machines). Free dates never hit Stripe unless someone extends. Counts are never invented: if Stripe is missing, paid rows stay blank instead of showing zero.
+The page shows unique room starts this website recorded (Free Date Night, Dinner, Movie Night) and, when `STRIPE_SECRET_KEY` is present, paid Checkout sessions (dinner $7.99, movie $11.99, premium $19.99, extend $2.99, including older amounts and first-date halves via Checkout metadata). It also lists recent private feedback from ended dates and the footer form. Feedback is never shown on the public site, homepage, or nav. There is no mailer: notes are stored with room starts on this server (they can reset if the host moves machines). Free dates never hit Stripe unless someone extends. Counts are never invented: if Stripe is missing, paid rows stay blank instead of showing zero.

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { markFirstDateUsed } from './firstDateOffer'
 import type { PaidPlanId } from './stripeCheckout'
 
 const DINNER_KEY = 'pd-paid-dinner'
@@ -31,6 +32,7 @@ function writeFlag(key: string) {
 
 export function grantPaidPlan(plan: PaidPlanId) {
   if (plan === 'extend') return
+  markFirstDateUsed()
   if (plan === 'premium') {
     writeFlag(PREMIUM_KEY)
     writeFlag(DINNER_KEY)

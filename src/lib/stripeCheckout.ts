@@ -1,3 +1,5 @@
+import { firstDateStillOpen } from './firstDateOffer'
+
 export type PaidPlanId = 'dinner' | 'movie' | 'premium' | 'extend'
 
 export type CheckoutResult = 'redirected' | 'waitlist' | 'error'
@@ -37,10 +39,12 @@ export async function startStripeCheckout(
 ): Promise<CheckoutResult> {
   const path = options?.returnTo?.split('?')[0] ?? ''
   const returnTo = path && ALLOWED_RETURN.has(path) ? options?.returnTo : undefined
+  const firstDate = planId !== 'extend' && firstDateStillOpen()
   const payload = JSON.stringify({
     plan: planId,
     returnTo,
     cancelTo: options?.cancelTo,
+    firstDate,
   })
 
   let keyMissing = false

@@ -3,12 +3,13 @@ import { Clapperboard, MessageCircle, UtensilsCrossed } from 'lucide-react'
 import { useEffect, useRef } from 'react'
 import { toast } from 'sonner'
 import { consumeChooserPaidReturn } from '../lib/roomAccess'
+import { LIST_PRICE } from '../data/prices'
 
 const rooms = [
   {
     to: '/restaurant',
     icon: UtensilsCrossed,
-    kicker: '$9.99',
+    kicker: LIST_PRICE.dinner,
     length: 'for 90 minutes',
     title: 'Restaurant Date',
     desc: 'Walk in, sit down, order from The Verdant Ember and The Silver Sage at one table. 90 minutes after you sit. Live waiter clips. No movie player.',
@@ -16,7 +17,7 @@ const rooms = [
   {
     to: '/movie-night',
     icon: Clapperboard,
-    kicker: '$14.99',
+    kicker: LIST_PRICE.movie,
     length: 'for 2.5 hours',
     title: 'Movie Night',
     desc: 'Walk in past the booth and lobby. Paste YouTube, press Play. 2.5 hours. Chat floats while you watch. No restaurant menus.',
@@ -65,12 +66,12 @@ export function DateRoomPage() {
         <p className="mt-4 text-xl text-[#A8988A] max-w-2xl mx-auto space-y-3">
           <span className="block">Each room is its own page.</span>
           <span className="block">
-            Restaurant is $9.99
+            Restaurant is {LIST_PRICE.dinner}
             <br />
             for 90 minutes.
           </span>
           <span className="block">
-            Movie Night is $14.99
+            Movie Night is {LIST_PRICE.movie}
             <br />
             for 2.5 hours.
           </span>

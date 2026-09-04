@@ -1,4 +1,5 @@
 import { PageShell } from '../components/PageShell'
+import { LIST_PRICE } from '../data/prices'
 
 export function AboutPage() {
   return (
@@ -13,7 +14,7 @@ export function AboutPage() {
       <p>This is a website (desktop and mobile). There is no iOS or Android app.</p>
       <p>Free Date Night is open for 30 minutes. The host can extend for $2.99.</p>
       <p>
-        Restaurant is $9.99 for 90 minutes after you sit. Movie Night is $14.99 for 2.5 hours. Both start after you pay with a card on Stripe. Premium is $24.99 for 3 hours covering both. Netflix stays on your own apps.
+        Restaurant is {LIST_PRICE.dinner} for 90 minutes after you sit. Movie Night is {LIST_PRICE.movie} for 2.5 hours. Both start after you pay with a card on Stripe. Premium is {LIST_PRICE.premium} for 3 hours covering both. The first paid evening in this browser is 50% off. Netflix stays on your own apps.
       </p>
       <p>
         Leave your email on Sign In or Get Started if you’d like a note from us.

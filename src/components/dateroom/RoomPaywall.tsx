@@ -1,21 +1,23 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { PLANS } from '../../data/plans'
+import { FIRST_DATE_PRICE, LIST_PRICE, payCta } from '../../data/prices'
 import { WaitlistForm } from '../WaitlistForm'
+import { firstDateStillOpen } from '../../lib/firstDateOffer'
 import { startStripeCheckout, type PaidPlanId } from '../../lib/stripeCheckout'
 
-const COPY: Record<'dinner' | 'movie', { kicker: string; title: string; plan: PaidPlanId; blurb: string }> = {
+const COPY: Record<'dinner' | 'movie', { kicker: string; title: string; plan: 'dinner' | 'movie'; duration: string }> = {
   dinner: {
     kicker: 'DINNER DATE',
     title: 'Restaurant Date',
     plan: 'dinner',
-    blurb: 'Pay $9.99 with a card on Stripe. Then the host seats you for 90 minutes. Your date can join on the follow link without paying again.',
+    duration: '90 minutes',
   },
   movie: {
     kicker: 'MOVIE NIGHT',
     title: 'Movie Night',
     plan: 'movie',
-    blurb: 'Pay $14.99 with a card on Stripe. Then the theater walk-in starts for 2.5 hours. Your date can join on the follow link without paying again.',
+    duration: '2.5 hours',
   },
 }
 
@@ -25,11 +27,16 @@ type RoomPaywallProps = {
 
 export function RoomPaywall({ room }: RoomPaywallProps) {
   const copy = COPY[room]
-  const plan = PLANS.find((p) => p.id === copy.plan)
   const premium = PLANS.find((p) => p.id === 'premium')
+  const [firstDate] = useState(() => firstDateStillOpen())
   const [busy, setBusy] = useState<PaidPlanId | null>(null)
   const [waitlist, setWaitlist] = useState<PaidPlanId | null>(null)
   const [checkoutError, setCheckoutError] = useState(false)
+  const list = LIST_PRICE[copy.plan]
+  const promo = FIRST_DATE_PRICE[copy.plan]
+  const blurb = firstDate
+    ? `First date ${promo} with a card on Stripe. Then the evening starts for ${copy.duration}. After that, ${list}. Your date can join on the follow link without paying again.`
+    : `Pay ${list} with a card on Stripe. Then the evening starts for ${copy.duration}. Your date can join on the follow link without paying again.`
 
   const pay = async (planId: PaidPlanId) => {
     setBusy(planId)
@@ -48,7 +55,7 @@ export function RoomPaywall({ room }: RoomPaywallProps) {
     <div className="max-w-lg mx-auto px-6 py-16">
       <div className="text-[#C9A962] text-xs tracking-[3px] mb-3">{copy.kicker}</div>
       <h1 className="text-[#F8F4ED] text-3xl mb-3">{copy.title}</h1>
-      <p className="text-[#A8988A] text-[15px] leading-relaxed mb-8">{copy.blurb}</p>
+      <p className="text-[#A8988A] text-[15px] leading-relaxed mb-8">{blurb}</p>
 
       {waitlist ? (
         <div className="card p-6">
@@ -68,7 +75,7 @@ export function RoomPaywall({ room }: RoomPaywallProps) {
             disabled={busy !== null}
             onClick={() => pay(copy.plan)}
           >
-            {busy === copy.plan ? 'Opening Stripe…' : plan?.cta ?? 'Pay with card'}
+            {busy === copy.plan ? 'Opening Stripe…' : payCta(copy.plan, firstDate)}
           </button>
           {premium && (
             <button
@@ -77,7 +84,9 @@ export function RoomPaywall({ room }: RoomPaywallProps) {
               disabled={busy !== null}
               onClick={() => pay('premium')}
             >
-              {busy === 'premium' ? 'Opening Stripe…' : `${premium.cta} — dinner + movie`}
+              {busy === 'premium'
+                ? 'Opening Stripe…'
+                : `${payCta('premium', firstDate)} — dinner + movie`}
             </button>
           )}
         </div>
