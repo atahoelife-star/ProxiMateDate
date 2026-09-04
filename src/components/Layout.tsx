@@ -9,7 +9,8 @@ export function Layout() {
     pathname === '/restaurant' ||
     pathname === '/movie-night' ||
     pathname === '/date-night' ||
-    pathname === '/stats'
+    pathname === '/stats' ||
+    pathname === '/stats/feedback'
 
   useEffect(() => {
     if (hash) {

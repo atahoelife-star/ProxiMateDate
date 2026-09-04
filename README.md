@@ -32,7 +32,7 @@ npm install
 npm run dev
 ```
 
-`npm run build` type-checks and emits `dist/`. Local Vite serves `/api/live-room`, `/api/room-start`, and `/api/stats`. Paid Pricing buttons still need `STRIPE_SECRET_KEY` on Vercel; without it they collect a waitlist email.
+`npm run build` type-checks and emits `dist/`. Local Vite serves `/api/live-room`, `/api/room-start`, `/api/feedback`, and `/api/stats`. Paid Pricing buttons still need `STRIPE_SECRET_KEY` on Vercel; without it they collect a waitlist email.
 
 Cloudflare Workers Git builds (if connected) need this Wrangler file and a dashboard **Build command** of `npm run build`. They serve the SPA only; Stripe Checkout is the Vercel function.
 
@@ -63,4 +63,4 @@ This page is not linked from the public nav, footer, or homepage. Customers and 
 2. Redeploy production.
 3. Open `https://www.proximatedate.com/stats?key=` plus that same value. You can also type the password on `/stats`. HTTP Basic uses the same password.
 
-The page shows unique room starts this website recorded (Free Date Night, Dinner, Movie Night) and, when `STRIPE_SECRET_KEY` is present, paid Checkout sessions (dinner $9.99, movie $14.99, premium $24.99, extend $2.99). Free dates never hit Stripe unless someone extends. Counts are never invented: if Stripe is missing, paid rows stay blank instead of showing zero. Room starts can reset if the host moves servers.
+The page shows unique room starts this website recorded (Free Date Night, Dinner, Movie Night) and, when `STRIPE_SECRET_KEY` is present, paid Checkout sessions (dinner $9.99, movie $14.99, premium $24.99, extend $2.99). It also lists recent private feedback from ended dates and the footer form. Feedback is never shown on the public site, homepage, or nav. There is no mailer: notes are stored with room starts on this server (they can reset if the host moves machines). Free dates never hit Stripe unless someone extends. Counts are never invented: if Stripe is missing, paid rows stay blank instead of showing zero.

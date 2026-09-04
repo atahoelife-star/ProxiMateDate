@@ -38,6 +38,8 @@ import { useLiveChat, useLiveSeat } from '../lib/liveRoom'
 import { useUsPhotos } from '../lib/datePhotos'
 import { RoomPaywall } from '../components/dateroom/RoomPaywall'
 import { reportRoomStart } from '../lib/roomStarts'
+import { useDateFeedback } from '../lib/useDateFeedback'
+import { DateFeedbackPrompt } from '../components/DateFeedbackPrompt'
 
 export function RestaurantDatePage() {
   const allowed = usePaidRoom('dinner')
@@ -71,6 +73,14 @@ function RestaurantDateSession() {
   const [showInviteModal, setShowInviteModal] = useState(false)
   const [inviteStep, setInviteStep] = useState<'options' | 'success'>('options')
   const [wrapDismissed, setWrapDismissed] = useState(false)
+  const feedback = useDateFeedback({
+    room: 'dinner',
+    roomId,
+    startedAt: session.startedAt,
+    expired: session.expired,
+    waiting: session.waiting,
+    plan: session.combo ? 'premium' : 'dinner',
+  })
 
   const [youOrder, setYouOrder] = useState<OrderLine[]>([])
   const [tableOrder, setTableOrder] = useState<OrderLine[]>([])
@@ -230,7 +240,7 @@ function RestaurantDateSession() {
           setShowInviteModal(true)
         }}
         sound={{ muted: diningMuted, onToggle: toggleDiningMute }}
-        onEnd={() => fadeOutAndStop(() => navigate('/'))}
+        onEnd={() => feedback.requestEnd(() => fadeOutAndStop(() => navigate('/')))}
         onChangeRoom={() => {
           setWaiterServing(false)
           setWaiterClip('idle')
@@ -396,6 +406,12 @@ function RestaurantDateSession() {
         startedAt={session.startedAt || undefined}
         step={inviteStep}
         onStep={setInviteStep}
+      />
+      <DateFeedbackPrompt
+        open={feedback.open}
+        room="dinner"
+        plan={feedback.plan}
+        onFinish={feedback.finish}
       />
       </>
       )}
