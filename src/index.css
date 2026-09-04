@@ -703,3 +703,52 @@ select.input option {
   h1 { font-size: 2.35rem; }
   h2 { font-size: 1.65rem; }
 }
+
+/* Light fall-leaves treatment — never capture clicks, never sit above copy */
+.fall-leaves {
+  z-index: 0;
+}
+.fall-leaf,
+.fall-leaf-static {
+  position: absolute;
+  display: block;
+  opacity: 0.55;
+  will-change: transform;
+}
+.fall-leaf {
+  top: -2.5rem;
+  animation-name: fall-drift;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+.fall-leaf-static {
+  opacity: 0.28;
+  transform: rotate(var(--leaf-rot, 0deg));
+}
+@keyframes fall-drift {
+  0% {
+    transform: translate3d(0, -8%, 0) rotate(var(--leaf-rot, 0deg));
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translate3d(22px, 108vh, 0) rotate(calc(var(--leaf-rot, 0deg) + 140deg));
+    opacity: 0.12;
+  }
+}
+@media (max-width: 640px) {
+  .fall-leaf:nth-child(n + 8),
+  .fall-leaf-static:nth-child(n + 8) {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fall-leaf {
+    animation: none;
+    top: 28%;
+    opacity: 0.28;
+    transform: rotate(var(--leaf-rot, 0deg));
+  }
+}

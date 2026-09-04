@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom'
 import { Clapperboard, Heart, MessageCircle, UtensilsCrossed } from 'lucide-react'
 import { LandingDemo, LandingDemoCtas } from '../components/LandingDemo'
+import { FallLeaves } from '../components/FallLeaves'
+import { FIRST_DATE_PRICE, LIST_PRICE } from '../data/prices'
 
 const rooms = [
   {
@@ -27,11 +29,27 @@ export function HomePage() {
   return (
     <div>
       <div className="relative pt-12 pb-16 md:pt-16 md:pb-20 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-[#1A1418] via-[#0F0A0D] to-[#0F0A0D]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#2A1810] via-[#0F0A0D] to-[#0F0A0D]" />
+        <FallLeaves />
 
         <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full border border-[#C9A962]/30 bg-white/5 text-sm mb-6">
+          <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full border border-[#C9A962]/30 bg-white/5 text-sm mb-5">
             <Heart className="w-4 h-4 text-[#E8A0B8]" /> A long-distance date night, in the browser
+          </div>
+
+          <div className="max-w-xl mx-auto mb-6 rounded-2xl border border-[#C9A962]/45 bg-[#C9A962]/10 px-5 py-4">
+            <div className="text-[#C9A962] text-xs tracking-[2px] mb-1">FIRST DATE</div>
+            <p className="text-[#F8F4ED] text-xl leading-snug">50% off your first paid evening</p>
+            <p className="text-[#EDE4D9]/90 text-sm mt-2 leading-relaxed">
+              Dinner {FIRST_DATE_PRICE.dinner}
+              <br />
+              Movie {FIRST_DATE_PRICE.movie}
+              <br />
+              Both {FIRST_DATE_PRICE.premium}
+            </p>
+            <p className="text-[#A8988A] text-xs mt-2">
+              After that, list prices. Free date night stays free.
+            </p>
           </div>
 
           <h1 className="text-[#F8F4ED] mb-4 leading-none">
@@ -51,14 +69,19 @@ export function HomePage() {
           <div className="max-w-md mx-auto text-lg text-[#EDE4D9]/90 mt-10 space-y-3">
             <p>Three rooms.</p>
             <p>
-              Restaurant dinner is $9.99
+              Restaurant dinner is {LIST_PRICE.dinner}
               <br />
               for 90 minutes.
             </p>
             <p>
-              Movie night is $14.99
+              Movie night is {LIST_PRICE.movie}
               <br />
               for 2.5 hours.
+            </p>
+            <p>
+              Premium is {LIST_PRICE.premium}
+              <br />
+              for 3 hours covering both.
             </p>
             <p>Free date night is 30 minutes.</p>
           </div>
@@ -103,11 +126,15 @@ export function HomePage() {
         </div>
       </div>
 
-      <div className="bg-[#1A1418] border-t border-[#3A2F36] py-16">
-        <div className="max-w-xl mx-auto text-center px-6">
+      <div className="relative overflow-hidden bg-[#1A1418] border-t border-[#3A2F36] py-16">
+        <FallLeaves variant="scatter" />
+        <div className="relative z-10 max-w-xl mx-auto text-center px-6">
           <Heart className="w-9 h-9 text-[#E8A0B8] mx-auto mb-6" />
           <h2 className="text-[#F8F4ED] mb-4">Your next date night is waiting.</h2>
-          <p className="text-lg text-[#A8988A] mb-8">Try free date night for 30 minutes, or pay for dinner or movie night with a card on Stripe.</p>
+          <p className="text-lg text-[#A8988A] mb-3">
+            First paid date is 50% off. Free date night is still free for 30 minutes.
+          </p>
+          <p className="text-lg text-[#A8988A] mb-8">Or pay list price for dinner or movie night with a card on Stripe.</p>
           <LandingDemoCtas size="md" />
         </div>
       </div>

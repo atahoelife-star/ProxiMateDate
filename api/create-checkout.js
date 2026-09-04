@@ -1,13 +1,25 @@
 import Stripe from 'stripe'
-
-const PLANS = {
-  dinner: { name: 'Virtual Dinner Date', amount: 999, successPath: '/restaurant' },
-  movie: { name: 'Movie Night', amount: 1499, successPath: '/movie-night' },
-  premium: { name: 'Premium Romance', amount: 2499, successPath: '/date-room' },
-  extend: { name: 'Date Night extend', amount: 299, successPath: '/date-night' },
-}
+import {
+  LIST_AMOUNTS,
+  PAID_EVENING_PLANS,
+  PLAN_NAMES,
+  SUCCESS_PATHS,
+  checkoutAmount,
+  isPlanId,
+} from './plan-amounts.js'
 
 const ALLOWED_PATHS = new Set(['/restaurant', '/movie-night', '/date-room', '/date-night', '/pricing'])
+
+function cookieSaysPaid(req) {
+  const raw = req.headers?.cookie || req.headers?.Cookie || ''
+  return /(?:^|;\s*)pd_first_paid=1(?:;|$)/.test(String(raw))
+}
+
+function wantsFirstDate(req, body, planId) {
+  if (!PAID_EVENING_PLANS.has(planId)) return false
+  if (cookieSaysPaid(req)) return false
+  return body?.firstDate === true || body?.promo === 'first-date'
+}
 
 async function readBody(req) {
   if (req.body) {
@@ -98,16 +110,20 @@ export default async function handler(req, res) {
 
   const body = await readBody(req)
   const planId = body?.plan
-  const plan = PLANS[planId]
-  if (!plan) {
+  if (!isPlanId(planId)) {
     res.status(400).json({ error: 'unknown_plan' })
     return
   }
 
+  const firstDate = wantsFirstDate(req, body, planId)
+  const amount = checkoutAmount(planId, firstDate)
+  const name = PLAN_NAMES[planId]
+  const productName = firstDate ? `ProxiMateDate — ${name} (first date)` : `ProxiMateDate — ${name}`
+
   try {
     const stripe = new Stripe(secret)
     const origin = siteOrigin(req)
-    const successPath = safePath(body?.returnTo, plan.successPath)
+    const successPath = safePath(body?.returnTo, SUCCESS_PATHS[planId])
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
       submit_type: 'pay',
@@ -117,21 +133,30 @@ export default async function handler(req, res) {
           quantity: 1,
           price_data: {
             currency: 'usd',
-            unit_amount: plan.amount,
-            product_data: { name: `ProxiMateDate — ${plan.name}` },
+            unit_amount: amount,
+            product_data: { name: productName },
           },
         },
       ],
       success_url: withSessionQuery(origin, successPath, body?.returnTo, planId),
       cancel_url: cancelUrl(origin, body?.cancelTo, '/pricing'),
-      metadata: { plan: planId },
+      metadata: {
+        plan: planId,
+        promo: firstDate ? 'first-date' : 'list',
+        list_amount: String(LIST_AMOUNTS[planId]),
+        charged_amount: String(amount),
+      },
     })
 
     if (!session.url) {
       res.status(500).json({ error: 'no_checkout_url' })
       return
     }
-    res.status(200).json({ url: session.url })
+    res.status(200).json({
+      url: session.url,
+      amount,
+      promo: firstDate ? 'first-date' : 'list',
+    })
   } catch {
     res.status(500).json({ error: 'checkout_failed' })
   }

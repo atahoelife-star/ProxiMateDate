@@ -3,10 +3,13 @@ import { Link } from 'react-router-dom'
 import { Check, X } from 'lucide-react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { PLANS, type Plan } from '../data/plans'
+import { FIRST_DATE_PRICE, LIST_PRICE, payCta, type PaidEveningId } from '../data/prices'
 import { WaitlistForm } from '../components/WaitlistForm'
+import { firstDateStillOpen } from '../lib/firstDateOffer'
 import { startStripeCheckout, type PaidPlanId } from '../lib/stripeCheckout'
 
 export function PricingPage() {
+  const [firstDate] = useState(() => firstDateStillOpen())
   const [waitlistPlan, setWaitlistPlan] = useState<Plan | null>(null)
   const [busy, setBusy] = useState<string | null>(null)
   const [checkoutError, setCheckoutError] = useState(false)
@@ -35,18 +38,29 @@ export function PricingPage() {
             <br />
             Then $2.99 if the host extends.
           </p>
+          {firstDate && (
+            <p>
+              First paid date is 50% off.
+              <br />
+              Dinner {FIRST_DATE_PRICE.dinner}
+              <br />
+              Movie {FIRST_DATE_PRICE.movie}
+              <br />
+              Both {FIRST_DATE_PRICE.premium}
+            </p>
+          )}
           <p>
-            Dinner is $9.99
+            Dinner is {LIST_PRICE.dinner}
             <br />
             for 90 minutes after you sit.
           </p>
           <p>
-            Movie Night is $14.99
+            Movie Night is {LIST_PRICE.movie}
             <br />
             for 2.5 hours.
           </p>
           <p>
-            Premium is $24.99
+            Premium is {LIST_PRICE.premium}
             <br />
             for 3 hours covering both.
           </p>
@@ -60,10 +74,10 @@ export function PricingPage() {
             Free Date Night
           </Link>
           <Link to="/restaurant" className="btn btn-outline px-8 py-3 text-sm">
-            Dinner $9.99
+            Dinner {LIST_PRICE.dinner}
           </Link>
           <Link to="/movie-night" className="btn btn-outline px-8 py-3 text-sm">
-            Movie Night $14.99
+            Movie Night {LIST_PRICE.movie}
           </Link>
         </div>
       </div>
@@ -88,6 +102,11 @@ export function PricingPage() {
                 <div className="mt-3">
                   <div className="text-4xl font-medium text-[#F8F4ED]">{plan.price}</div>
                   <div className="text-sm text-[#A8988A] mt-2">{plan.duration}</div>
+                  {firstDate && plan.id !== 'free' && (
+                    <div className="text-sm text-[#C9A962] mt-2">
+                      First date {FIRST_DATE_PRICE[plan.id as PaidEveningId]}
+                    </div>
+                  )}
                 </div>
                 <p className="text-[#A8988A] mt-3 text-sm leading-snug">{plan.description}</p>
               </div>
@@ -112,7 +131,7 @@ export function PricingPage() {
                   disabled={busy === plan.id}
                   onClick={() => onPaidCta(plan)}
                 >
-                  {busy === plan.id ? 'Opening Stripe…' : plan.cta}
+                  {busy === plan.id ? 'Opening Stripe…' : payCta(plan.id, firstDate)}
                 </button>
               )}
             </div>

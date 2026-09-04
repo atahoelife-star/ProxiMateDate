@@ -1,3 +1,5 @@
+import { LIST_DURATION, LIST_PRICE } from './prices'
+
 export type PlanId = 'free' | 'dinner' | 'movie' | 'premium'
 
 export type Plan = {
@@ -35,10 +37,10 @@ export const PLANS: Plan[] = [
   {
     id: 'dinner',
     name: 'Virtual Dinner Date',
-    price: '$9.99',
-    duration: 'for 90 minutes',
+    price: LIST_PRICE.dinner,
+    duration: LIST_DURATION.dinner,
     popular: true,
-    description: 'Pay $9.99 with a card on Stripe. Then walk in and sit down for 90 minutes at the table.',
+    description: `Pay ${LIST_PRICE.dinner} with a card on Stripe. Then walk in and sit down for 90 minutes at the table.`,
     features: [
       'Walk-in, then a seated 1x dining room',
       '90 minutes after you sit',
@@ -46,17 +48,17 @@ export const PLANS: Plan[] = [
       'Dish-matched waiter clips',
       'Pay with a card on Stripe',
     ],
-    cta: 'Pay $9.99 with Stripe',
+    cta: `Pay ${LIST_PRICE.dinner} with Stripe`,
     roomPath: '/restaurant',
     roomCta: 'Open restaurant',
   },
   {
     id: 'movie',
     name: 'Movie Night',
-    price: '$14.99',
-    duration: 'for 2.5 hours',
+    price: LIST_PRICE.movie,
+    duration: LIST_DURATION.movie,
     popular: false,
-    description: 'Pay $14.99 with a card on Stripe. Then Watch Together for 2.5 hours.',
+    description: `Pay ${LIST_PRICE.movie} with a card on Stripe. Then Watch Together for 2.5 hours.`,
     features: [
       'Walk-in: tickets, lobby, popcorn, seats',
       '2.5 hours in the theater',
@@ -64,15 +66,15 @@ export const PLANS: Plan[] = [
       'Floating chat while a video plays',
       'Pay with a card on Stripe',
     ],
-    cta: 'Pay $14.99 with Stripe',
+    cta: `Pay ${LIST_PRICE.movie} with Stripe`,
     roomPath: '/movie-night',
     roomCta: 'Open movie night',
   },
   {
     id: 'premium',
     name: 'Premium Romance',
-    price: '$24.99',
-    duration: 'for 3 hours',
+    price: LIST_PRICE.premium,
+    duration: LIST_DURATION.premium,
     popular: false,
     description: 'Dinner + movie in one payment. Unlocks both paid rooms for 3 hours in this browser.',
     features: [
@@ -81,7 +83,7 @@ export const PLANS: Plan[] = [
       'Pay with a card on Stripe',
       'One payment unlocks both rooms in this browser',
     ],
-    cta: 'Pay $24.99 with Stripe',
+    cta: `Pay ${LIST_PRICE.premium} with Stripe`,
     roomPath: '/date-room',
     roomCta: 'Both rooms after payment',
   },

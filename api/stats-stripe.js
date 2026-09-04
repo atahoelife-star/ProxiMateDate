@@ -1,9 +1,16 @@
 import Stripe from 'stripe'
 
 const PLAN_IDS = new Set(['dinner', 'movie', 'premium', 'extend'])
+/** Metadata.plan wins. Amount fallback covers old list, new list, and first-date halves.
+ *  999 is kept as dinner for historical $9.99 checkouts; new $9.99 premium first-dates set metadata. */
 const AMOUNT_TO_PLAN = {
+  399: 'dinner',
+  599: 'movie',
+  799: 'dinner',
   999: 'dinner',
+  1199: 'movie',
   1499: 'movie',
+  1999: 'premium',
   2499: 'premium',
   299: 'extend',
 }

@@ -1,16 +1,17 @@
 import { PageShell } from '../components/PageShell'
+import { LIST_PRICE } from '../data/prices'
 
 export function TermsPage() {
   return (
     <PageShell kicker="TERMS" title="Terms of Use">
-      <p>Last updated August 27, 2026. By using proximatedate.com you agree to these terms.</p>
+      <p>Last updated September 4, 2026. By using proximatedate.com you agree to these terms.</p>
       <h2 className="text-[#F8F4ED] text-xl">What this site is</h2>
       <p>
         ProxiMateDate is a website for a long-distance date night. Chat is between the two of you on a room link. Restaurant orders stay in your browser. Waiter clips are videos. YouTube Watch Together uses YouTube. This is not a live two-person video call and not a reservation at The Verdant Ember or The Silver Sage Steakhouse. Dinner and Movie Night are paid before those rooms start.
       </p>
       <h2 className="text-[#F8F4ED] text-xl">Waitlist and Checkout</h2>
       <p>
-        Free Date Night is free for 30 minutes. The host may extend for $2.99. Dinner is $9.99 for 90 minutes after you sit. Movie Night is $14.99 for 2.5 hours. Both are paid before those rooms start through Stripe. Premium is $24.99 for 3 hours covering both. Submitting an email does not charge you. Paid rooms are billed through Stripe. We do not send you to PayPal, Venmo, or Cash App.
+        Free Date Night is free for 30 minutes. The host may extend for $2.99. Dinner is {LIST_PRICE.dinner} for 90 minutes after you sit. Movie Night is {LIST_PRICE.movie} for 2.5 hours. Both are paid before those rooms start through Stripe. Premium is {LIST_PRICE.premium} for 3 hours covering both. The first paid evening in this browser is 50% off. Submitting an email does not charge you. Paid rooms are billed through Stripe. We do not send you to PayPal, Venmo, or Cash App.
       </p>
       <h2 className="text-[#F8F4ED] text-xl">Your use</h2>
       <p>

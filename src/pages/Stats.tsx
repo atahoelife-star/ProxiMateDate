@@ -172,15 +172,15 @@ export function StatsPage() {
                 )}
                 <dl className="space-y-3">
                   <div className="flex justify-between border-b border-[#3A2F36] py-2">
-                    <dt>Dinner $9.99</dt>
+                    <dt>Dinner $7.99</dt>
                     <dd className="text-[#F8F4ED]">{countOrDash(true, stripe.dinner)}</dd>
                   </div>
                   <div className="flex justify-between border-b border-[#3A2F36] py-2">
-                    <dt>Movie Night $14.99</dt>
+                    <dt>Movie Night $11.99</dt>
                     <dd className="text-[#F8F4ED]">{countOrDash(true, stripe.movie)}</dd>
                   </div>
                   <div className="flex justify-between border-b border-[#3A2F36] py-2">
-                    <dt>Premium $24.99</dt>
+                    <dt>Premium $19.99</dt>
                     <dd className="text-[#F8F4ED]">{countOrDash(true, stripe.premium)}</dd>
                   </div>
                   <div className="flex justify-between border-b border-[#3A2F36] py-2">
