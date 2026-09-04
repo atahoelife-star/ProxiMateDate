@@ -14,6 +14,8 @@ import { useUsPhotos } from '../lib/datePhotos'
 import { startStripeCheckout } from '../lib/stripeCheckout'
 import { newRoomId } from '../lib/watchSync'
 import { reportRoomStart } from '../lib/roomStarts'
+import { useDateFeedback } from '../lib/useDateFeedback'
+import { DateFeedbackPrompt } from '../components/DateFeedbackPrompt'
 
 /** Free Date Night is never behind Stripe/Premium. Only restaurant and movie night gate on pay. */
 export function FreeDateNightPage() {
@@ -50,6 +52,14 @@ function FreeDateNightRoom({ roomId, onRecycle }: { roomId: string; onRecycle: (
   const [checkoutError, setCheckoutError] = useState(false)
   const [dismissedExtraMs, setDismissedExtraMs] = useState<number | null>(null)
   const sawRunning = useRef(false)
+  const feedback = useDateFeedback({
+    room: 'free',
+    roomId,
+    startedAt: session.startedAt,
+    expired: session.expired,
+    waiting: session.waiting,
+    plan: session.extraMs > 0 ? 'extend' : 'free',
+  })
 
   useRoomQuerySync(roomId, session.startedAt > 0 ? { started: String(session.startedAt) } : undefined)
 
@@ -131,7 +141,7 @@ function FreeDateNightRoom({ roomId, onRecycle }: { roomId: string; onRecycle: (
           setInviteStep('options')
           setShowInviteModal(true)
         }}
-        onEnd={() => navigate('/')}
+        onEnd={() => feedback.requestEnd(() => navigate('/'))}
         onExtend={showHostPay ? payExtend : undefined}
         extendLabel={busy ? 'Opening Stripe…' : 'Extend $2.99'}
       />
@@ -244,6 +254,12 @@ function FreeDateNightRoom({ roomId, onRecycle }: { roomId: string; onRecycle: (
         startedAt={session.startedAt || undefined}
         step={inviteStep}
         onStep={setInviteStep}
+      />
+      <DateFeedbackPrompt
+        open={feedback.open}
+        room="free"
+        plan={feedback.plan}
+        onFinish={feedback.finish}
       />
     </div>
   )

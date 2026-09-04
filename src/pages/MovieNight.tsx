@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { WatchStage } from '../components/dateroom/WatchTogether'
 import { ArrivalSequence } from '../components/dateroom/ArrivalSequence'
 import { useArrivalGate } from '../lib/arrivalGate'
@@ -21,6 +22,8 @@ import { useLiveChat, useLiveSeat } from '../lib/liveRoom'
 import { useUsPhotos } from '../lib/datePhotos'
 import { RoomPaywall } from '../components/dateroom/RoomPaywall'
 import { reportRoomStart } from '../lib/roomStarts'
+import { useDateFeedback } from '../lib/useDateFeedback'
+import { DateFeedbackPrompt } from '../components/DateFeedbackPrompt'
 
 export function MovieNightPage() {
   const allowed = usePaidRoom('movie')
@@ -29,6 +32,7 @@ export function MovieNightPage() {
 }
 
 function MovieNightSession() {
+  const navigate = useNavigate()
   const { arrived, markArrived } = useArrivalGate('pd-arrival-cinema')
   const [roomId] = useState(roomFromWindow)
   const { seat, myName, join, rename, photoScope } = useLiveSeat(roomId)
@@ -56,6 +60,14 @@ function MovieNightSession() {
   const [initialVideoId] = useState(initialWatchId)
   const [watchingMovie, setWatchingMovie] = useState(Boolean(initialVideoId))
   const [wrapDismissed, setWrapDismissed] = useState(false)
+  const feedback = useDateFeedback({
+    room: 'movie',
+    roomId,
+    startedAt: session.startedAt,
+    expired: session.expired,
+    waiting: session.waiting,
+    plan: session.combo ? 'premium' : 'movie',
+  })
 
   useRoomQuerySync(roomId, session.startedAt > 0 ? { started: String(session.startedAt) } : undefined)
 
@@ -105,6 +117,7 @@ function MovieNightSession() {
           setInviteStep('options')
           setShowInviteModal(true)
         }}
+        onEnd={() => feedback.requestEnd(() => navigate('/'))}
       />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pt-8 pb-16">
@@ -178,6 +191,12 @@ function MovieNightSession() {
         startedAt={session.startedAt || undefined}
         step={inviteStep}
         onStep={setInviteStep}
+      />
+      <DateFeedbackPrompt
+        open={feedback.open}
+        room="movie"
+        plan={feedback.plan}
+        onFinish={feedback.finish}
       />
     </div>
   )

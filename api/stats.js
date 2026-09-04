@@ -1,4 +1,5 @@
 import { authorizeStats } from './stats-auth.js'
+import { getRecentFeedback } from './feedback-store.js'
 import { getRoomStartCounts } from './room-start-store.js'
 import { collectPaidCheckoutCounts } from './stats-stripe.js'
 
@@ -29,5 +30,6 @@ export default async function handler(req, res) {
 
   const roomStarts = getRoomStartCounts()
   const stripe = await collectPaidCheckoutCounts()
-  res.status(200).json({ roomStarts, stripe })
+  const feedback = getRecentFeedback(50)
+  res.status(200).json({ roomStarts, stripe, feedback })
 }

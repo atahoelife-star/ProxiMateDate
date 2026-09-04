@@ -6,6 +6,21 @@ import {
   stripStatsKeyFromAddress,
   type StatsPayload,
 } from '../lib/privateStats'
+import { ratingLabel, roomLabel } from '../lib/feedback'
+
+function formatWhen(at: number) {
+  if (!at) return '—'
+  try {
+    return new Date(at).toLocaleString(undefined, {
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+    })
+  } catch {
+    return '—'
+  }
+}
 
 function countOrDash(available: boolean, value: number | undefined) {
   if (!available || typeof value !== 'number') return '—'
@@ -54,6 +69,12 @@ export function StatsPage() {
       cancelled = true
     }
   }, [])
+
+  useEffect(() => {
+    if (status !== 'ready') return
+    if (window.location.pathname !== '/stats/feedback') return
+    document.getElementById('feedback')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }, [status])
 
   const onSubmit = (event: FormEvent) => {
     event.preventDefault()
@@ -182,9 +203,36 @@ export function StatsPage() {
             )}
           </section>
 
+          <section id="feedback">
+            <h2 className="text-[#C9A962] text-sm tracking-[2px] mb-4">RECENT FEEDBACK</h2>
+            <p className="text-[#A8988A] text-sm mb-4">
+              Private notes from ended dates and the footer form. Not shown on the public site.
+            </p>
+            {data.feedback.length === 0 ? (
+              <p className="text-[#A8988A]">No notes yet.</p>
+            ) : (
+              <ul className="space-y-4">
+                {data.feedback.map((row) => (
+                  <li key={row.id} className="border-b border-[#3A2F36] pb-3">
+                    <div className="flex flex-wrap justify-between gap-2 text-sm">
+                      <span className="text-[#F8F4ED]">{ratingLabel(row.rating)}</span>
+                      <span className="text-[#7A6B5F]">{formatWhen(row.at)}</span>
+                    </div>
+                    <p className="text-[#A8988A] text-sm mt-1">
+                      {roomLabel(row.room)}
+                      {row.plan ? ` · ${row.plan}` : ''}
+                      {row.source ? ` · ${row.source}` : ''}
+                    </p>
+                    {row.note ? <p className="text-[#EDE4D9] text-sm mt-2 whitespace-pre-wrap">{row.note}</p> : null}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+
           <p className="text-[#7A6B5F] text-sm">
-            Room starts live on this website’s server and can reset if the host moves machines.
-            Stripe numbers come from Checkout when that secret is present.
+            Room starts and feedback live on this website’s server and can reset if the host moves
+            machines. Stripe numbers come from Checkout when that secret is present.
           </p>
         </div>
       )}

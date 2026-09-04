@@ -35,6 +35,7 @@ function App() {
           <Route path="/signin" element={<SignInPage />} />
           <Route path="/get-started" element={<GetStartedPage />} />
           <Route path="/stats" element={<StatsPage />} />
+          <Route path="/stats/feedback" element={<StatsPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>

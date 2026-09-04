@@ -3,6 +3,7 @@ import type { IncomingMessage, ServerResponse } from 'node:http'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { applyEvent, claimSeatOnRoom, loadRoom, roomIdFrom, saveRoom, snapshotAfter } from './api/live-room-store.js'
+import { getRecentFeedback, normalizeFeedback, recordFeedback } from './api/feedback-store.js'
 import { getRoomStartCounts, isRoomStartKind, recordRoomStart } from './api/room-start-store.js'
 import { authorizeStats } from './api/stats-auth.js'
 import { collectPaidCheckoutCounts } from './api/stats-stripe.js'
@@ -42,7 +43,7 @@ function statsApiPlugin(): Plugin {
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
         const path = (req.originalUrl || req.url || '').split('?')[0]
-        if (path !== '/api/room-start' && path !== '/api/stats') {
+        if (path !== '/api/room-start' && path !== '/api/stats' && path !== '/api/feedback') {
           next()
           return
         }
@@ -71,6 +72,34 @@ function statsApiPlugin(): Plugin {
             send(res, 200, { ok: true, recorded: result.recorded })
             return
           }
+          if (path === '/api/feedback') {
+            if (req.method === 'POST') {
+              const parsed = normalizeFeedback(await readJson(req))
+              if (!parsed.ok) {
+                send(res, 400, { error: parsed.error })
+                return
+              }
+              recordFeedback(parsed.entry)
+              send(res, 200, { ok: true })
+              return
+            }
+            if (req.method !== 'GET') {
+              send(res, 405, { error: 'method_not_allowed' })
+              return
+            }
+            const url = new URL(req.originalUrl || req.url || '', 'http://localhost')
+            const auth = authorizeStats({
+              url: url.pathname + url.search,
+              headers: req.headers,
+              query: Object.fromEntries(url.searchParams.entries()),
+            })
+            if (!auth.ok) {
+              send(res, auth.status, { error: auth.error })
+              return
+            }
+            send(res, 200, { feedback: getRecentFeedback(50) })
+            return
+          }
           if (req.method !== 'GET') {
             send(res, 405, { error: 'method_not_allowed' })
             return
@@ -87,7 +116,8 @@ function statsApiPlugin(): Plugin {
           }
           const roomStarts = getRoomStartCounts()
           const stripe = await collectPaidCheckoutCounts()
-          send(res, 200, { roomStarts, stripe })
+          const feedback = getRecentFeedback(50)
+          send(res, 200, { roomStarts, stripe, feedback })
         })().catch(() => next())
       })
     },

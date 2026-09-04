@@ -14,9 +14,20 @@ export type StripeCounts = {
   other?: number
 }
 
+export type FeedbackRow = {
+  id: string
+  rating: string
+  note: string
+  room: string
+  plan?: string
+  source?: string
+  at: number
+}
+
 export type StatsPayload = {
   roomStarts: RoomStartCounts
   stripe: StripeCounts
+  feedback: FeedbackRow[]
 }
 
 const KEY_STORAGE = 'pd-stats-key'
@@ -83,7 +94,11 @@ export async function fetchPrivateStats(key: string): Promise<
       if (response.ok && parsed.roomStarts && parsed.stripe) {
         return {
           ok: true,
-          data: { roomStarts: parsed.roomStarts, stripe: parsed.stripe },
+          data: {
+            roomStarts: parsed.roomStarts,
+            stripe: parsed.stripe,
+            feedback: Array.isArray(parsed.feedback) ? parsed.feedback : [],
+          },
         }
       }
       lastError = parsed.error
