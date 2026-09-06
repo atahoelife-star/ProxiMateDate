@@ -1,5 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { GAMES, PRIZE_STILL, type GameId, gameById } from '../../data/carnival'
+import {
+  BELL_SWEET,
+  THROW_SWEET,
+  inSweet,
+  powerFromHold,
+  skillHit,
+  sweetLeft,
+  sweetRight,
+  type SweetSpot,
+} from '../../lib/carnivalSkill'
 import { PLAY_COST, TOKEN_PACK, TOKEN_PACK_PRICE } from '../../lib/carnivalTokens'
 
 type CarnivalGamesProps = {
@@ -20,16 +30,6 @@ const BALLOONS = [
   { id: 'sage', color: '#9BB59B' },
   { id: 'rose', color: '#D47A9A' },
 ]
-
-function powerFromHold(ms: number) {
-  const raw = ms / 1050
-  if (raw <= 1) return Math.min(1, Math.max(0.05, raw))
-  return Math.max(0.28, 1 - (raw - 1) * 1.35)
-}
-
-function inSweet(power: number, low = 0.52, high = 0.9) {
-  return power >= low && power <= high
-}
 
 function useCharge(onRelease: (power: number) => void, disabled: boolean) {
   const [charging, setCharging] = useState(false)
@@ -179,11 +179,18 @@ export function CarnivalGames({
   )
 }
 
-function ChargeBar({ power, charging }: { power: number; charging: boolean }) {
+function ChargeBar({ power, charging, sweet }: { power: number; charging: boolean; sweet: SweetSpot }) {
+  const left = sweetLeft(sweet) * 100
+  const width = (sweetRight(sweet) - sweetLeft(sweet)) * 100
   return (
-    <div className="h-3 rounded-full bg-[#1A1418]/80 border border-white/15 overflow-hidden max-w-md">
+    <div className="relative h-3 rounded-full bg-[#1A1418]/80 border border-white/15 overflow-hidden max-w-md">
       <div
-        className={`h-full ${inSweet(power) && charging ? 'bg-[#C9A962]' : 'bg-[#E8A0B8]'}`}
+        className="absolute inset-y-0 bg-[#C9A962]/35"
+        style={{ left: `${left}%`, width: `${width}%` }}
+        aria-hidden
+      />
+      <div
+        className={`relative h-full ${inSweet(power, sweet) && charging ? 'bg-[#C9A962]' : 'bg-[#E8A0B8]'}`}
         style={{ width: `${power * 100}%` }}
       />
     </div>
@@ -196,16 +203,18 @@ function CockControl({
   begin,
   end,
   label,
+  sweet = THROW_SWEET,
 }: {
   charging: boolean
   power: number
   begin: () => void
   end: () => void
   label: string
+  sweet?: SweetSpot
 }) {
   return (
     <div className="mt-4 max-w-md">
-      <ChargeBar power={power} charging={charging} />
+      <ChargeBar power={power} charging={charging} sweet={sweet} />
       <button
         type="button"
         className="btn btn-gold mt-4 w-full py-4 text-base"
@@ -215,13 +224,12 @@ function CockControl({
         }}
         onPointerUp={end}
         onPointerCancel={end}
-        onPointerLeave={() => {
-          if (charging) end()
-        }}
       >
         {charging ? 'Cocked — release' : label}
       </button>
-      <p className="text-[#A8988A] text-xs mt-2">Hold Space or this button. Longer hold adds power. Too long overshoots.</p>
+      <p className="text-[#A8988A] text-xs mt-2">
+        Hold Space or this button. Release in the gold band. A short tap or a long hold misses.
+      </p>
     </div>
   )
 }
@@ -237,7 +245,7 @@ function BalloonDarts({ onLeave, onNote }: { onLeave: () => void; onNote: (text:
 
   const throwDart = (power: number) => {
     if (left <= 0 || busy) return
-    const hit = inSweet(power) && !popped.includes(aim.id)
+    const hit = skillHit(power, THROW_SWEET) && !popped.includes(aim.id)
     const key = left
     setBusy(true)
     setFly({ hit, key })
@@ -300,7 +308,7 @@ function RingToss({ onLeave, onNote }: { onLeave: () => void; onNote: (text: str
 
   const toss = (power: number) => {
     if (left <= 0 || busy) return
-    const hit = inSweet(power) && !ringed.includes(target)
+    const hit = skillHit(power, THROW_SWEET) && !ringed.includes(target)
     setBusy(true)
     setFly({ target, hit, key: left })
     window.setTimeout(() => {
@@ -352,7 +360,7 @@ function Strongman({ onLeave, onNote }: { onLeave: () => void; onNote: (text: st
     if (used) return
     setUsed(true)
     setHeight(Math.round(power * 100))
-    const rang = inSweet(power, 0.78, 1)
+    const rang = skillHit(power, BELL_SWEET)
     setBell(rang)
     onNote(rang ? 'The mallet hits. The puck rings the bell.' : 'The mallet hits. The puck climbs and falls short.')
   }
@@ -370,7 +378,7 @@ function Strongman({ onLeave, onNote }: { onLeave: () => void; onNote: (text: st
           </div>
           <div className={`carnival-mallet ${used ? 'is-swing' : charging ? 'is-cocked' : ''}`} />
         </div>
-        <CockControl charging={charging} power={power} begin={begin} end={end} label="Hold to charge mallet" />
+        <CockControl charging={charging} power={power} begin={begin} end={end} label="Hold to charge mallet" sweet={BELL_SWEET} />
       </div>
       <div className="mt-auto pt-6">
         <button type="button" onClick={onLeave} className="btn btn-outline px-5 py-2 text-sm">
@@ -390,7 +398,7 @@ function BottleKnock({ onLeave, onNote }: { onLeave: () => void; onNote: (text: 
 
   const throwBall = (power: number) => {
     if (left <= 0 || busy) return
-    const hit = inSweet(power, 0.45, 0.95)
+    const hit = skillHit(power, THROW_SWEET)
     setBusy(true)
     setFly({ target, key: left })
     window.setTimeout(() => {
