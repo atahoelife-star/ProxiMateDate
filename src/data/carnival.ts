@@ -65,7 +65,7 @@ export const RIDES: RideAttraction[] = [
     kicker: 'Log ride',
     blurb: 'Wait on the dock, then a full ride-through: willows, logging camp, lift, tunnel, splash, home.',
     still: '/images/carnival/carnival-flume.jpg',
-    durationMs: 228500,
+    durationMs: 162000,
     chatLine: 'Willow Run Flume — the dock line, then a log on the creek.',
   },
   {
