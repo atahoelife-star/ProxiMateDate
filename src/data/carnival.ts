@@ -63,9 +63,9 @@ export const RIDES: RideAttraction[] = [
     id: 'flume',
     name: 'Willow Run Flume',
     kicker: 'Log ride',
-    blurb: 'Wait on the dock, then ride the log past loggers and a splash.',
+    blurb: 'Wait on the dock, then a full ride-through: willows, logging camp, lift, tunnel, splash, home.',
     still: '/images/carnival/carnival-flume.jpg',
-    durationMs: 224000,
+    durationMs: 228500,
     chatLine: 'Willow Run Flume — the dock line, then a log on the creek.',
   },
   {
@@ -162,7 +162,7 @@ export const RIDE_SHOWS: RideShow[] = [
     film: '/videos/carnival/flume.mp4',
     loop: false,
     queueChat: 'You wait on the Willow Run dock. Logs sit in the channel.',
-    rideChat: 'The log pushes off. Creek, camp pocket, tunnel, splash.',
+    rideChat: 'The log pushes off. Willows, logging camp, lift, tunnel, splash, then the dock.',
     queue: {
       id: 'queue',
       src: '/images/carnival/carnival-flume-queue.jpg',
