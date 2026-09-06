@@ -92,7 +92,7 @@ export const RIDES: RideAttraction[] = [
     kicker: 'Carousel',
     blurb: 'A full turn: horses, a fox, and a stag spin and bob under the bulbs the whole time.',
     still: '/images/carnival/carnival-carousel.jpg',
-    durationMs: 228500,
+    durationMs: 206000,
     chatLine: 'The Gilded Round is already turning. Horses rise and fall.',
   },
 ]
