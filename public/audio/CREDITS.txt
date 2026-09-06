@@ -14,8 +14,16 @@ dining-room.mp3
   Table: Mixkit “Taking cutlery from a plate” (sfx 133), “Dish placed in a wood table” (sfx 2933)
 
 ridge-runner ride bed (muxed into /videos/carnival/coaster.mp4)
-  Placeholder only for this preview — original synthesized lift-hill clack and a
-  soft wooden roar. No Mixkit joy / whoop layers. Gregory will send better
-  scream/holler examples later. Not taken from any park on-ride film.
+  Original Pinewick bed, not ripped from any on-ride or YouTube film.
+  Character reference only: “Roller Coaster Sound Fx” yell-reel energy
+  (lift ratchet, track roar / wind zoom, joyful park yells that swell
+  toward the bottom of a drop and fall off on the climb-out).
+  Synthesized: anti-rollback dogs + chain clatter, wooden roar, wind zoom,
+  original women-screech / men-hoop voices.
+  Mixkit Stock SFX Free License, gated by the same speed/proximity envelope:
+    “Screaming people at mechanical game fair” (sfx 349)
+    “Girls crowd cheer, scream, and applause” (sfx 515)
+    “Birthday crowd party cheer” (sfx 531)
+    “Male crowd cheering short” (sfx 476)
   Room mute still silences the ride.
 
