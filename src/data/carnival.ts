@@ -54,9 +54,9 @@ export const RIDES: RideAttraction[] = [
     id: 'coaster',
     name: 'The Ridge Runner',
     kicker: 'Wooden coaster',
-    blurb: 'Queue the lift, then a full ride-through: chain, climb, hang, drop, valley, bank, tunnel, home — with the train’s own sound.',
+    blurb: 'Queue the lift, then a generated on-train ride-through: rails, timber, and pines streaming past.',
     still: '/images/carnival/carnival-coaster.jpg',
-    durationMs: 74000,
+    durationMs: 82000,
     chatLine: 'You join the Ridge Runner line. Timber, bulbs, and the lift ahead.',
   },
   {
@@ -117,7 +117,7 @@ export const RIDE_SHOWS: RideShow[] = [
       {
         id: 'lift',
         src: '/images/carnival/carnival-coaster-lift.jpg',
-        durationMs: 23000,
+        durationMs: 36000,
         title: 'Lift hill',
         line: 'Chain under the car. Pines climb past the lift lights.',
         motion: 'up',
@@ -125,7 +125,7 @@ export const RIDE_SHOWS: RideShow[] = [
       {
         id: 'drop',
         src: '/images/carnival/carnival-coaster-drop.jpg',
-        durationMs: 12000,
+        durationMs: 10000,
         title: 'First drop',
         line: 'The crest, then the timber falls away.',
         motion: 'drop',
@@ -133,7 +133,7 @@ export const RIDE_SHOWS: RideShow[] = [
       {
         id: 'turn',
         src: '/images/carnival/carnival-coaster-turn.jpg',
-        durationMs: 16000,
+        durationMs: 14000,
         title: 'Banked turn',
         line: 'The train leans through the pines.',
         motion: 'left',
@@ -141,7 +141,7 @@ export const RIDE_SHOWS: RideShow[] = [
       {
         id: 'tunnel',
         src: '/images/carnival/carnival-coaster-tunnel.jpg',
-        durationMs: 13000,
+        durationMs: 11000,
         title: 'Covered run',
         line: 'Beams rush the camera. Light at the far end.',
         motion: 'zoom',
@@ -149,7 +149,7 @@ export const RIDE_SHOWS: RideShow[] = [
       {
         id: 'home',
         src: '/images/carnival/carnival-coaster-home.jpg',
-        durationMs: 10000,
+        durationMs: 11000,
         title: 'Brake run',
         line: 'Lanterns in the station. The train comes home.',
         motion: 'in',

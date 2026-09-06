@@ -14,13 +14,8 @@ dining-room.mp3
   Table: Mixkit “Taking cutlery from a plate” (sfx 133), “Dish placed in a wood table” (sfx 2933)
 
 ridge-runner ride bed (muxed into /videos/carnival/coaster.mp4)
-  Original Pinewick Fair sound, synthesized for this preview — not taken from
-  any on-ride film. Lift-hill chain and anti-rollback clack, bass wooden-track
-  roar, air whoosh that rises with speed, and short joyful whoops on the drops
-  (fun park energy, not horror screams).
-  Mixkit Stock SFX Free License layered on the drops / between hills:
-    “People in fair ambience and laughter” (sfx 424)
-    “Stadium joy shouting crowd” (sfx 441)
-    “Male crowd cheering short” (sfx 476)
+  Placeholder only for this preview — original synthesized lift-hill clack and a
+  soft wooden roar. No Mixkit joy / whoop layers. Gregory will send better
+  scream/holler examples later. Not taken from any park on-ride film.
   Room mute still silences the ride.
 
