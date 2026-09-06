@@ -56,7 +56,7 @@ export const RIDES: RideAttraction[] = [
     kicker: 'Wooden coaster',
     blurb: 'Queue the lift, then a full ride-through: chain, climb, hang, drop, valley, bank, tunnel, home.',
     still: '/images/carnival/carnival-coaster.jpg',
-    durationMs: 255500,
+    durationMs: 188500,
     chatLine: 'You join the Ridge Runner line. Timber, bulbs, and the lift ahead.',
   },
   {
