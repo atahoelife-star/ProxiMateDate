@@ -6,7 +6,7 @@ export function LandingDemoCtas({ size = 'lg' }: { size?: 'lg' | 'md' }) {
   return (
     <div className="flex flex-col sm:flex-row gap-3 justify-center">
       <Link to="/date-night" className={`btn btn-gold ${pad}`}>
-        Try it for free
+        Free Date Night
       </Link>
       <Link to="/restaurant" className={`btn btn-outline ${pad}`}>
         Dinner
