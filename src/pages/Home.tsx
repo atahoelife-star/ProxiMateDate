@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom'
-import { Clapperboard, Heart, MessageCircle, UtensilsCrossed } from 'lucide-react'
+import { Clapperboard, FerrisWheel, Heart, MessageCircle, UtensilsCrossed } from 'lucide-react'
 import { LandingDemo, LandingDemoCtas } from '../components/LandingDemo'
 import { FallLeaves } from '../components/FallLeaves'
-import { FIRST_DATE_PRICE, LIST_PRICE } from '../data/prices'
+import { FIRST_DATE_PRICE, LIST_DURATION, LIST_PRICE } from '../data/prices'
 
 const rooms = [
   {
@@ -21,8 +21,14 @@ const rooms = [
     to: '/date-night',
     icon: MessageCircle,
     title: 'Free Date Night',
-    desc: 'Simple together time. Just chat. Free for 30 minutes.',
+    desc: 'Simple together time. Just chat. No card to start.',
   },
+]
+
+const evenings = [
+  { name: 'Dinner', price: LIST_PRICE.dinner, duration: LIST_DURATION.dinner, first: FIRST_DATE_PRICE.dinner },
+  { name: 'Movie night', price: LIST_PRICE.movie, duration: LIST_DURATION.movie, first: FIRST_DATE_PRICE.movie },
+  { name: 'Both', price: LIST_PRICE.premium, duration: `${LIST_DURATION.premium} covering both`, first: FIRST_DATE_PRICE.premium },
 ]
 
 export function HomePage() {
@@ -37,21 +43,6 @@ export function HomePage() {
             <Heart className="w-4 h-4 text-[#E8A0B8]" /> A long-distance date night, in the browser
           </div>
 
-          <div className="max-w-xl mx-auto mb-6 rounded-2xl border border-[#C9A962]/45 bg-[#C9A962]/10 px-5 py-4">
-            <div className="text-[#C9A962] text-xs tracking-[2px] mb-1">FIRST DATE</div>
-            <p className="text-[#F8F4ED] text-xl leading-snug">50% off your first paid evening</p>
-            <p className="text-[#EDE4D9]/90 text-sm mt-2 leading-relaxed">
-              Dinner {FIRST_DATE_PRICE.dinner}
-              <br />
-              Movie {FIRST_DATE_PRICE.movie}
-              <br />
-              Both {FIRST_DATE_PRICE.premium}
-            </p>
-            <p className="text-[#A8988A] text-xs mt-2">
-              After that, list prices. Free date night stays free.
-            </p>
-          </div>
-
           <h1 className="text-[#F8F4ED] mb-4 leading-none">
             Stay close,
             <br />
@@ -59,34 +50,20 @@ export function HomePage() {
           </h1>
 
           <p className="max-w-xl mx-auto text-lg text-[#EDE4D9]/90 mb-8">
-            A look at dinner and movie night. No sign-in. Loops while you watch.
+            Dinner across a table. A movie on the couch. Or just talk. A look at the rooms — no sign-in. Loops while you watch.
           </p>
 
           <LandingDemo className="max-w-4xl mx-auto mb-8" />
 
           <LandingDemoCtas />
 
-          <div className="max-w-md mx-auto text-lg text-[#EDE4D9]/90 mt-10 space-y-3">
-            <p>Three rooms.</p>
-            <p>
-              Restaurant dinner is {LIST_PRICE.dinner}
-              <br />
-              for 90 minutes.
-            </p>
-            <p>
-              Movie night is {LIST_PRICE.movie}
-              <br />
-              for 2.5 hours.
-            </p>
-            <p>
-              Premium is {LIST_PRICE.premium}
-              <br />
-              for 3 hours covering both.
-            </p>
-            <p>Free date night is 30 minutes.</p>
-          </div>
-
-          <div className="mt-8 text-xs tracking-[2px] text-[#A8988A]">PAY WITH A CARD ON STRIPE</div>
+          <p className="mt-6 text-sm text-[#A8988A]">
+            Start with{' '}
+            <Link to="/date-night" className="text-[#C9A962] underline underline-offset-2">
+              Free Date Night
+            </Link>
+            . Look around first. Price comes later.
+          </p>
         </div>
       </div>
 
@@ -107,6 +84,22 @@ export function HomePage() {
             </Link>
           ))}
         </div>
+
+        <Link
+          to="/carnival?paid=1"
+          className="card mt-6 p-8 md:p-10 flex flex-col md:flex-row md:items-center gap-6 hover:border-[#C9A962]/50 transition"
+        >
+          <div className="w-14 h-14 rounded-full bg-[#C9A962]/10 flex items-center justify-center shrink-0">
+            <FerrisWheel className="w-7 h-7 text-[#C9A962]" />
+          </div>
+          <div className="text-left">
+            <div className="text-[#C9A962] text-xs tracking-[2px] mb-2">COMING SOON</div>
+            <h3 className="text-[#F8F4ED] text-xl mb-2">Pinewick Fair</h3>
+            <p className="text-[#A8988A] leading-relaxed">
+              An original carnival date room. Lanterns, timber, a country midway. Not for sale yet.
+            </p>
+          </div>
+        </Link>
       </div>
 
       <div className="section-divider max-w-6xl mx-auto" />
@@ -121,8 +114,38 @@ export function HomePage() {
             This site is for couples who are away from each other and still want an evening together. If you miss dinner across a table — vegan on one side, steak on the other — the restaurant room is for you. Movie night is Watch Together. Free date night is just talking for a little while.
           </p>
           <p className="text-[#A8988A] mt-6 leading-relaxed">
-            Orders stay with you; they do not go to a kitchen. YouTube uses Google’s official player. Netflix stays on your own apps. Dinner and movie night are paid with a card on Stripe.
+            Orders stay with you; they do not go to a kitchen. YouTube uses Google’s official player. Netflix stays on your own apps.
           </p>
+        </div>
+      </div>
+
+      <div id="when-youre-ready" className="max-w-3xl mx-auto px-6 pb-20 scroll-mt-24">
+        <div className="text-center mb-10">
+          <div className="text-[#C9A962] text-sm tracking-[3px] mb-3">WHEN YOU’RE READY</div>
+          <h2 className="text-[#F8F4ED] text-3xl">An evening, when you want one</h2>
+        </div>
+
+        <div className="grid sm:grid-cols-3 gap-4">
+          {evenings.map((item) => (
+            <div key={item.name} className="rounded-2xl border border-[#3A2F36] bg-[#1A1418]/70 px-5 py-6 text-center">
+              <div className="text-[#A8988A] text-sm tracking-[1px]">{item.name}</div>
+              <div className="text-[#F8F4ED] text-2xl mt-2">{item.price}</div>
+              <div className="text-[#A8988A] text-xs mt-1.5 leading-relaxed">{item.duration}</div>
+            </div>
+          ))}
+        </div>
+
+        <p className="text-center text-sm text-[#C9A962]/90 mt-8 leading-relaxed">
+          First paid evening is half off — dinner {FIRST_DATE_PRICE.dinner}, movie {FIRST_DATE_PRICE.movie}, both{' '}
+          {FIRST_DATE_PRICE.premium}.
+        </p>
+        <p className="text-center text-xs text-[#A8988A] mt-2 leading-relaxed">
+          After that, list price. Free Date Night stays free. Pay with a card on Stripe.
+        </p>
+        <div className="text-center mt-6">
+          <Link to="/pricing" className="text-[#C9A962] text-sm underline underline-offset-2">
+            Full pricing
+          </Link>
         </div>
       </div>
 
@@ -131,10 +154,9 @@ export function HomePage() {
         <div className="relative z-10 max-w-xl mx-auto text-center px-6">
           <Heart className="w-9 h-9 text-[#E8A0B8] mx-auto mb-6" />
           <h2 className="text-[#F8F4ED] mb-4">Your next date night is waiting.</h2>
-          <p className="text-lg text-[#A8988A] mb-3">
-            First paid date is 50% off. Free date night is still free for 30 minutes.
+          <p className="text-lg text-[#A8988A] mb-8">
+            Walk through dinner or a movie together. Or open Free Date Night and just talk.
           </p>
-          <p className="text-lg text-[#A8988A] mb-8">Or pay list price for dinner or movie night with a card on Stripe.</p>
           <LandingDemoCtas size="md" />
         </div>
       </div>
