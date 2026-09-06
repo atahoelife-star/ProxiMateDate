@@ -539,8 +539,411 @@ select.input option {
   animation: arrivalKenBurns 3.4s ease-out forwards;
 }
 
+@keyframes carnivalKenBurns {
+  from { transform: scale(1.12) translate3d(1.4%, 1%, 0); }
+  to { transform: scale(1.03) translate3d(-0.6%, -0.4%, 0); }
+}
+
+.carnival-still {
+  animation: carnivalKenBurns 14s ease-in-out infinite alternate;
+}
+
+@keyframes rideIn {
+  from { transform: scale(1.18) translate3d(0, 4%, 0); }
+  to { transform: scale(1.04) translate3d(0, 0, 0); }
+}
+@keyframes rideLeft {
+  from { transform: scale(1.16) translate3d(8%, 0, 0); }
+  to { transform: scale(1.05) translate3d(-4%, 0, 0); }
+}
+@keyframes rideRight {
+  from { transform: scale(1.16) translate3d(-8%, 0, 0); }
+  to { transform: scale(1.05) translate3d(4%, 0, 0); }
+}
+@keyframes rideUp {
+  from { transform: scale(1.08) translate3d(0, 10%, 0); }
+  to { transform: scale(1.2) translate3d(0, -6%, 0); }
+}
+@keyframes rideDrop {
+  0% { transform: scale(1.06) translate3d(0, -4%, 0); }
+  55% { transform: scale(1.22) translate3d(0, 8%, 0); }
+  100% { transform: scale(1.1) translate3d(0, 3%, 0); }
+}
+@keyframes rideZoom {
+  from { transform: scale(1.02) translate3d(0, 0, 0); }
+  to { transform: scale(1.28) translate3d(0, -2%, 0); }
+}
+@keyframes rideDrift {
+  from { transform: scale(1.1) translate3d(-3%, 2%, 0); }
+  to { transform: scale(1.16) translate3d(4%, -2%, 0); }
+}
+@keyframes carnivalShake {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  20% { transform: translate3d(-6px, 3px, 0); }
+  40% { transform: translate3d(5px, -2px, 0); }
+  60% { transform: translate3d(-4px, 2px, 0); }
+  80% { transform: translate3d(3px, -1px, 0); }
+}
+
+.carnival-ride-still {
+  will-change: transform;
+}
+.carnival-ride-in { animation: rideIn 5.8s ease-out forwards; }
+.carnival-ride-left { animation: rideLeft 5.2s ease-in-out forwards; }
+.carnival-ride-right { animation: rideRight 5.2s ease-in-out forwards; }
+.carnival-ride-up { animation: rideUp 5.2s ease-in forwards; }
+.carnival-ride-drop { animation: rideDrop 3.6s ease-in forwards; }
+.carnival-ride-zoom { animation: rideZoom 4.2s ease-in forwards; }
+.carnival-ride-drift { animation: rideDrift 6s ease-in-out infinite alternate; }
+.carnival-shake { animation: carnivalShake 0.55s linear 3; pointer-events: none; }
+
+.carnival-water {
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent 55%, rgba(180, 220, 230, 0.12) 100%);
+  animation: rideDrift 3.2s ease-in-out infinite alternate;
+}
+
+.carnival-firefly {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: #f6e27a;
+  box-shadow: 0 0 10px #f6e27a;
+  opacity: 0.85;
+  animation: firefly 4.8s ease-in-out infinite;
+}
+.carnival-firefly-1 { left: 12%; top: 22%; animation-delay: 0s; }
+.carnival-firefly-2 { left: 28%; top: 40%; animation-delay: 0.4s; }
+.carnival-firefly-3 { left: 48%; top: 18%; animation-delay: 0.8s; }
+.carnival-firefly-4 { left: 66%; top: 34%; animation-delay: 1.1s; }
+.carnival-firefly-5 { left: 80%; top: 20%; animation-delay: 0.2s; }
+.carnival-firefly-6 { left: 18%; top: 62%; animation-delay: 1.4s; }
+.carnival-firefly-7 { left: 38%; top: 70%; animation-delay: 0.6s; }
+.carnival-firefly-8 { left: 58%; top: 58%; animation-delay: 1.8s; }
+.carnival-firefly-9 { left: 74%; top: 66%; animation-delay: 0.9s; }
+.carnival-firefly-10 { left: 88%; top: 48%; animation-delay: 1.6s; }
+.carnival-firefly-11 { left: 8%; top: 48%; animation-delay: 2s; }
+.carnival-firefly-12 { left: 52%; top: 42%; animation-delay: 0.3s; }
+@keyframes firefly {
+  0%, 100% { transform: translate3d(0, 0, 0); opacity: 0.25; }
+  50% { transform: translate3d(12px, -18px, 0); opacity: 1; }
+}
+
+.carnival-ferris {
+  pointer-events: none;
+}
+.carnival-ferris-wheel {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border: 3px solid rgba(201, 169, 98, 0.85);
+  border-radius: 999px;
+  box-shadow: 0 0 24px rgba(201, 169, 98, 0.35);
+  animation: ferrisSpin 16s linear infinite;
+}
+.carnival-ferris-hub {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 14%;
+  height: 14%;
+  margin: -7% 0 0 -7%;
+  border-radius: 999px;
+  background: #C9A962;
+}
+.carnival-ferris-arm {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 2px;
+  height: 50%;
+  background: rgba(248, 244, 237, 0.55);
+  transform-origin: bottom center;
+}
+.carnival-ferris-car {
+  position: absolute;
+  top: -8px;
+  left: -7px;
+  width: 16px;
+  height: 14px;
+  border-radius: 4px 4px 6px 6px;
+  background: #E8A0B8;
+  box-shadow: 0 0 8px rgba(232, 160, 184, 0.6);
+  animation: ferrisUnspin 16s linear infinite;
+}
+@keyframes ferrisUnspin {
+  to { transform: rotate(-360deg); }
+}
+@keyframes ferrisSpin {
+  to { transform: rotate(360deg); }
+}
+
+.carnival-carousel-floor {
+  animation: rideLeft 18s linear infinite alternate;
+}
+.carnival-carousel-stage {
+  perspective: 900px;
+}
+.carnival-carousel-ring {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  width: 0;
+  height: 0;
+  transform-style: preserve-3d;
+  animation: carouselSpin 11s linear infinite;
+}
+.carnival-carousel-mount {
+  position: absolute;
+  left: -48px;
+  top: -78px;
+  width: 96px;
+  height: 124px;
+  transform-style: preserve-3d;
+}
+.carnival-mount-figure {
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(201, 169, 98, 0.45);
+}
+.carnival-mount-horse { background-image: url('/images/carnival/carnival-carousel-high.jpg'); }
+.carnival-mount-fox { background-image: url('/images/carnival/carnival-carousel-fox.jpg'); background-position: 40% 55%; }
+.carnival-mount-stag { background-image: url('/images/carnival/carnival-carousel-stag.jpg'); background-position: 45% 40%; }
+.carnival-bob { animation: horseBob 1.35s ease-in-out infinite; }
+.carnival-bob-1 { animation-delay: 0.3s; }
+.carnival-bob-2 { animation-delay: 0.75s; }
+.carnival-film-bob {
+  animation: filmBob 1.4s ease-in-out infinite;
+  transform-origin: 50% 70%;
+}
+@keyframes carouselSpin {
+  to { transform: rotateY(360deg); }
+}
+@keyframes horseBob {
+  0%, 100% { margin-top: 0; }
+  50% { margin-top: -22px; }
+}
+@keyframes filmBob {
+  0%, 100% { transform: scale(1.07) translate3d(0, 0, 0); }
+  50% { transform: scale(1.07) translate3d(0, -16px, 0); }
+}
+.carnival-queue-spin {
+  background: radial-gradient(circle at 50% 55%, transparent 30%, rgba(15, 10, 13, 0.15) 70%);
+  animation: rideDrift 8s linear infinite;
+}
+
+.carnival-bottle { position: relative; width: 44px; }
+.carnival-bottle-neck {
+  width: 14px;
+  height: 18px;
+  margin: 0 auto;
+  background: linear-gradient(#9ec4c8, #6f9194);
+  border-radius: 3px 3px 0 0;
+}
+.carnival-bottle-body {
+  height: 72px;
+  border-radius: 10px 10px 6px 6px;
+  background: linear-gradient(180deg, rgba(180, 210, 214, 0.7), rgba(80, 110, 112, 0.9));
+  color: #F8F4ED;
+  font-size: 11px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 8px;
+}
+.carnival-ring-seated {
+  position: absolute;
+  top: 10px;
+  left: 6px;
+  width: 32px;
+  height: 10px;
+  border: 3px solid #C9A962;
+  border-radius: 999px;
+}
+.carnival-fly-ring {
+  position: absolute;
+  left: 8px;
+  width: 30px;
+  height: 12px;
+  border: 3px solid #C9A962;
+  border-radius: 999px;
+  animation: flyRingHit 0.7s ease-out forwards;
+}
+.carnival-fly-ring.is-miss { animation-name: flyRingMiss; }
+@keyframes flyRingHit {
+  0% { bottom: -70px; transform: translateX(-20px) rotate(-20deg); opacity: 1; }
+  100% { bottom: 78px; transform: translateX(0) rotate(0deg); opacity: 1; }
+}
+@keyframes flyRingMiss {
+  0% { bottom: -70px; transform: translateX(-16px) rotate(-30deg); opacity: 1; }
+  100% { bottom: 90px; transform: translateX(36px) rotate(50deg); opacity: 0.2; }
+}
+
+.carnival-striker { position: relative; width: 70px; height: 220px; }
+.carnival-bell {
+  width: 28px;
+  height: 18px;
+  margin: 0 auto 4px;
+  border-radius: 14px 14px 4px 4px;
+  background: #C9A962;
+}
+.carnival-bell.is-ring { animation: carnivalShake 0.4s linear 4; }
+.carnival-tower {
+  position: relative;
+  height: 160px;
+  width: 16px;
+  margin: 0 auto;
+  background: linear-gradient(#3A2F36, #1A1418);
+  border: 1px solid rgba(201, 169, 98, 0.4);
+}
+.carnival-puck {
+  position: absolute;
+  left: -6px;
+  width: 26px;
+  height: 10px;
+  border-radius: 3px;
+  background: #E8A0B8;
+  transition: bottom 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.carnival-mallet {
+  position: absolute;
+  left: 38px;
+  bottom: 8px;
+  width: 36px;
+  height: 8px;
+  background: #8a6230;
+  transform-origin: left center;
+}
+.carnival-mallet.is-cocked { transform: rotate(-70deg); }
+.carnival-mallet.is-swing { animation: malletSwing 0.35s ease-in forwards; }
+
+.carnival-dart-icon,
+.carnival-ring-icon,
+.carnival-ball-icon {
+  display: inline-block;
+  flex-shrink: 0;
+}
+.carnival-dart-icon {
+  width: 14px;
+  height: 46px;
+  background: linear-gradient(#C9A962, #8a6230);
+  clip-path: polygon(50% 0, 100% 28%, 68% 28%, 68% 100%, 32% 100%, 32% 28%, 0 28%);
+}
+.carnival-ring-icon {
+  width: 34px;
+  height: 14px;
+  border: 3px solid #C9A962;
+  border-radius: 999px;
+}
+.carnival-ball-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: #E8A0B8;
+}
+.carnival-dart-icon.is-spent,
+.carnival-ring-icon.is-spent,
+.carnival-ball-icon.is-spent {
+  opacity: 0.2;
+}
+.carnival-dart-icon.is-cocked,
+.carnival-ring-icon.is-cocked,
+.carnival-ball-icon.is-cocked {
+  transform: translateY(8px) scale(1.08);
+  filter: brightness(1.2);
+}
+@keyframes malletSwing {
+  0% { transform: rotate(-80deg); }
+  70% { transform: rotate(10deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.carnival-milk {
+  width: 44px;
+  height: 72px;
+  border-radius: 8px 8px 4px 4px;
+  background: linear-gradient(#F8F4ED, #C4B6A8);
+  color: #2c2118;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 8px;
+  font-size: 11px;
+  transition: transform 0.45s ease-in, opacity 0.45s;
+}
+.carnival-milk.is-down { transform: rotate(78deg) translateY(18px); opacity: 0.35; }
+.carnival-fly-ball {
+  position: absolute;
+  left: 12px;
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: #E8A0B8;
+  animation: flyBall 0.6s ease-out forwards;
+}
+@keyframes flyBall {
+  0% { bottom: -50px; transform: scale(1); }
+  100% { bottom: 40px; transform: scale(0.7); }
+}
+
+.carnival-balloon {
+  display: block;
+  width: 42px;
+  height: 50px;
+  margin: 0 auto;
+  border-radius: 50% 50% 50% 50% / 55% 55% 45% 45%;
+  box-shadow: inset -6px -8px 12px rgba(0, 0, 0, 0.15);
+}
+.carnival-balloon.is-pop { animation: balloonPop 0.35s ease-out forwards; }
+@keyframes balloonPop {
+  0% { transform: scale(1); opacity: 1; }
+  70% { transform: scale(1.35); opacity: 0.6; }
+  100% { transform: scale(0); opacity: 0; }
+}
+.carnival-fly-dart {
+  position: absolute;
+  left: 18px;
+  width: 4px;
+  height: 28px;
+  background: linear-gradient(#C9A962, #8a6230);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  animation: flyDartHit 0.6s ease-out forwards;
+}
+.carnival-fly-dart.is-miss { animation-name: flyDartMiss; }
+@keyframes flyDartHit {
+  0% { bottom: -40px; transform: rotate(-20deg); }
+  100% { bottom: 18px; transform: rotate(0deg); }
+}
+@keyframes flyDartMiss {
+  0% { bottom: -40px; transform: rotate(-10deg); }
+  100% { bottom: 56px; transform: translateX(22px) rotate(25deg); opacity: 0.2; }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .arrival-media {
+  .arrival-media,
+  .carnival-still,
+  .carnival-ride-still,
+  .carnival-ride-in,
+  .carnival-ride-left,
+  .carnival-ride-right,
+  .carnival-ride-up,
+  .carnival-ride-drop,
+  .carnival-ride-zoom,
+  .carnival-ride-drift,
+  .carnival-shake,
+  .carnival-water,
+  .carnival-ferris-wheel,
+  .carnival-ferris-car,
+  .carnival-carousel-floor,
+  .carnival-carousel-ring,
+  .carnival-bob,
+  .carnival-film-bob,
+  .carnival-firefly {
     animation: none;
   }
   .date-room-bg.date-room-seated::before,

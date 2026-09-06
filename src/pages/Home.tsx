@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Clapperboard, Heart, MessageCircle, UtensilsCrossed } from 'lucide-react'
+import { Clapperboard, FerrisWheel, Heart, MessageCircle, UtensilsCrossed } from 'lucide-react'
 import { LandingDemo, LandingDemoCtas } from '../components/LandingDemo'
 import { FallLeaves } from '../components/FallLeaves'
 import { FIRST_DATE_PRICE, LIST_PRICE } from '../data/prices'
@@ -107,6 +107,22 @@ export function HomePage() {
             </Link>
           ))}
         </div>
+
+        <Link
+          to="/carnival?paid=1"
+          className="card mt-6 p-8 md:p-10 flex flex-col md:flex-row md:items-center gap-6 hover:border-[#C9A962]/50 transition"
+        >
+          <div className="w-14 h-14 rounded-full bg-[#C9A962]/10 flex items-center justify-center shrink-0">
+            <FerrisWheel className="w-7 h-7 text-[#C9A962]" />
+          </div>
+          <div className="text-left">
+            <div className="text-[#C9A962] text-xs tracking-[2px] mb-2">COMING SOON · PREVIEW</div>
+            <h3 className="text-[#F8F4ED] text-xl mb-2">Pinewick Fair</h3>
+            <p className="text-[#A8988A] leading-relaxed">
+              An original carnival date room for QA on this preview. No charge. Not for sale yet.
+            </p>
+          </div>
+        </Link>
       </div>
 
       <div className="section-divider max-w-6xl mx-auto" />

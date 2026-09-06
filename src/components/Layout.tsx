@@ -9,6 +9,7 @@ export function Layout() {
     pathname === '/restaurant' ||
     pathname === '/movie-night' ||
     pathname === '/date-night' ||
+    pathname === '/carnival' ||
     pathname === '/stats' ||
     pathname === '/stats/feedback'
 

@@ -1,6 +1,6 @@
 import { isFoodClip, type WaiterClip } from './waiterClips'
 
-export type ChatMoment = 'settling' | 'waiter' | 'food' | 'movie' | 'quiet'
+export type ChatMoment = 'settling' | 'waiter' | 'food' | 'movie' | 'quiet' | 'fair'
 
 const TOAST_CLIPS: WaiterClip[] = ['wine', 'champagne']
 
@@ -8,7 +8,9 @@ export function chatMomentForEvening(opts: {
   watching: boolean
   waiterClip: WaiterClip
   myMessageCount: number
+  fair?: boolean
 }): ChatMoment {
+  if (opts.fair) return opts.myMessageCount >= 3 ? 'quiet' : 'fair'
   if (opts.watching) return 'movie'
   if (isFoodClip(opts.waiterClip)) return 'food'
   if (TOAST_CLIPS.includes(opts.waiterClip)) return 'waiter'
@@ -40,6 +42,12 @@ const LINES: Record<ChatMoment, string[]> = {
     'This scene.',
     'You ok if I talk through this?',
     'Are you following this?',
+  ],
+  fair: [
+    'Want to ride that next?',
+    'The lights look good from here.',
+    'Hold my hand on the wheel?',
+    'I want to try the strongman.',
   ],
   quiet: [
     'You still there?',

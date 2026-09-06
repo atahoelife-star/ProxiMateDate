@@ -1,5 +1,5 @@
 export type FeedbackRating = 'loved' | 'ok' | 'confusing'
-export type FeedbackRoom = 'free' | 'dinner' | 'movie' | 'site'
+export type FeedbackRoom = 'free' | 'dinner' | 'movie' | 'carnival' | 'site'
 export type FeedbackSource = 'end-of-date' | 'footer'
 export type FeedbackPlan = 'free' | 'dinner' | 'movie' | 'premium' | 'extend' | ''
 
@@ -23,6 +23,7 @@ export const FEEDBACK_ROOMS: { value: FeedbackRoom; label: string }[] = [
   { value: 'free', label: 'Free Date Night' },
   { value: 'dinner', label: 'Dinner' },
   { value: 'movie', label: 'Movie Night' },
+  { value: 'carnival', label: 'Pinewick Fair' },
   { value: 'site', label: 'Just the site' },
 ]
 

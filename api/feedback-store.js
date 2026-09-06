@@ -3,7 +3,7 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 const FILE = '/tmp/pd-feedback.json'
 const MAX = 200
 const RATINGS = new Set(['loved', 'ok', 'confusing'])
-const ROOMS = new Set(['free', 'dinner', 'movie', 'site'])
+const ROOMS = new Set(['free', 'dinner', 'movie', 'carnival', 'site'])
 const SOURCES = new Set(['end-of-date', 'footer'])
 const PLANS = new Set(['free', 'dinner', 'movie', 'premium', 'extend'])
 const NOTE_MAX = 800

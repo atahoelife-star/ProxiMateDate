@@ -1,10 +1,10 @@
 import { firstDateStillOpen } from './firstDateOffer'
 
-export type PaidPlanId = 'dinner' | 'movie' | 'premium' | 'extend'
+export type PaidPlanId = 'dinner' | 'movie' | 'premium' | 'extend' | 'tokens'
 
 export type CheckoutResult = 'redirected' | 'waitlist' | 'error'
 
-const ALLOWED_RETURN = new Set(['/restaurant', '/movie-night', '/date-room', '/date-night', '/pricing'])
+const ALLOWED_RETURN = new Set(['/restaurant', '/movie-night', '/date-room', '/date-night', '/pricing', '/carnival'])
 const PRODUCTION_CHECKOUT = 'https://www.proximatedate.com/api/create-checkout'
 
 function checkoutUrls() {
@@ -39,7 +39,7 @@ export async function startStripeCheckout(
 ): Promise<CheckoutResult> {
   const path = options?.returnTo?.split('?')[0] ?? ''
   const returnTo = path && ALLOWED_RETURN.has(path) ? options?.returnTo : undefined
-  const firstDate = planId !== 'extend' && firstDateStillOpen()
+  const firstDate = planId !== 'extend' && planId !== 'tokens' && firstDateStillOpen()
   const payload = JSON.stringify({
     plan: planId,
     returnTo,

@@ -11,7 +11,7 @@ const navItems = [
 ]
 
 function isDatesPath(pathname: string) {
-  return ['/date-room', '/restaurant', '/movie-night'].includes(pathname)
+  return ['/date-room', '/restaurant', '/movie-night', '/carnival'].includes(pathname)
 }
 
 function linkClass(isActive: boolean) {

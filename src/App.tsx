@@ -14,6 +14,7 @@ import { TermsPage } from './pages/Terms'
 import { SignInPage } from './pages/SignIn'
 import { GetStartedPage } from './pages/GetStarted'
 import { StatsPage } from './pages/Stats'
+import { CarnivalPage } from './pages/Carnival'
 
 function App() {
   return (
@@ -27,6 +28,8 @@ function App() {
           <Route path="/restaurant" element={<RestaurantDatePage />} />
           <Route path="/movie-night" element={<MovieNightPage />} />
           <Route path="/date-night" element={<FreeDateNightPage />} />
+          <Route path="/carnival" element={<CarnivalPage />} />
+          <Route path="/midway" element={<Navigate to="/carnival" replace />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/faq" element={<FaqPage />} />
           <Route path="/contact" element={<ContactPage />} />

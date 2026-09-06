@@ -8,7 +8,7 @@ import {
   isPlanId,
 } from './plan-amounts.js'
 
-const ALLOWED_PATHS = new Set(['/restaurant', '/movie-night', '/date-room', '/date-night', '/pricing'])
+const ALLOWED_PATHS = new Set(['/restaurant', '/movie-night', '/date-room', '/date-night', '/pricing', '/carnival'])
 
 function cookieSaysPaid(req) {
   const raw = req.headers?.cookie || req.headers?.Cookie || ''
