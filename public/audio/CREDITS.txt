@@ -13,10 +13,12 @@ dining-room.mp3
   Glasses: Mixkit “A couple of glasses clink” (sfx 154), “Wine glass clink” (sfx 2936)
   Table: Mixkit “Taking cutlery from a plate” (sfx 133), “Dish placed in a wood table” (sfx 2933)
 
+ridge-runner-grok-source.jpg
+  Best photoreal opening still (front-row dispatch / lift) for Gregory
+  to upload into Grok / xAI image-to-video. Same pixels as
+  carnival-coaster-dispatch.jpg. Not a ride film.
+
 ridge-runner ride bed (muxed into /videos/carnival/coaster.mp4)
-  30-second motion-test bed — light synthesized lift ratchet and
-  wooden-track roar only. No vocal layers, no fake screeches.
-  Picture is a generated continuous 24fps POV (unique camera station
-  every frame), textured from Pinewick stills — not a still dissolve
-  and not photographed on-ride. Room mute still silences the ride.
+  Last generated 30s test is still wired until Gregory’s ~15s Grok
+  mp4 arrives. No new cartoon/dissolve encode on this pass.
 
