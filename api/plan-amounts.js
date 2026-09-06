@@ -5,6 +5,7 @@ export const LIST_AMOUNTS = {
   movie: 1199,
   premium: 1999,
   extend: 299,
+  tokens: 100,
 }
 
 /** First paid evening in this browser: half the new list, rounded to a clean .99. */
@@ -19,6 +20,7 @@ export const PLAN_NAMES = {
   movie: 'Movie Night',
   premium: 'Premium Romance',
   extend: 'Date Night extend',
+  tokens: 'Pinewick Fair tokens',
 }
 
 export const SUCCESS_PATHS = {
@@ -26,6 +28,7 @@ export const SUCCESS_PATHS = {
   movie: '/movie-night',
   premium: '/date-room',
   extend: '/date-night',
+  tokens: '/carnival',
 }
 
 export const PAID_EVENING_PLANS = new Set(['dinner', 'movie', 'premium'])
@@ -36,6 +39,6 @@ export function isPlanId(raw) {
 
 export function checkoutAmount(planId, firstDate) {
   if (!isPlanId(planId)) return null
-  if (planId !== 'extend' && firstDate) return FIRST_DATE_AMOUNTS[planId]
+  if (planId !== 'extend' && planId !== 'tokens' && firstDate) return FIRST_DATE_AMOUNTS[planId]
   return LIST_AMOUNTS[planId]
 }

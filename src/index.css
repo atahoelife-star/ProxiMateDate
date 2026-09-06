@@ -811,7 +811,44 @@ select.input option {
   background: #8a6230;
   transform-origin: left center;
 }
+.carnival-mallet.is-cocked { transform: rotate(-70deg); }
 .carnival-mallet.is-swing { animation: malletSwing 0.35s ease-in forwards; }
+
+.carnival-dart-icon,
+.carnival-ring-icon,
+.carnival-ball-icon {
+  display: inline-block;
+  flex-shrink: 0;
+}
+.carnival-dart-icon {
+  width: 14px;
+  height: 46px;
+  background: linear-gradient(#C9A962, #8a6230);
+  clip-path: polygon(50% 0, 100% 28%, 68% 28%, 68% 100%, 32% 100%, 32% 28%, 0 28%);
+}
+.carnival-ring-icon {
+  width: 34px;
+  height: 14px;
+  border: 3px solid #C9A962;
+  border-radius: 999px;
+}
+.carnival-ball-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: #E8A0B8;
+}
+.carnival-dart-icon.is-spent,
+.carnival-ring-icon.is-spent,
+.carnival-ball-icon.is-spent {
+  opacity: 0.2;
+}
+.carnival-dart-icon.is-cocked,
+.carnival-ring-icon.is-cocked,
+.carnival-ball-icon.is-cocked {
+  transform: translateY(8px) scale(1.08);
+  filter: brightness(1.2);
+}
 @keyframes malletSwing {
   0% { transform: rotate(-80deg); }
   70% { transform: rotate(10deg); }

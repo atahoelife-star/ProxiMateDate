@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { showById, type RideBeat, type RideId, type RideMotion, type RideShow } from '../../data/carnival'
 
 type CarnivalRideProps = {
@@ -42,12 +42,8 @@ function RideShowView({
     <div className="relative overflow-hidden rounded-3xl border border-[#C9A962]/25 min-h-[560px]">
       {phase === 'queue' ? (
         <QueueBeat beat={show.queue} flavor={show.flavor} onBoard={board} onBack={onBack} />
-      ) : show.flavor === 'wheel' ? (
-        <WheelRide show={show} onBack={onBack} />
-      ) : show.flavor === 'carousel' ? (
-        <CarouselRide show={show} onBack={onBack} />
       ) : (
-        <TrackRide show={show} onBack={onBack} />
+        <RideFilm show={show} onBack={onBack} />
       )}
     </div>
   )
@@ -135,83 +131,96 @@ function QueueBeat({
   )
 }
 
-function TrackRide({ show, onBack }: { show: RideShow; onBack: () => void }) {
-  const [index, setIndex] = useState(0)
-  const beat = show.beats[index] ?? show.beats[0]
-  const last = index >= show.beats.length - 1
-
-  useEffect(() => {
-    if (last) return
-    const id = window.setTimeout(() => setIndex((i) => i + 1), beat.durationMs)
-    return () => window.clearTimeout(id)
-  }, [beat.durationMs, last, index])
-
-  return (
-    <>
-      <MovingStill src={beat.src} motion={beat.motion} flavor={show.flavor} />
-      <Overlay
-        kicker={show.flavor === 'hollow' ? 'BOAT JOURNEY' : 'ON THE RIDE'}
-        title={beat.title}
-        line={beat.line}
-        onBack={onBack}
-        action={last ? onBack : undefined}
-        actionLabel={last ? 'Return to midway' : undefined}
-      />
-      <div className="absolute bottom-6 left-6 right-6 z-10 flex gap-1.5 pointer-events-none">
-        {show.beats.map((item, i) => (
-          <div key={item.id} className={`h-1 flex-1 rounded-full ${i <= index ? 'bg-[#C9A962]' : 'bg-white/20'}`} />
-        ))}
-      </div>
-    </>
-  )
+function formatFilmTime(seconds: number) {
+  const total = Math.max(0, Math.round(seconds))
+  const m = Math.floor(total / 60)
+  const s = total % 60
+  return `${m}:${s.toString().padStart(2, '0')}`
 }
 
-function WheelRide({ show, onBack }: { show: RideShow; onBack: () => void }) {
-  const [index, setIndex] = useState(0)
-  const beat = show.beats[index] ?? show.beats[0]
-
-  useEffect(() => {
-    const id = window.setTimeout(() => setIndex((i) => (i + 1) % show.beats.length), beat.durationMs)
-    return () => window.clearTimeout(id)
-  }, [beat.durationMs, index, show.beats.length])
-
-  return (
-    <>
-      <MovingStill src={beat.src} motion={beat.motion} flavor="wheel" />
-      <FerrisGraphic className="absolute right-4 top-28 w-28 h-28 md:w-36 md:h-36 z-[5] opacity-90" />
-      <Overlay kicker="THE WHEEL TURNS" title={beat.title} line={beat.line} onBack={onBack} />
-    </>
-  )
-}
-
-function CarouselRide({ show, onBack }: { show: RideShow; onBack: () => void }) {
-  const [index, setIndex] = useState(0)
-  const beat = show.beats[index] ?? show.beats[0]
+function RideFilm({ show, onBack }: { show: RideShow; onBack: () => void }) {
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const [now, setNow] = useState(0)
+  const [dur, setDur] = useState(show.beats.reduce((sum, beat) => sum + beat.durationMs, 0) / 1000)
+  const [ended, setEnded] = useState(false)
   const mounts = ['horse', 'fox', 'horse', 'stag', 'horse', 'fox'] as const
 
   useEffect(() => {
-    const id = window.setTimeout(() => setIndex((i) => (i + 1) % show.beats.length), beat.durationMs)
-    return () => window.clearTimeout(id)
-  }, [beat.durationMs, index, show.beats.length])
+    const el = videoRef.current
+    if (!el) return
+    const onTime = () => setNow(el.currentTime)
+    const onMeta = () => {
+      if (Number.isFinite(el.duration) && el.duration > 0) setDur(el.duration)
+    }
+    const onEnd = () => setEnded(true)
+    el.addEventListener('timeupdate', onTime)
+    el.addEventListener('loadedmetadata', onMeta)
+    el.addEventListener('ended', onEnd)
+    void el.play().catch(() => {})
+    return () => {
+      el.removeEventListener('timeupdate', onTime)
+      el.removeEventListener('loadedmetadata', onMeta)
+      el.removeEventListener('ended', onEnd)
+    }
+  }, [show.film])
+
+  const replay = () => {
+    const el = videoRef.current
+    setEnded(false)
+    if (!el) return
+    el.currentTime = 0
+    void el.play().catch(() => {})
+  }
+
+  const left = Math.max(0, dur - now)
+  const kicker =
+    show.flavor === 'hollow' ? 'BOAT JOURNEY' : show.flavor === 'wheel' ? 'THE WHEEL TURNS' : show.flavor === 'carousel' ? 'THE ROUND TURNS' : 'ON THE RIDE'
 
   return (
     <>
-      <img src={beat.src} alt="" className="carnival-carousel-floor absolute inset-0 w-full h-full object-cover" />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#0F0A0D]/75 via-[#0F0A0D]/15 to-[#0F0A0D]/30" />
-      <div className="carnival-carousel-stage absolute inset-0 pointer-events-none">
-        <div className="carnival-carousel-ring">
-          {mounts.map((kind, i) => (
-            <div
-              key={`${kind}-${i}`}
-              className={`carnival-carousel-mount carnival-bob carnival-bob-${i % 3}`}
-              style={{ transform: `rotateY(${i * 60}deg) translateZ(168px)` }}
-            >
-              <div className={`carnival-mount-figure carnival-mount-${kind}`} />
-            </div>
-          ))}
+      <video
+        ref={videoRef}
+        className="absolute inset-0 w-full h-full object-cover"
+        src={show.film}
+        poster={show.queue.src}
+        playsInline
+        muted
+        preload="auto"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#0F0A0D]/70 via-transparent to-[#0F0A0D]/25 pointer-events-none" />
+      {show.flavor === 'hollow' && <Fireflies />}
+      {show.flavor === 'flume' && <div className="carnival-water absolute inset-0" />}
+      {show.flavor === 'wheel' && <FerrisGraphic className="absolute right-4 top-28 w-28 h-28 md:w-36 md:h-36 z-[5] opacity-90" />}
+      {show.flavor === 'carousel' && (
+        <div className="carnival-carousel-stage absolute inset-0 pointer-events-none z-[4]">
+          <div className="carnival-carousel-ring">
+            {mounts.map((kind, i) => (
+              <div
+                key={`${kind}-${i}`}
+                className={`carnival-carousel-mount carnival-bob carnival-bob-${i % 3}`}
+                style={{ transform: `rotateY(${i * 60}deg) translateZ(168px)` }}
+              >
+                <div className={`carnival-mount-figure carnival-mount-${kind}`} />
+              </div>
+            ))}
+          </div>
         </div>
+      )}
+      <Overlay
+        kicker={kicker}
+        title={ended ? 'Unload' : 'On the ride'}
+        line={
+          ended
+            ? 'The ride has finished. Ride again, or walk back to the midway.'
+            : `${formatFilmTime(left)} left on this run. The picture keeps moving.`
+        }
+        onBack={onBack}
+        action={ended ? replay : undefined}
+        actionLabel={ended ? 'Ride again' : undefined}
+      />
+      <div className="absolute bottom-6 left-6 right-6 z-10 h-1.5 rounded-full bg-white/15 overflow-hidden pointer-events-none">
+        <div className="h-full bg-[#C9A962]" style={{ width: `${dur > 0 ? Math.min(100, (now / dur) * 100) : 0}%` }} />
       </div>
-      <Overlay kicker="THE ROUND TURNS" title={beat.title} line={beat.line} onBack={onBack} />
     </>
   )
 }

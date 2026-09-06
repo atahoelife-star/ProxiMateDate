@@ -33,6 +33,7 @@ export type RideAttraction = {
 export type RideShow = {
   id: RideId
   flavor: RideFlavor
+  film: string
   queue: RideBeat
   queueChat: string
   rideChat: string
@@ -55,7 +56,7 @@ export const RIDES: RideAttraction[] = [
     kicker: 'Wooden coaster',
     blurb: 'Queue the lift, then ride: climb, drop, bank, tunnel. You are in the train.',
     still: '/images/carnival/carnival-coaster.jpg',
-    durationMs: 28000,
+    durationMs: 224000,
     chatLine: 'You join the Ridge Runner line. Timber, bulbs, and the lift ahead.',
   },
   {
@@ -64,7 +65,7 @@ export const RIDES: RideAttraction[] = [
     kicker: 'Log ride',
     blurb: 'Wait on the dock, then ride the log past loggers and a splash.',
     still: '/images/carnival/carnival-flume.jpg',
-    durationMs: 26000,
+    durationMs: 224000,
     chatLine: 'Willow Run Flume — the dock line, then a log on the creek.',
   },
   {
@@ -73,7 +74,7 @@ export const RIDES: RideAttraction[] = [
     kicker: 'Animatronic dark ride',
     blurb: 'A boat through backwater creek: cabin bears, a raccoon den, a wolves’ lair. Not pirates.',
     still: '/images/carnival/carnival-hollow-porch.jpg',
-    durationMs: 32000,
+    durationMs: 345000,
     chatLine: 'Firefly Hollow — the boathouse line. Cabin bears and a slow creek. No pirates.',
   },
   {
@@ -82,7 +83,7 @@ export const RIDES: RideAttraction[] = [
     kicker: 'Ferris wheel',
     blurb: 'The wheel turns. Up through the lights, then down over the midway queues.',
     still: '/images/carnival/carnival-wheel.jpg',
-    durationMs: 24000,
+    durationMs: 224000,
     chatLine: 'The Lantern Wheel is turning. Handlers load the gondola.',
   },
   {
@@ -91,7 +92,7 @@ export const RIDES: RideAttraction[] = [
     kicker: 'Carousel',
     blurb: 'Horses, a fox, and a stag turn and bob under the bulbs.',
     still: '/images/carnival/carnival-carousel.jpg',
-    durationMs: 20000,
+    durationMs: 224000,
     chatLine: 'The Gilded Round is already turning. Horses rise and fall.',
   },
 ]
@@ -100,6 +101,7 @@ export const RIDE_SHOWS: RideShow[] = [
   {
     id: 'coaster',
     flavor: 'coaster',
+    film: '/videos/carnival/coaster.mp4',
     loop: false,
     queueChat: 'You wait on the timber ramp. The train sits in the station.',
     rideChat: 'The train rolls. Lift, drop, a bank, then the tunnel.',
@@ -149,6 +151,7 @@ export const RIDE_SHOWS: RideShow[] = [
   {
     id: 'flume',
     flavor: 'flume',
+    film: '/videos/carnival/flume.mp4',
     loop: false,
     queueChat: 'You wait on the Willow Run dock. Logs sit in the channel.',
     rideChat: 'The log pushes off. Creek, camp pocket, tunnel, splash.',
@@ -198,6 +201,7 @@ export const RIDE_SHOWS: RideShow[] = [
   {
     id: 'hollow',
     flavor: 'hollow',
+    film: '/videos/carnival/hollow.mp4',
     loop: false,
     queueChat: 'Firefly Hollow queue — lanterns on the boathouse dock. No pirates.',
     rideChat: 'The boat slips the backwater: cabin bears, raccoons, wolves, fireflies.',
@@ -255,6 +259,7 @@ export const RIDE_SHOWS: RideShow[] = [
   {
     id: 'wheel',
     flavor: 'wheel',
+    film: '/videos/carnival/wheel.mp4',
     loop: true,
     queueChat: 'Lantern Wheel line — handlers, ropes, the wheel already turning.',
     rideChat: 'The gondola lifts. Top lights, then the midway queues come back.',
@@ -304,6 +309,7 @@ export const RIDE_SHOWS: RideShow[] = [
   {
     id: 'carousel',
     flavor: 'carousel',
+    film: '/videos/carnival/carousel.mp4',
     loop: true,
     queueChat: 'Gilded Round line — the horses are already rising and falling.',
     rideChat: 'You are on a horse. The round turns. Creatures bob under the bulbs.',
@@ -342,28 +348,28 @@ export const GAMES: GameBooth[] = [
     name: 'Ring toss',
     blurb: 'Watch the ring fly. It lands on the neck or it doesn’t.',
     still: '/images/carnival/carnival-ringtoss.jpg',
-    play: 'Click a bottle — the ring flies.',
+    play: 'Hold to cock. Release to throw.',
   },
   {
     id: 'strongman',
     name: 'Ring the bell',
     blurb: 'Mallet swings. The puck climbs the tower.',
     still: '/images/carnival/carnival-strongman.jpg',
-    play: 'Strike when the bar is high.',
+    play: 'Hold to charge. Release to swing.',
   },
   {
     id: 'bottles',
     name: 'Bottle knock-down',
     blurb: 'The ball flies. Bottles tip.',
     still: '/images/carnival/carnival-bottles.jpg',
-    play: 'Click a bottle — throw the ball.',
+    play: 'Hold to cock. Release the ball.',
   },
   {
     id: 'balloons',
     name: 'Balloon darts',
     blurb: 'The dart flies. Balloons pop or the dart slips past.',
     still: '/images/carnival/carnival-balloons.jpg',
-    play: 'Click a balloon — throw a dart.',
+    play: 'Hold Space to cock. Release to throw. 3 of 5 wins a prize.',
   },
 ]
 
@@ -371,6 +377,7 @@ export const GAMES_STILL = '/images/carnival/carnival-midway.jpg'
 export const GATES_STILL = '/images/carnival/carnival-gates.jpg'
 export const PLAZA_STILL = '/images/carnival/carnival-plaza.jpg'
 export const MIDWAY_STILL = '/images/carnival/carnival-midway.jpg'
+export const PRIZE_STILL = '/images/carnival/carnival-prize-plush.jpg'
 
 export function rideById(id: RideId) {
   return RIDES.find((ride) => ride.id === id)
