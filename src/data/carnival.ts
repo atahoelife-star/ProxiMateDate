@@ -54,9 +54,9 @@ export const RIDES: RideAttraction[] = [
     id: 'coaster',
     name: 'The Ridge Runner',
     kicker: 'Wooden coaster',
-    blurb: 'Queue the lift, then ride: climb, drop, bank, tunnel. You are in the train.',
+    blurb: 'Queue the lift, then a full ride-through: chain, climb, hang, drop, valley, bank, tunnel, home.',
     still: '/images/carnival/carnival-coaster.jpg',
-    durationMs: 224000,
+    durationMs: 255500,
     chatLine: 'You join the Ridge Runner line. Timber, bulbs, and the lift ahead.',
   },
   {
@@ -104,7 +104,7 @@ export const RIDE_SHOWS: RideShow[] = [
     film: '/videos/carnival/coaster.mp4',
     loop: false,
     queueChat: 'You wait on the timber ramp. The train sits in the station.',
-    rideChat: 'The train rolls. Lift, drop, a bank, then the tunnel.',
+    rideChat: 'The train rolls. Chain, lift, hang, drop, a bank, the tunnel, then home.',
     queue: {
       id: 'queue',
       src: '/images/carnival/carnival-coaster-queue.jpg',
@@ -117,7 +117,7 @@ export const RIDE_SHOWS: RideShow[] = [
       {
         id: 'lift',
         src: '/images/carnival/carnival-coaster-lift.jpg',
-        durationMs: 5200,
+        durationMs: 64000,
         title: 'Lift hill',
         line: 'Chain under the car. Pines climb past the lift lights.',
         motion: 'up',
@@ -125,7 +125,7 @@ export const RIDE_SHOWS: RideShow[] = [
       {
         id: 'drop',
         src: '/images/carnival/carnival-coaster-drop.jpg',
-        durationMs: 3800,
+        durationMs: 53000,
         title: 'First drop',
         line: 'The crest, then the timber falls away.',
         motion: 'drop',
@@ -133,7 +133,7 @@ export const RIDE_SHOWS: RideShow[] = [
       {
         id: 'turn',
         src: '/images/carnival/carnival-coaster-turn.jpg',
-        durationMs: 4200,
+        durationMs: 42000,
         title: 'Banked turn',
         line: 'The train leans through the pines.',
         motion: 'left',
@@ -141,10 +141,18 @@ export const RIDE_SHOWS: RideShow[] = [
       {
         id: 'tunnel',
         src: '/images/carnival/carnival-coaster-tunnel.jpg',
-        durationMs: 4000,
+        durationMs: 53000,
         title: 'Covered run',
         line: 'Beams rush the camera. Light at the far end.',
         motion: 'zoom',
+      },
+      {
+        id: 'home',
+        src: '/images/carnival/carnival-coaster-home.jpg',
+        durationMs: 43000,
+        title: 'Brake run',
+        line: 'Lanterns in the station. The train comes home.',
+        motion: 'in',
       },
     ],
   },

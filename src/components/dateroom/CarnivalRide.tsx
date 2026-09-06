@@ -56,6 +56,7 @@ function Overlay({
   onBack,
   action,
   actionLabel,
+  faded,
 }: {
   kicker: string
   title: string
@@ -63,11 +64,12 @@ function Overlay({
   onBack: () => void
   action?: () => void
   actionLabel?: string
+  faded?: boolean
 }) {
   return (
     <div className="relative z-10 p-5 md:p-8 flex flex-col min-h-[560px] pointer-events-none">
       <div className="flex items-start justify-between gap-3">
-        <div>
+        <div className={`transition-opacity duration-700 ${faded ? 'opacity-0' : 'opacity-100'}`}>
           <div className="text-[#C9A962] text-[11px] tracking-[2px]">{kicker}</div>
           <h2 className="text-[#F8F4ED] text-3xl mt-1">{title}</h2>
         </div>
@@ -79,7 +81,13 @@ function Overlay({
           Midway
         </button>
       </div>
-      <p className="text-[#F8F4ED] text-lg mt-8 max-w-xl leading-relaxed drop-shadow">{line}</p>
+      <p
+        className={`text-[#F8F4ED] text-lg mt-8 max-w-xl leading-relaxed drop-shadow transition-opacity duration-700 ${
+          faded ? 'opacity-0' : 'opacity-100'
+        }`}
+      >
+        {line}
+      </p>
       {action && actionLabel && (
         <div className="mt-auto pt-8">
           <button type="button" onClick={action} className="btn btn-gold px-5 py-2 text-sm pointer-events-auto">
@@ -143,6 +151,7 @@ function RideFilm({ show, onBack }: { show: RideShow; onBack: () => void }) {
   const [now, setNow] = useState(0)
   const [dur, setDur] = useState(show.beats.reduce((sum, beat) => sum + beat.durationMs, 0) / 1000)
   const [ended, setEnded] = useState(false)
+  const [chrome, setChrome] = useState(true)
   const mounts = ['horse', 'fox', 'horse', 'stag', 'horse', 'fox'] as const
 
   useEffect(() => {
@@ -152,7 +161,10 @@ function RideFilm({ show, onBack }: { show: RideShow; onBack: () => void }) {
     const onMeta = () => {
       if (Number.isFinite(el.duration) && el.duration > 0) setDur(el.duration)
     }
-    const onEnd = () => setEnded(true)
+    const onEnd = () => {
+      setEnded(true)
+      setChrome(true)
+    }
     el.addEventListener('timeupdate', onTime)
     el.addEventListener('loadedmetadata', onMeta)
     el.addEventListener('ended', onEnd)
@@ -164,9 +176,17 @@ function RideFilm({ show, onBack }: { show: RideShow; onBack: () => void }) {
     }
   }, [show.film])
 
+  useEffect(() => {
+    if (ended) return
+    setChrome(true)
+    const hide = window.setTimeout(() => setChrome(false), 4200)
+    return () => window.clearTimeout(hide)
+  }, [ended, show.film])
+
   const replay = () => {
     const el = videoRef.current
     setEnded(false)
+    setChrome(true)
     if (!el) return
     el.currentTime = 0
     void el.play().catch(() => {})
@@ -187,7 +207,11 @@ function RideFilm({ show, onBack }: { show: RideShow; onBack: () => void }) {
         muted
         preload="auto"
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#0F0A0D]/70 via-transparent to-[#0F0A0D]/25 pointer-events-none" />
+      <div
+        className={`absolute inset-0 pointer-events-none transition-opacity duration-700 ${
+          ended || chrome ? 'bg-gradient-to-t from-[#0F0A0D]/70 via-transparent to-[#0F0A0D]/25' : 'bg-gradient-to-t from-[#0F0A0D]/28 via-transparent to-[#0F0A0D]/10'
+        }`}
+      />
       {show.flavor === 'hollow' && <Fireflies />}
       {show.flavor === 'flume' && <div className="carnival-water absolute inset-0" />}
       {show.flavor === 'wheel' && <FerrisGraphic className="absolute right-4 top-28 w-28 h-28 md:w-36 md:h-36 z-[5] opacity-90" />}
@@ -212,11 +236,12 @@ function RideFilm({ show, onBack }: { show: RideShow; onBack: () => void }) {
         line={
           ended
             ? 'The ride has finished. Ride again, or walk back to the midway.'
-            : `${formatFilmTime(left)} left on this run. The picture keeps moving.`
+            : `${formatFilmTime(left)} left on this run.`
         }
         onBack={onBack}
         action={ended ? replay : undefined}
         actionLabel={ended ? 'Ride again' : undefined}
+        faded={!ended && !chrome}
       />
       <div className="absolute bottom-6 left-6 right-6 z-10 h-1.5 rounded-full bg-white/15 overflow-hidden pointer-events-none">
         <div className="h-full bg-[#C9A962]" style={{ width: `${dur > 0 ? Math.min(100, (now / dur) * 100) : 0}%` }} />
