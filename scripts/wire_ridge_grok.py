@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Wire Gregory's Grok Ridge Runner mp4 as Board now. No encode from stills.
+"""Wire a later themed Grok Ridge Runner mp4 as Board now. No encode from stills.
+
+Never wire the first study clip (assets.grok.com …88f3b53b… / that generated_video).
+Wait until Gregory says the next themed clip is the one to ship.
 
 Usage:
   python3 scripts/wire_ridge_grok.py /path/to/generated_video.mp4
@@ -22,6 +25,8 @@ BLOCKED = (
     "88f3b53b-b4ac-45c3-9273-b1b3946dfb54",
     "aa467dc3-c5f6-412f-aa1b-eefdab225b1f/generated/88f3b53b",
 )
+# Themed clip Gregory said IS the ride.
+ALLOWED = ("8dbd1804-38f3-47e2-8ea2-561195fc52a4",)
 DATA = "/workspace/src/data/carnival.ts"
 CREDITS = "/workspace/public/audio/CREDITS.txt"
 CANDIDATES = [
@@ -30,8 +35,11 @@ CANDIDATES = [
     "/home/ubuntu/Downloads/generated_video.mp4",
     "/home/ubuntu/generated_video.mp4",
     "/tmp/generated_video.mp4",
+    "/tmp/ridge-grok-themed.mp4",
     "/tmp/grok.mp4",
+    "/workspace/public/videos/carnival/ridge-runner-grok.mp4",
     "/opt/cursor/artifacts/generated_video.mp4",
+    "/opt/cursor/artifacts/ridge-runner-grok.mp4",
 ]
 
 
