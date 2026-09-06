@@ -32,14 +32,18 @@ CREDITS = "/workspace/public/audio/CREDITS.txt"
 CANDIDATES = [
     "/workspace/generated_video.mp4",
     "/workspace/Downloads/generated_video.mp4",
+    "/workspace/Downloads/generate-Ridge-runner.mp4",
     "/home/ubuntu/Downloads/generated_video.mp4",
+    "/home/ubuntu/Downloads/generate-Ridge-runner.mp4",
     "/home/ubuntu/generated_video.mp4",
     "/tmp/generated_video.mp4",
+    "/tmp/generate-Ridge-runner.mp4",
     "/tmp/ridge-grok-themed.mp4",
     "/tmp/grok.mp4",
     "/workspace/public/videos/carnival/ridge-runner-grok.mp4",
     "/opt/cursor/artifacts/generated_video.mp4",
     "/opt/cursor/artifacts/ridge-runner-grok.mp4",
+    "/opt/cursor/artifacts/generate-Ridge-runner.mp4",
 ]
 
 
