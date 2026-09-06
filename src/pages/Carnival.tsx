@@ -33,7 +33,8 @@ export function CarnivalPage() {
 function CarnivalSession() {
   const navigate = useNavigate()
   const { arrived, markArrived } = useArrivalGate('pd-arrival-carnival')
-  const { muted, toggleMute, fadeOutAndStop } = useCarnivalAmbience(arrived)
+  const [rideLive, setRideLive] = useState(false)
+  const { muted, toggleMute, fadeOutAndStop } = useCarnivalAmbience(arrived && !rideLive)
   const [roomId] = useState(roomFromWindow)
   const { seat, myName, join, rename, photoScope } = useLiveSeat(roomId)
   const { photos } = useUsPhotos(photoScope)
@@ -115,7 +116,7 @@ function CarnivalSession() {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pt-8 pb-16">
         <div className="grid lg:grid-cols-12 gap-6 items-stretch">
           <div className="lg:col-span-8">
-            <CarnivalStage onRoomMessage={roomMessage} />
+            <CarnivalStage onRoomMessage={roomMessage} muted={muted} onRideActive={setRideLive} />
           </div>
           <div className="lg:col-span-4">
             <PrivateChatPanel

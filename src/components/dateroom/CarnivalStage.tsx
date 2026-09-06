@@ -14,16 +14,21 @@ import { CarnivalRide } from './CarnivalRide'
 
 type CarnivalStageProps = {
   onRoomMessage: (text: string) => void
+  muted?: boolean
+  onRideActive?: (active: boolean) => void
 }
 
-export function CarnivalStage({ onRoomMessage }: CarnivalStageProps) {
+export function CarnivalStage({ onRoomMessage, muted = false, onRideActive }: CarnivalStageProps) {
   const [view, setView] = useState<AttractionId | 'map'>('map')
   const { tokens, spend, grantPack } = useCarnivalTokens()
   const [buying, setBuying] = useState(false)
   const [buyError, setBuyError] = useState('')
 
   const openRide = (id: RideId) => setView(id)
-  const back = () => setView('map')
+  const back = () => {
+    onRideActive?.(false)
+    setView('map')
+  }
 
   const buyTokens = async () => {
     setBuying(true)
@@ -113,5 +118,7 @@ export function CarnivalStage({ onRoomMessage }: CarnivalStageProps) {
     )
   }
 
-  return <CarnivalRide rideId={view} onBack={back} onNote={onRoomMessage} />
+  return (
+    <CarnivalRide rideId={view} onBack={back} onNote={onRoomMessage} muted={muted} onRideActive={onRideActive} />
+  )
 }

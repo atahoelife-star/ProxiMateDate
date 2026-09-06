@@ -5,28 +5,50 @@ type CarnivalRideProps = {
   rideId: RideId
   onBack: () => void
   onNote: (text: string) => void
+  muted?: boolean
+  onRideActive?: (active: boolean) => void
 }
 
-export function CarnivalRide({ rideId, onBack, onNote }: CarnivalRideProps) {
+export function CarnivalRide({ rideId, onBack, onNote, muted = false, onRideActive }: CarnivalRideProps) {
   const show = showById(rideId)
   if (!show) return null
-  return <RideShowView key={show.id} show={show} onBack={onBack} onNote={onNote} />
+  return (
+    <RideShowView
+      key={show.id}
+      show={show}
+      onBack={onBack}
+      onNote={onNote}
+      muted={muted}
+      onRideActive={onRideActive}
+    />
+  )
 }
 
 function RideShowView({
   show,
   onBack,
   onNote,
+  muted,
+  onRideActive,
 }: {
   show: RideShow
   onBack: () => void
   onNote: (text: string) => void
+  muted: boolean
+  onRideActive?: (active: boolean) => void
 }) {
+  const videoRef = useRef<HTMLVideoElement>(null)
   const [phase, setPhase] = useState<'queue' | 'ride'>('queue')
+  const [now, setNow] = useState(0)
+  const [dur, setDur] = useState(show.beats.reduce((sum, beat) => sum + beat.durationMs, 0) / 1000)
+  const [ended, setEnded] = useState(false)
+  const [chrome, setChrome] = useState(true)
 
   useEffect(() => {
     onNote(show.queueChat)
-    const id = window.setTimeout(() => setPhase('ride'), show.queue.durationMs)
+    const id = window.setTimeout(() => {
+      setPhase('ride')
+    }, show.queue.durationMs)
     return () => window.clearTimeout(id)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [show.id])
@@ -36,14 +58,134 @@ function RideShowView({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase, show.id])
 
-  const board = () => setPhase('ride')
+  useEffect(() => {
+    onRideActive?.(phase === 'ride')
+  }, [phase, onRideActive])
+
+  useEffect(() => {
+    return () => onRideActive?.(false)
+  }, [onRideActive])
+
+  useEffect(() => {
+    const el = videoRef.current
+    if (!el) return
+    el.muted = muted
+    el.volume = 0.86
+  }, [muted, phase])
+
+  useEffect(() => {
+    const el = videoRef.current
+    if (!el) return
+    const onTime = () => setNow(el.currentTime)
+    const onMeta = () => {
+      if (Number.isFinite(el.duration) && el.duration > 0) setDur(el.duration)
+    }
+    const onEnd = () => {
+      setEnded(true)
+      setChrome(true)
+    }
+    el.addEventListener('timeupdate', onTime)
+    el.addEventListener('loadedmetadata', onMeta)
+    el.addEventListener('ended', onEnd)
+    return () => {
+      el.removeEventListener('timeupdate', onTime)
+      el.removeEventListener('loadedmetadata', onMeta)
+      el.removeEventListener('ended', onEnd)
+    }
+  }, [show.film])
+
+  useEffect(() => {
+    if (phase !== 'ride' || ended) return
+    const el = videoRef.current
+    if (!el) return
+    el.muted = muted
+    void el.play().catch(() => {})
+  }, [phase, show.film, muted, ended])
+
+  useEffect(() => {
+    if (ended || phase !== 'ride') return
+    setChrome(true)
+    const hide = window.setTimeout(() => setChrome(false), 4200)
+    return () => window.clearTimeout(hide)
+  }, [ended, show.film, phase])
+
+  const startFilm = () => {
+    setPhase('ride')
+    const el = videoRef.current
+    if (!el) return
+    el.muted = muted
+    el.volume = 0.86
+    void el.play().catch(() => {
+      el.muted = true
+      void el.play().catch(() => {})
+    })
+  }
+
+  const replay = () => {
+    const el = videoRef.current
+    setEnded(false)
+    setChrome(true)
+    if (!el) return
+    el.currentTime = 0
+    el.muted = muted
+    void el.play().catch(() => {})
+  }
+
+  const left = Math.max(0, dur - now)
+  const kicker =
+    show.flavor === 'hollow'
+      ? 'BOAT JOURNEY'
+      : show.flavor === 'wheel'
+        ? 'THE WHEEL TURNS'
+        : show.flavor === 'carousel'
+          ? 'THE ROUND TURNS'
+          : 'ON THE RIDE'
 
   return (
     <div className="relative overflow-hidden rounded-3xl border border-[#C9A962]/25 min-h-[560px]">
+      <video
+        ref={videoRef}
+        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
+          phase === 'ride' ? 'opacity-100' : 'opacity-0'
+        } ${show.flavor === 'carousel' ? 'carnival-film-bob' : ''}`}
+        src={show.film}
+        poster={show.queue.src}
+        playsInline
+        preload="auto"
+      />
       {phase === 'queue' ? (
-        <QueueBeat beat={show.queue} flavor={show.flavor} onBoard={board} onBack={onBack} />
+        <QueueBeat beat={show.queue} flavor={show.flavor} onBoard={startFilm} onBack={onBack} />
       ) : (
-        <RideFilm show={show} onBack={onBack} />
+        <>
+          <div
+            className={`absolute inset-0 pointer-events-none transition-opacity duration-700 ${
+              ended || chrome
+                ? 'bg-gradient-to-t from-[#0F0A0D]/70 via-transparent to-[#0F0A0D]/25'
+                : 'bg-gradient-to-t from-[#0F0A0D]/28 via-transparent to-[#0F0A0D]/10'
+            }`}
+          />
+          {show.flavor === 'hollow' && <Fireflies />}
+          {show.flavor === 'flume' && <div className="carnival-water absolute inset-0" />}
+          {show.flavor === 'wheel' && (
+            <FerrisGraphic className="absolute right-4 top-28 w-28 h-28 md:w-36 md:h-36 z-[5] opacity-90" />
+          )}
+          <Overlay
+            kicker={kicker}
+            title={ended ? 'Unload' : 'On the ride'}
+            line={
+              ended
+                ? 'The ride has finished. Ride again, or walk back to the midway.'
+                : `${formatFilmTime(left)} left on this run.`
+            }
+            onBack={onBack}
+            action={ended ? replay : undefined}
+            actionLabel={ended ? 'Ride again' : undefined}
+            faded={!ended && !chrome}
+          />
+          <div className="absolute bottom-6 left-6 right-6 z-10 h-1.5 rounded-full bg-white/15 overflow-hidden pointer-events-none">
+            <div className="h-full bg-[#C9A962]" style={{ width: `${dur > 0 ? Math.min(100, (now / dur) * 100) : 0}%` }} />
+          </div>
+        </>
       )}
     </div>
   )
@@ -144,94 +286,6 @@ function formatFilmTime(seconds: number) {
   const m = Math.floor(total / 60)
   const s = total % 60
   return `${m}:${s.toString().padStart(2, '0')}`
-}
-
-function RideFilm({ show, onBack }: { show: RideShow; onBack: () => void }) {
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const [now, setNow] = useState(0)
-  const [dur, setDur] = useState(show.beats.reduce((sum, beat) => sum + beat.durationMs, 0) / 1000)
-  const [ended, setEnded] = useState(false)
-  const [chrome, setChrome] = useState(true)
-
-  useEffect(() => {
-    const el = videoRef.current
-    if (!el) return
-    const onTime = () => setNow(el.currentTime)
-    const onMeta = () => {
-      if (Number.isFinite(el.duration) && el.duration > 0) setDur(el.duration)
-    }
-    const onEnd = () => {
-      setEnded(true)
-      setChrome(true)
-    }
-    el.addEventListener('timeupdate', onTime)
-    el.addEventListener('loadedmetadata', onMeta)
-    el.addEventListener('ended', onEnd)
-    void el.play().catch(() => {})
-    return () => {
-      el.removeEventListener('timeupdate', onTime)
-      el.removeEventListener('loadedmetadata', onMeta)
-      el.removeEventListener('ended', onEnd)
-    }
-  }, [show.film])
-
-  useEffect(() => {
-    if (ended) return
-    setChrome(true)
-    const hide = window.setTimeout(() => setChrome(false), 4200)
-    return () => window.clearTimeout(hide)
-  }, [ended, show.film])
-
-  const replay = () => {
-    const el = videoRef.current
-    setEnded(false)
-    setChrome(true)
-    if (!el) return
-    el.currentTime = 0
-    void el.play().catch(() => {})
-  }
-
-  const left = Math.max(0, dur - now)
-  const kicker =
-    show.flavor === 'hollow' ? 'BOAT JOURNEY' : show.flavor === 'wheel' ? 'THE WHEEL TURNS' : show.flavor === 'carousel' ? 'THE ROUND TURNS' : 'ON THE RIDE'
-
-  return (
-    <>
-      <video
-        ref={videoRef}
-        className={`absolute inset-0 w-full h-full object-cover ${show.flavor === 'carousel' ? 'carnival-film-bob' : ''}`}
-        src={show.film}
-        poster={show.queue.src}
-        playsInline
-        muted
-        preload="auto"
-      />
-      <div
-        className={`absolute inset-0 pointer-events-none transition-opacity duration-700 ${
-          ended || chrome ? 'bg-gradient-to-t from-[#0F0A0D]/70 via-transparent to-[#0F0A0D]/25' : 'bg-gradient-to-t from-[#0F0A0D]/28 via-transparent to-[#0F0A0D]/10'
-        }`}
-      />
-      {show.flavor === 'hollow' && <Fireflies />}
-      {show.flavor === 'flume' && <div className="carnival-water absolute inset-0" />}
-      {show.flavor === 'wheel' && <FerrisGraphic className="absolute right-4 top-28 w-28 h-28 md:w-36 md:h-36 z-[5] opacity-90" />}
-      <Overlay
-        kicker={kicker}
-        title={ended ? 'Unload' : 'On the ride'}
-        line={
-          ended
-            ? 'The ride has finished. Ride again, or walk back to the midway.'
-            : `${formatFilmTime(left)} left on this run.`
-        }
-        onBack={onBack}
-        action={ended ? replay : undefined}
-        actionLabel={ended ? 'Ride again' : undefined}
-        faded={!ended && !chrome}
-      />
-      <div className="absolute bottom-6 left-6 right-6 z-10 h-1.5 rounded-full bg-white/15 overflow-hidden pointer-events-none">
-        <div className="h-full bg-[#C9A962]" style={{ width: `${dur > 0 ? Math.min(100, (now / dur) * 100) : 0}%` }} />
-      </div>
-    </>
-  )
 }
 
 function FerrisGraphic({ className }: { className?: string }) {
