@@ -72,9 +72,9 @@ export const RIDES: RideAttraction[] = [
     id: 'hollow',
     name: 'Firefly Hollow',
     kicker: 'Animatronic dark ride',
-    blurb: 'A boat through backwater creek: cabin bears, a raccoon den, a wolves’ lair. Not pirates.',
+    blurb: 'A full boat journey: cabin bears, raccoon den, wolves’ lair, then a field of fireflies. Not pirates.',
     still: '/images/carnival/carnival-hollow-porch.jpg',
-    durationMs: 345000,
+    durationMs: 318000,
     chatLine: 'Firefly Hollow — the boathouse line. Cabin bears and a slow creek. No pirates.',
   },
   {
@@ -212,7 +212,7 @@ export const RIDE_SHOWS: RideShow[] = [
     film: '/videos/carnival/hollow.mp4',
     loop: false,
     queueChat: 'Firefly Hollow queue — lanterns on the boathouse dock. No pirates.',
-    rideChat: 'The boat slips the backwater: cabin bears, raccoons, wolves, fireflies.',
+    rideChat: 'The boat slips the backwater: cabin bears, a raccoon den, wolves, then a field of fireflies.',
     queue: {
       id: 'queue',
       src: '/images/carnival/carnival-hollow-queue.jpg',
