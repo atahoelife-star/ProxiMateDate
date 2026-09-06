@@ -17,6 +17,11 @@ import subprocess
 import sys
 
 DEST = "/workspace/public/videos/carnival/coaster.mp4"
+# Gregory's first Grok clip: motion study only. Do not ship as Board now.
+BLOCKED = (
+    "88f3b53b-b4ac-45c3-9273-b1b3946dfb54",
+    "aa467dc3-c5f6-412f-aa1b-eefdab225b1f/generated/88f3b53b",
+)
 DATA = "/workspace/src/data/carnival.ts"
 CREDITS = "/workspace/public/audio/CREDITS.txt"
 CANDIDATES = [
@@ -49,7 +54,14 @@ def find_src() -> str:
     raise SystemExit("no Grok mp4 yet — pass the file path when it arrives")
 
 
+def refuse_first_study_clip(src: str) -> None:
+    blob = src.lower()
+    if any(token.lower() in blob for token in BLOCKED):
+        raise SystemExit("refusing first Grok clip (88f3b53b) — motion study only, not Board footage")
+
+
 def transcode(src: str, dest: str) -> float:
+    refuse_first_study_clip(src)
     info = probe(src)
     video = next(s for s in info["streams"] if s.get("codec_type") == "video")
     has_audio = any(s.get("codec_type") == "audio" for s in info["streams"])
@@ -163,6 +175,7 @@ def patch_credits() -> None:
 
 def main() -> None:
     src = find_src()
+    refuse_first_study_clip(src)
     seconds = transcode(src, DEST)
     patch_carnival(seconds)
     patch_credits()
