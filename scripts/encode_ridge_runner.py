@@ -27,65 +27,61 @@ SR = 44100
 # Overlapping waypoints: (file, start_s, end_s, kind)
 # kind only biases the still's local travel, not the physics clock.
 WAYPOINTS = [
-    ("carnival-coaster-dispatch.jpg", 0.0, 6.2, "roll"),
-    ("carnival-coaster-chain.jpg", 4.4, 14.2, "lift"),
-    ("carnival-coaster-lift.jpg", 11.8, 25.0, "lift"),
-    ("carnival-coaster-lift-mid.jpg", 22.4, 35.6, "lift"),
-    ("carnival-coaster-lift-high.jpg", 32.8, 44.0, "lift"),
-    ("carnival-coaster-hang.jpg", 41.6, 47.2, "hang"),
-    ("carnival-coaster-crest.jpg", 45.4, 49.4, "crest"),
-    ("carnival-coaster-drop.jpg", 47.8, 52.2, "drop"),
-    ("carnival-coaster-drop-mid.jpg", 50.4, 54.4, "drop"),
-    ("carnival-coaster-plunge.jpg", 52.6, 56.4, "drop"),
-    ("carnival-coaster-valley.jpg", 54.8, 61.2, "rush"),
-    ("carnival-coaster-airtime.jpg", 59.0, 65.4, "air"),
-    ("carnival-coaster-camel.jpg", 63.2, 70.0, "rush"),
-    ("carnival-coaster-bank.jpg", 67.6, 75.4, "bank"),
-    ("carnival-coaster-turn.jpg", 73.0, 80.8, "bank"),
-    ("carnival-coaster-helix.jpg", 78.4, 86.6, "helix"),
-    ("carnival-coaster-portal.jpg", 84.4, 89.6, "rush"),
-    ("carnival-coaster-tunnel.jpg", 87.6, 93.6, "tunnel"),
-    ("carnival-coaster-tunnel-mid.jpg", 91.2, 96.8, "tunnel"),
-    ("carnival-coaster-tunnel-exit.jpg", 94.8, 99.6, "rush"),
-    ("carnival-coaster-climbout.jpg", 97.6, 104.8, "air"),
-    ("carnival-coaster-brakerun.jpg", 102.4, 111.2, "brake"),
-    ("carnival-coaster-brakes.jpg", 108.6, 115.4, "brake"),
-    ("carnival-coaster-home.jpg", 113.0, 120.0, "home"),
+    ("carnival-coaster-dispatch.jpg", 0.0, 4.8, "roll"),
+    ("carnival-coaster-chain.jpg", 3.2, 9.2, "lift"),
+    ("carnival-coaster-lift.jpg", 7.4, 13.8, "lift"),
+    ("carnival-coaster-lift-mid.jpg", 12.0, 18.4, "lift"),
+    ("carnival-coaster-lift-high.jpg", 16.6, 23.0, "lift"),
+    ("carnival-coaster-hang.jpg", 21.4, 25.4, "hang"),
+    ("carnival-coaster-crest.jpg", 24.2, 27.0, "crest"),
+    ("carnival-coaster-drop.jpg", 26.0, 29.2, "drop"),
+    ("carnival-coaster-drop-mid.jpg", 28.0, 30.8, "drop"),
+    ("carnival-coaster-plunge.jpg", 29.8, 32.6, "drop"),
+    ("carnival-coaster-valley.jpg", 31.6, 35.4, "rush"),
+    ("carnival-coaster-airtime.jpg", 34.4, 38.0, "air"),
+    ("carnival-coaster-camel.jpg", 36.8, 40.6, "rush"),
+    ("carnival-coaster-bank.jpg", 39.4, 43.8, "bank"),
+    ("carnival-coaster-turn.jpg", 42.6, 47.0, "bank"),
+    ("carnival-coaster-helix.jpg", 45.8, 50.4, "helix"),
+    ("carnival-coaster-portal.jpg", 49.2, 52.4, "rush"),
+    ("carnival-coaster-tunnel.jpg", 51.4, 55.0, "tunnel"),
+    ("carnival-coaster-tunnel-mid.jpg", 53.8, 57.2, "tunnel"),
+    ("carnival-coaster-tunnel-exit.jpg", 56.2, 59.2, "rush"),
+    ("carnival-coaster-climbout.jpg", 58.2, 62.4, "air"),
+    ("carnival-coaster-brakerun.jpg", 61.2, 67.0, "brake"),
+    ("carnival-coaster-brakes.jpg", 65.4, 70.4, "brake"),
+    ("carnival-coaster-home.jpg", 69.0, 74.0, "home"),
 ]
 
-DURATION = 120.0
+DURATION = 74.0
 
 # Ride physics keys: (t, speed 0-1, pitch -1..1 look down/up, roll -1..1)
 PHYSICS = [
-    (0.0, 0.16, 0.02, 0.00),
-    (2.4, 0.22, 0.04, 0.02),
-    (5.0, 0.20, 0.08, 0.00),
-    (8.0, 0.15, 0.18, 0.00),
-    (14.0, 0.13, 0.30, 0.00),
-    (24.0, 0.12, 0.36, 0.01),
-    (34.0, 0.12, 0.40, 0.00),
-    (42.0, 0.11, 0.28, 0.00),
-    (45.8, 0.10, 0.06, 0.00),
-    (47.6, 0.14, -0.08, 0.02),
-    (48.6, 0.42, -0.38, 0.04),
-    (50.4, 0.88, -0.58, 0.06),
-    (52.8, 1.00, -0.42, 0.03),
-    (55.6, 0.92, -0.08, -0.08),
-    (59.4, 0.78, 0.22, 0.04),
-    (63.2, 0.70, 0.16, 0.02),
-    (67.0, 0.80, 0.04, -0.22),
-    (71.4, 0.84, 0.00, -0.42),
-    (75.8, 0.82, 0.02, -0.28),
-    (80.4, 0.86, 0.00, -0.46),
-    (84.8, 0.80, -0.06, -0.18),
-    (88.6, 0.90, -0.04, 0.06),
-    (93.0, 0.88, 0.00, 0.04),
-    (97.2, 0.74, 0.10, 0.00),
-    (101.6, 0.48, 0.18, 0.00),
-    (106.4, 0.28, 0.06, 0.00),
-    (111.2, 0.14, 0.02, 0.00),
-    (116.0, 0.08, 0.00, 0.00),
-    (120.0, 0.04, 0.00, 0.00),
+    (0.0, 0.18, 0.02, 0.00),
+    (2.0, 0.24, 0.05, 0.02),
+    (4.2, 0.20, 0.10, 0.00),
+    (7.0, 0.15, 0.22, 0.00),
+    (12.0, 0.13, 0.34, 0.01),
+    (18.0, 0.12, 0.40, 0.00),
+    (22.4, 0.11, 0.22, 0.00),
+    (24.6, 0.10, 0.04, 0.00),
+    (26.0, 0.18, -0.12, 0.03),
+    (27.0, 0.55, -0.42, 0.05),
+    (28.6, 0.92, -0.58, 0.06),
+    (30.8, 1.00, -0.36, 0.02),
+    (33.2, 0.90, -0.06, -0.10),
+    (36.0, 0.76, 0.24, 0.04),
+    (39.2, 0.72, 0.12, 0.00),
+    (42.0, 0.82, 0.02, -0.28),
+    (45.2, 0.86, 0.00, -0.44),
+    (48.6, 0.84, 0.02, -0.30),
+    (51.4, 0.80, -0.04, -0.12),
+    (54.2, 0.92, -0.02, 0.06),
+    (57.4, 0.86, 0.04, 0.02),
+    (60.6, 0.52, 0.16, 0.00),
+    (64.8, 0.26, 0.06, 0.00),
+    (69.2, 0.12, 0.02, 0.00),
+    (74.0, 0.04, 0.00, 0.00),
 ]
 
 
@@ -157,65 +153,65 @@ def sample(img: np.ndarray, sx: np.ndarray, sy: np.ndarray) -> np.ndarray:
 def still_travel(kind: str, u: float, speed: float) -> tuple[float, float, float, float]:
     """Local dolly through one still. u is 0..1 and must keep moving — no ease-out."""
     if kind == "lift":
-        z = 1.06 + u * (0.42 + speed * 0.08)
-        persp = 0.22 + u * 0.38
-        panx = 6 * math.sin(u * 2.1)
-        pany = -36 - u * 118
-    elif kind == "hang":
-        z = 1.08 + u * 0.22
-        persp = 0.18 + u * 0.16
-        panx = 10 * math.sin(u * 3.2)
-        pany = -8 + u * 24
-    elif kind == "crest":
-        z = 1.10 + u * 0.38
+        z = 1.10 + u * 0.72
         persp = 0.28 + u * 0.55
-        panx = 8 * math.sin(u * 4)
-        pany = 18 + u * 90
+        panx = 8 * math.sin(u * 2.4)
+        pany = -48 - u * 150
+    elif kind == "hang":
+        z = 1.12 + u * 0.34
+        persp = 0.22 + u * 0.22
+        panx = 12 * math.sin(u * 3.6)
+        pany = -6 + u * 36
+    elif kind == "crest":
+        z = 1.14 + u * 0.55
+        persp = 0.34 + u * 0.70
+        panx = 10 * math.sin(u * 5)
+        pany = 22 + u * 110
     elif kind == "drop":
-        z = 1.12 + u * (0.95 + speed * 0.35)
-        persp = 0.42 + u * 1.05
-        panx = 14 * math.sin(u * 11)
-        pany = 40 + u * 170
+        z = 1.16 + u * (1.15 + speed * 0.28)
+        persp = 0.50 + u * 1.20
+        panx = 18 * math.sin(u * 13)
+        pany = 48 + u * 190
     elif kind == "rush":
-        z = 1.10 + u * (0.62 + speed * 0.28)
-        persp = 0.32 + u * 0.72
-        panx = 7 * math.sin(u * 5.4)
-        pany = 8 + u * 28
+        z = 1.14 + u * (0.82 + speed * 0.22)
+        persp = 0.38 + u * 0.88
+        panx = 9 * math.sin(u * 6.2)
+        pany = 10 + u * 36
     elif kind == "air":
-        z = 1.08 + u * 0.40
-        persp = 0.20 + u * 0.28
-        panx = 5 * math.sin(u * 2.6)
-        pany = -18 - u * 96
+        z = 1.12 + u * 0.52
+        persp = 0.24 + u * 0.34
+        panx = 6 * math.sin(u * 3.0)
+        pany = -24 - u * 120
     elif kind == "bank":
-        z = 1.10 + u * 0.48
-        persp = 0.28 + u * 0.40
-        panx = -28 + u * 210
-        pany = 10 * math.sin(u * 3)
+        z = 1.14 + u * 0.62
+        persp = 0.32 + u * 0.48
+        panx = -36 + u * 240
+        pany = 12 * math.sin(u * 3.4)
     elif kind == "helix":
-        z = 1.12 + u * 0.55
-        persp = 0.30 + u * 0.50
-        panx = -40 + u * 240
-        pany = 12 * math.sin(u * 4.2)
+        z = 1.16 + u * 0.70
+        persp = 0.34 + u * 0.58
+        panx = -48 + u * 260
+        pany = 14 * math.sin(u * 4.8)
     elif kind == "tunnel":
-        z = 1.14 + u * (0.78 + speed * 0.2)
-        persp = 0.38 + u * 0.85
-        panx = 6 * math.sin(u * 6)
-        pany = 6 + u * 18
+        z = 1.18 + u * (0.95 + speed * 0.18)
+        persp = 0.44 + u * 0.95
+        panx = 8 * math.sin(u * 7)
+        pany = 8 + u * 22
     elif kind == "brake":
-        z = 1.07 + u * 0.26
-        persp = 0.16 + u * 0.14
-        panx = 5 * math.sin(u * 2)
-        pany = 4 * math.cos(u * 1.6)
+        z = 1.10 + u * 0.34
+        persp = 0.18 + u * 0.18
+        panx = 6 * math.sin(u * 2.2)
+        pany = 5 * math.cos(u * 1.8)
     elif kind == "home":
-        z = 1.05 + u * 0.16
-        persp = 0.12 + u * 0.08
-        panx = 4 * math.sin(u * 1.4)
-        pany = 2
+        z = 1.08 + u * 0.20
+        persp = 0.14 + u * 0.10
+        panx = 5 * math.sin(u * 1.6)
+        pany = 3
     else:  # roll / dispatch
-        z = 1.06 + u * 0.28
-        persp = 0.18 + u * 0.22
-        panx = 9 * math.sin(u * 2.8)
-        pany = 4 * math.cos(u * 2.1)
+        z = 1.08 + u * 0.38
+        persp = 0.20 + u * 0.28
+        panx = 10 * math.sin(u * 3.0)
+        pany = 5 * math.cos(u * 2.2)
     return z, persp, panx, pany
 
 
@@ -304,19 +300,21 @@ def encode_video(dest_video: str) -> int:
     for n in range(frames):
         t = n / FPS
         speed, pitch, roll = ride_state(t)
-        shake = 0.18 + speed * 1.35
-        # wooden chatter ~11 Hz plus a slower sway
-        jx = shake * 6.2 * math.sin(n * 0.79) + shake * 2.4 * math.sin(n * 2.05)
-        jy = shake * 4.6 * math.cos(n * 0.67) + shake * 1.8 * math.sin(n * 2.51)
-        roll_rad = roll * 0.38 + 0.018 * math.sin(n * 0.11) * (0.4 + speed)
+        shake = 0.38 + speed * 1.65
+        # wooden chatter ~12 Hz plus a slower car sway — never a locked-off plate
+        jx = shake * 8.4 * math.sin(n * math.pi * 0.55) + shake * 3.1 * math.sin(n * 2.15)
+        jy = shake * 6.2 * math.cos(n * math.pi * 0.48) + shake * 2.4 * math.sin(n * 2.62)
+        roll_rad = roll * 0.46 + 0.028 * math.sin(n * 0.14) * (0.45 + speed)
+        crawl = ((t * (14 + speed * 86)) % 36) - 8
 
         layers = []
         weights = []
-        for idx, u in active_waypoints(t):
+        hits = active_waypoints(t)
+        for idx, u in hits:
             name, _a, _b, kind = WAYPOINTS[idx]
             z, persp, panx, pany = still_travel(kind, u, speed)
-            pany += -pitch * 120
-            panx += 16 * math.sin(t * 1.15) * (0.25 + speed * 0.6)
+            pany += -pitch * 128 + crawl * (0.35 + speed * 0.55)
+            panx += 18 * math.sin(t * 1.35) * (0.28 + speed * 0.7)
             frame = warp(cache[name], z, persp, panx, pany, roll_rad, jx, jy)
             # raised-cosine weight so two stills always mix in the overlap
             w = 0.5 - 0.5 * math.cos(math.pi * min(max(u, 0.0), 1.0))
@@ -333,12 +331,21 @@ def encode_video(dest_video: str) -> int:
             acc = acc + layer * (w / wsum)
 
         # extra rush sample: look a hair farther down the track at speed
-        if speed > 0.45 and layers:
-            name, _a, _b, kind = WAYPOINTS[active_waypoints(t)[0][0]]
-            u = min(active_waypoints(t)[0][1] + 0.08 + speed * 0.06, 1.0)
+        if speed > 0.28 and layers:
+            name, _a, _b, kind = WAYPOINTS[hits[0][0]]
+            u = min(hits[0][1] + 0.10 + speed * 0.08, 1.0)
             z, persp, panx, pany = still_travel(kind, u, speed)
-            rush = warp(cache[name], z * 1.06, persp + 0.12, panx, pany - pitch * 120, roll_rad, jx, jy)
-            mix = 0.16 + 0.22 * speed
+            rush = warp(
+                cache[name],
+                z * 1.08,
+                persp + 0.16,
+                panx,
+                pany - pitch * 128 + crawl,
+                roll_rad,
+                jx,
+                jy,
+            )
+            mix = 0.14 + 0.28 * speed
             acc = acc * (1 - mix) + rush * mix
 
         blur = 0.16 + speed * 0.42
@@ -380,18 +387,24 @@ def make_whoop(dur: float, gender: str, seed: int) -> np.ndarray:
     n = max(int(dur * SR), 8)
     t = np.arange(n, dtype=np.float32) / SR
     if gender == "w":
-        f0a, f0b, f0c = rng.uniform(280, 340), rng.uniform(520, 740), rng.uniform(300, 380)
-        f1, f2 = 720.0, 2250.0
-        bright = 0.22
+        f0a, f0b, f0c = rng.uniform(260, 320), rng.uniform(480, 620), rng.uniform(280, 340)
+        f1, f2 = 680.0, 2100.0
+        bright = 0.18
     else:
-        f0a, f0b, f0c = rng.uniform(110, 150), rng.uniform(220, 320), rng.uniform(130, 170)
-        f1, f2 = 430.0, 1050.0
-        bright = 0.10
-    peak_at = rng.uniform(0.28, 0.42) * dur
+        f0a, f0b, f0c = rng.uniform(105, 140), rng.uniform(200, 280), rng.uniform(120, 160)
+        f1, f2 = 400.0, 980.0
+        bright = 0.08
+    # hold the peak — a sustained “woooo”, not a chirp or a horror wail
+    rise = rng.uniform(0.18, 0.28) * dur
+    hold = rng.uniform(0.42, 0.58) * dur
     f0 = np.where(
-        t < peak_at,
-        f0a + (f0b - f0a) * (t / peak_at),
-        f0b + (f0c - f0b) * ((t - peak_at) / max(dur - peak_at, 1e-3)),
+        t < rise,
+        f0a + (f0b - f0a) * (t / max(rise, 1e-3)),
+        np.where(
+            t < rise + hold,
+            f0b + (f0b * 0.04) * np.sin(2 * np.pi * 3.2 * (t - rise)),
+            f0b + (f0c - f0b) * ((t - rise - hold) / max(dur - rise - hold, 1e-3)),
+        ),
     )
     phase = np.cumsum(f0, dtype=np.float64) * 2 * np.pi / SR
     pulse = (
@@ -449,39 +462,47 @@ def synth_audio(seconds: float) -> np.ndarray:
         t,
         [(k[0], k[1]) for k in PHYSICS],
     )
-    lift = ((t >= 5.0) & (t < 46.5)).astype(np.float32)
+    lift = ((t >= 4.2) & (t < 25.2)).astype(np.float32)
+    after_crest = ((t >= 26.0) & (t < 61.0)).astype(np.float32)
     drop_fun = env_at(
         t,
         [
             (0, 0),
-            (47.4, 0),
-            (48.2, 0.55),
-            (50.0, 1.0),
-            (56.0, 0.85),
-            (62.0, 0.55),
-            (72.0, 0.40),
-            (82.0, 0.50),
-            (90.0, 0.35),
-            (98.0, 0.12),
-            (108.0, 0.04),
-            (120.0, 0),
+            (25.6, 0),
+            (26.4, 0.70),
+            (28.2, 1.0),
+            (33.0, 0.80),
+            (38.0, 0.45),
+            (43.0, 0.55),
+            (49.0, 0.40),
+            (54.0, 0.50),
+            (60.0, 0.18),
+            (68.0, 0.04),
+            (74.0, 0),
         ],
     )
 
     rng = np.random.default_rng(20260906)
     raw = rng.normal(0, 1, n).astype(np.float32)
-    # wooden wheel roar — low rumble that grows with speed
-    roar = fft_shape(raw, lambda f: (f < 28) * 0.15 + ((f >= 28) & (f < 220)) * 1.0 + ((f >= 220) & (f < 900)) * 0.35)
-    roar *= 0.10 + speed * 0.62
-    # rushing air / zoom whoosh
-    air = fft_shape(rng.normal(0, 1, n).astype(np.float32), lambda f: ((f >= 700) & (f < 4200)).astype(np.float32) * (f / 4200))
-    air *= (speed**1.6) * 0.34
-    # extra drop whoosh
-    whoosh_burst = air * env_at(t, [(0, 0), (47.6, 0), (49.2, 1.2), (53.5, 0.4), (58, 0.15), (120, 0.05)])
+    # bass-heavy wooden roar after the crest, plus a lighter lift rumble
+    roar = fft_shape(raw, lambda f: (f < 40) * 0.55 + ((f >= 40) & (f < 180)) * 1.15 + ((f >= 180) & (f < 700)) * 0.28)
+    roar *= 0.08 + speed * 0.48 + after_crest * (0.22 + speed * 0.38)
+    rattle = fft_shape(rng.normal(0, 1, n).astype(np.float32), lambda f: ((f >= 180) & (f < 1400)).astype(np.float32))
+    rattle *= (0.04 + speed * 0.22) * (0.35 + after_crest)
+    # harsh wind whoosh that peaks with speed
+    air = fft_shape(
+        rng.normal(0, 1, n).astype(np.float32),
+        lambda f: ((f >= 900) & (f < 6200)).astype(np.float32) * np.clip(f / 3200, 0, 1.4),
+    )
+    air *= (speed**1.75) * 0.48
+    whoosh_burst = air * env_at(
+        t,
+        [(0, 0), (25.8, 0), (26.8, 1.35), (30.4, 0.85), (34.0, 0.35), (43.0, 0.45), (54.0, 0.40), (62.0, 0.08), (74.0, 0)],
+    )
 
     bed = np.zeros((2, n), dtype=np.float32)
-    bed[0] += roar * 0.92 + air * 0.85 + whoosh_burst * 0.7
-    bed[1] += roar * 0.88 + air * 0.95 + whoosh_burst * 0.8
+    bed[0] += roar * 0.95 + rattle * 0.70 + air * 0.90 + whoosh_burst * 0.85
+    bed[1] += roar * 0.90 + rattle * 0.78 + air * 1.00 + whoosh_burst * 0.95
 
     # lift chain + anti-rollback clack
     chain_noise = fft_shape(rng.normal(0, 1, n).astype(np.float32), lambda f: ((f >= 60) & (f < 380)).astype(np.float32))
@@ -494,13 +515,13 @@ def synth_audio(seconds: float) -> np.ndarray:
             np.float32
         )
 
-    # anti-rollback dogs on the lift
-    t_clack = 6.2
-    while t_clack < 46.2:
-        gap = 0.40 - 0.04 * ((t_clack - 6.2) / 40.0)
-        place(bed, click(1680, 38, 0.09), t_clack, 0.42, rng.uniform(-0.15, 0.15))
-        place(bed, click(420, 22, 0.11), t_clack, 0.28, 0.0)
-        t_clack += max(gap, 0.30)
+    # anti-rollback dogs — regular metallic clack that tightens as we climb
+    t_clack = 5.0
+    while t_clack < 24.8:
+        gap = 0.36 - 0.08 * ((t_clack - 5.0) / 20.0)
+        place(bed, click(1860, 42, 0.08), t_clack, 0.58, rng.uniform(-0.12, 0.12))
+        place(bed, click(510, 26, 0.10), t_clack, 0.36, 0.0)
+        t_clack += max(gap, 0.26)
 
     # running track joints / wheel clacks scale with speed
     t_joint = 1.0
@@ -514,41 +535,37 @@ def synth_audio(seconds: float) -> np.ndarray:
         else:
             t_joint += 0.20
 
-    # joyful riders — women screech / men hoop, never horror wails
+    # joyful riders — sustained “woooo” / hollers on drops, never horror wails
     fun_times = [
-        (48.1, "w", 0.55, -0.35),
-        (48.22, "m", 0.70, 0.20),
-        (48.40, "w", 0.48, 0.40),
-        (48.55, "m", 0.62, -0.15),
-        (49.05, "w", 0.42, 0.10),
-        (49.35, "m", 0.80, 0.30),
-        (50.10, "w", 0.50, -0.25),
-        (50.40, "m", 0.55, 0.05),
-        (51.20, "w", 0.38, 0.45),
-        (52.10, "m", 0.72, -0.30),
-        (53.40, "w", 0.44, 0.15),
-        (54.80, "m", 0.66, 0.25),
-        (56.60, "w", 0.36, -0.20),
-        (59.80, "m", 0.58, 0.10),
-        (60.15, "w", 0.40, 0.35),
-        (64.20, "m", 0.50, -0.10),
-        (68.40, "w", 0.34, 0.20),
-        (71.80, "m", 0.62, -0.25),
-        (72.10, "w", 0.40, 0.30),
-        (79.40, "m", 0.55, 0.05),
-        (80.00, "w", 0.36, -0.35),
-        (88.90, "m", 0.48, 0.15),
-        (89.20, "w", 0.32, 0.25),
-        (96.40, "m", 0.44, -0.10),
+        (26.15, "w", 1.35, -0.32),
+        (26.28, "m", 1.55, 0.22),
+        (26.55, "w", 1.15, 0.38),
+        (26.70, "m", 1.40, -0.12),
+        (27.40, "w", 1.05, 0.08),
+        (27.70, "m", 1.45, 0.28),
+        (28.50, "w", 0.95, -0.22),
+        (29.10, "m", 1.20, 0.06),
+        (30.20, "w", 0.85, 0.40),
+        (31.10, "m", 1.15, -0.28),
+        (36.20, "m", 1.25, 0.12),
+        (36.45, "w", 1.00, 0.30),
+        (42.40, "m", 1.20, -0.20),
+        (42.70, "w", 0.95, 0.24),
+        (46.80, "m", 1.10, 0.08),
+        (47.10, "w", 0.90, -0.30),
+        (53.60, "m", 1.05, 0.16),
+        (53.90, "w", 0.85, 0.22),
+        (57.40, "m", 0.90, -0.10),
     ]
     for i, (at, gender, dur, pan) in enumerate(fun_times):
-        place(bed, make_whoop(dur, gender, 9000 + i * 17), at, 0.95 if gender == "m" else 0.88, pan)
-    for i, at in enumerate((49.8, 53.1, 61.4, 73.2, 90.6)):
-        place(bed, make_laugh(0.38, 4400 + i), at, 0.55, (-0.2, 0.25, -0.1, 0.15, 0.0)[i])
+        place(bed, make_whoop(dur, gender, 9000 + i * 17), at, 1.02 if gender == "m" else 0.94, pan)
+    # quieter laughs between elements, then the next dip takes off again
+    for i, at in enumerate((32.6, 34.8, 39.4, 44.8, 50.6, 59.6)):
+        place(bed, make_laugh(0.42, 4400 + i), at, 0.62, (-0.18, 0.22, -0.08, 0.14, -0.12, 0.06)[i])
 
     # quiet station murmur under the first seconds and last brakes
     murmur = fft_shape(rng.normal(0, 1, n).astype(np.float32), lambda f: ((f >= 80) & (f < 500)).astype(np.float32))
-    murmur *= env_at(t, [(0, 0.16), (6, 0.10), (12, 0.04), (100, 0.03), (110, 0.10), (120, 0.14)])
+    murmur *= env_at(t, [(0, 0.16), (5, 0.09), (10, 0.03), (62, 0.04), (68, 0.10), (74, 0.14)])
     bed += murmur[None, :] * 0.22
 
     # keep drop reactions in the clear
