@@ -14,9 +14,9 @@ dining-room.mp3
   Table: Mixkit “Taking cutlery from a plate” (sfx 133), “Dish placed in a wood table” (sfx 2933)
 
 ridge-runner ride bed (muxed into /videos/carnival/coaster.mp4)
-  Mechanical only for this preview — original synthesized lift-hill
-  anti-rollback ratchet / chain clatter, wooden-track roar, and wind
-  whoosh that swells toward the bottom of a drop. No vocal layers.
-  Not ripped from any park or YouTube film. Room mute still silences
-  the ride.
+  30-second motion-test bed — light synthesized lift ratchet and
+  wooden-track roar only. No vocal layers, no fake screeches.
+  Picture is a generated continuous 24fps POV (unique camera station
+  every frame), textured from Pinewick stills — not a still dissolve
+  and not photographed on-ride. Room mute still silences the ride.
 
