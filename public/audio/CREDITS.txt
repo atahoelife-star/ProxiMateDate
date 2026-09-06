@@ -19,6 +19,7 @@ ridge-runner-grok-source.jpg
   carnival-coaster-dispatch.jpg. Not a ride film.
 
 ridge-runner ride bed (muxed into /videos/carnival/coaster.mp4)
-  Last generated 30s test is still wired until Gregory’s ~15s Grok
-  mp4 arrives. No new cartoon/dissolve encode on this pass.
+  Gregory’s Grok / xAI image-to-video from the photoreal dispatch still.
+  Wired as-is (padded to 1280×720). No cartoon encode. No still dissolve.
+  Room mute still silences the ride if the clip has audio.
 
