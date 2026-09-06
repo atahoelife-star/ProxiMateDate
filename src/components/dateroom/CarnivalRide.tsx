@@ -152,7 +152,6 @@ function RideFilm({ show, onBack }: { show: RideShow; onBack: () => void }) {
   const [dur, setDur] = useState(show.beats.reduce((sum, beat) => sum + beat.durationMs, 0) / 1000)
   const [ended, setEnded] = useState(false)
   const [chrome, setChrome] = useState(true)
-  const mounts = ['horse', 'fox', 'horse', 'stag', 'horse', 'fox'] as const
 
   useEffect(() => {
     const el = videoRef.current
@@ -200,7 +199,7 @@ function RideFilm({ show, onBack }: { show: RideShow; onBack: () => void }) {
     <>
       <video
         ref={videoRef}
-        className="absolute inset-0 w-full h-full object-cover"
+        className={`absolute inset-0 w-full h-full object-cover ${show.flavor === 'carousel' ? 'carnival-film-bob' : ''}`}
         src={show.film}
         poster={show.queue.src}
         playsInline
@@ -215,21 +214,6 @@ function RideFilm({ show, onBack }: { show: RideShow; onBack: () => void }) {
       {show.flavor === 'hollow' && <Fireflies />}
       {show.flavor === 'flume' && <div className="carnival-water absolute inset-0" />}
       {show.flavor === 'wheel' && <FerrisGraphic className="absolute right-4 top-28 w-28 h-28 md:w-36 md:h-36 z-[5] opacity-90" />}
-      {show.flavor === 'carousel' && (
-        <div className="carnival-carousel-stage absolute inset-0 pointer-events-none z-[4]">
-          <div className="carnival-carousel-ring">
-            {mounts.map((kind, i) => (
-              <div
-                key={`${kind}-${i}`}
-                className={`carnival-carousel-mount carnival-bob carnival-bob-${i % 3}`}
-                style={{ transform: `rotateY(${i * 60}deg) translateZ(188px)` }}
-              >
-                <div className={`carnival-mount-figure carnival-mount-${kind}`} />
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
       <Overlay
         kicker={kicker}
         title={ended ? 'Unload' : 'On the ride'}

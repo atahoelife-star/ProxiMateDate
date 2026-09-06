@@ -717,12 +717,20 @@ select.input option {
 .carnival-bob { animation: horseBob 1.35s ease-in-out infinite; }
 .carnival-bob-1 { animation-delay: 0.3s; }
 .carnival-bob-2 { animation-delay: 0.75s; }
+.carnival-film-bob {
+  animation: filmBob 1.4s ease-in-out infinite;
+  transform-origin: 50% 70%;
+}
 @keyframes carouselSpin {
   to { transform: rotateY(360deg); }
 }
 @keyframes horseBob {
   0%, 100% { margin-top: 0; }
   50% { margin-top: -22px; }
+}
+@keyframes filmBob {
+  0%, 100% { transform: scale(1.07) translate3d(0, 0, 0); }
+  50% { transform: scale(1.07) translate3d(0, -16px, 0); }
 }
 .carnival-queue-spin {
   background: radial-gradient(circle at 50% 55%, transparent 30%, rgba(15, 10, 13, 0.15) 70%);
@@ -934,6 +942,7 @@ select.input option {
   .carnival-carousel-floor,
   .carnival-carousel-ring,
   .carnival-bob,
+  .carnival-film-bob,
   .carnival-firefly {
     animation: none;
   }
