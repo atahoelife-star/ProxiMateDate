@@ -145,9 +145,9 @@ function RideShowView({
     <div className="relative overflow-hidden rounded-3xl border border-[#C9A962]/25 min-h-[560px]">
       <video
         ref={videoRef}
-        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
-          phase === 'ride' ? 'opacity-100' : 'opacity-0'
-        } ${show.flavor === 'carousel' ? 'carnival-film-bob' : ''}`}
+        className={`absolute inset-0 w-full h-full transition-opacity duration-300 ${
+          show.flavor === 'coaster' ? 'object-contain bg-[#120C0E]' : 'object-cover'
+        } ${phase === 'ride' ? 'opacity-100' : 'opacity-0'} ${show.flavor === 'carousel' ? 'carnival-film-bob' : ''}`}
         src={show.film}
         poster={show.queue.src}
         playsInline
