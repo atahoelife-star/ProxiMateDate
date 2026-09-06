@@ -74,7 +74,7 @@ export const RIDES: RideAttraction[] = [
     kicker: 'Animatronic dark ride',
     blurb: 'A full boat journey: cabin bears, raccoon den, wolves’ lair, then a field of fireflies. Not pirates.',
     still: '/images/carnival/carnival-hollow-porch.jpg',
-    durationMs: 318000,
+    durationMs: 210000,
     chatLine: 'Firefly Hollow — the boathouse line. Cabin bears and a slow creek. No pirates.',
   },
   {
