@@ -54,9 +54,9 @@ export const RIDES: RideAttraction[] = [
     id: 'coaster',
     name: 'The Ridge Runner',
     kicker: 'Wooden coaster',
-    blurb: 'Queue the lift, then a generated on-train ride-through: rails, timber, and pines streaming past.',
+    blurb: 'Queue the lift, then a full woodie: chain, climb, hang, drop, more hills, a bank, the tunnel, home.',
     still: '/images/carnival/carnival-coaster.jpg',
-    durationMs: 82000,
+    durationMs: 94000,
     chatLine: 'You join the Ridge Runner line. Timber, bulbs, and the lift ahead.',
   },
   {
@@ -104,7 +104,7 @@ export const RIDE_SHOWS: RideShow[] = [
     film: '/videos/carnival/coaster.mp4',
     loop: false,
     queueChat: 'You wait on the timber ramp. The train sits in the station.',
-    rideChat: 'The train rolls. Chain, lift, hang, drop, a bank, the tunnel, then home.',
+    rideChat: 'The train rolls. Chain, lift, hang, then hills — drop, valley, climb, drop again — a bank, the tunnel, home.',
     queue: {
       id: 'queue',
       src: '/images/carnival/carnival-coaster-queue.jpg',
@@ -117,7 +117,7 @@ export const RIDE_SHOWS: RideShow[] = [
       {
         id: 'lift',
         src: '/images/carnival/carnival-coaster-lift.jpg',
-        durationMs: 36000,
+        durationMs: 28000,
         title: 'Lift hill',
         line: 'Chain under the car. Pines climb past the lift lights.',
         motion: 'up',
@@ -125,9 +125,9 @@ export const RIDE_SHOWS: RideShow[] = [
       {
         id: 'drop',
         src: '/images/carnival/carnival-coaster-drop.jpg',
-        durationMs: 10000,
-        title: 'First drop',
-        line: 'The crest, then the timber falls away.',
+        durationMs: 28000,
+        title: 'Hills',
+        line: 'Drop, valley, climb, then another plunge through the timber.',
         motion: 'drop',
       },
       {
@@ -141,7 +141,7 @@ export const RIDE_SHOWS: RideShow[] = [
       {
         id: 'tunnel',
         src: '/images/carnival/carnival-coaster-tunnel.jpg',
-        durationMs: 11000,
+        durationMs: 12000,
         title: 'Covered run',
         line: 'Beams rush the camera. Light at the far end.',
         motion: 'zoom',
@@ -149,7 +149,7 @@ export const RIDE_SHOWS: RideShow[] = [
       {
         id: 'home',
         src: '/images/carnival/carnival-coaster-home.jpg',
-        durationMs: 11000,
+        durationMs: 12000,
         title: 'Brake run',
         line: 'Lanterns in the station. The train comes home.',
         motion: 'in',
