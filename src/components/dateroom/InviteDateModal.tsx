@@ -11,15 +11,27 @@ type InviteDateModalProps = {
   invitePath: string
   follow: boolean
   startedAt?: number
+  extraParams?: Record<string, string>
   step: 'options' | 'success'
   onStep: (step: 'options' | 'success') => void
 }
 
-function buildInviteUrl(invitePath: string, roomId: string, follow: boolean, startedAt?: number) {
+function buildInviteUrl(
+  invitePath: string,
+  roomId: string,
+  follow: boolean,
+  startedAt?: number,
+  extraParams?: Record<string, string>,
+) {
   const url = new URL(`${window.location.origin}${invitePath}`)
   url.searchParams.set('room', roomId)
   if (follow) url.searchParams.set('follow', '1')
   if (startedAt && startedAt > 0) url.searchParams.set('started', String(startedAt))
+  if (extraParams) {
+    for (const [key, value] of Object.entries(extraParams)) {
+      if (value) url.searchParams.set(key, value)
+    }
+  }
   return url.toString()
 }
 
@@ -31,18 +43,19 @@ export function InviteDateModal({
   invitePath,
   follow,
   startedAt,
+  extraParams,
   step,
   onStep,
 }: InviteDateModalProps) {
   const inviteUrl = useMemo(() => {
     if (typeof window === 'undefined') return ''
-    return buildInviteUrl(invitePath, roomId, follow, startedAt)
-  }, [invitePath, roomId, follow, startedAt])
+    return buildInviteUrl(invitePath, roomId, follow, startedAt, extraParams)
+  }, [invitePath, roomId, follow, startedAt, extraParams])
 
   if (!open) return null
 
   const copyInvite = () => {
-    const url = buildInviteUrl(invitePath, roomId, follow, startedAt)
+    const url = buildInviteUrl(invitePath, roomId, follow, startedAt, extraParams)
     void navigator.clipboard.writeText(url)
     toast.success('Link copied', { description: 'Email or text it to your date so they can join this room.' })
   }

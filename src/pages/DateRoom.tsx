@@ -1,5 +1,5 @@
 import { Link, Navigate, useSearchParams } from 'react-router-dom'
-import { Clapperboard, MessageCircle, UtensilsCrossed } from 'lucide-react'
+import { Clapperboard, FerrisWheel, MessageCircle, UtensilsCrossed } from 'lucide-react'
 import { useEffect, useRef } from 'react'
 import { toast } from 'sonner'
 import { consumeChooserPaidReturn } from '../lib/roomAccess'
@@ -94,6 +94,21 @@ export function DateRoomPage() {
           </Link>
         ))}
       </div>
+      <Link
+        to="/carnival?paid=1"
+        className="card mt-6 p-8 hover:border-[#C9A962]/50 transition flex flex-col md:flex-row md:items-center gap-6"
+      >
+        <div className="w-12 h-12 rounded-full bg-[#C9A962]/10 flex items-center justify-center shrink-0">
+          <FerrisWheel className="w-6 h-6 text-[#C9A962]" />
+        </div>
+        <div>
+          <div className="text-[#E8A0B8] text-xs tracking-[2px] mb-2">COMING SOON · PREVIEW</div>
+          <h2 className="text-[#F8F4ED] text-2xl mb-2">Pinewick Fair</h2>
+          <p className="text-[#A8988A] leading-relaxed">
+            Original midway for QA. No Stripe on this room. Opens with ?paid=1. Price later.
+          </p>
+        </div>
+      </Link>
     </div>
   )
 }

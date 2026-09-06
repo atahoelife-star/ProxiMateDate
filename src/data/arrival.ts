@@ -40,6 +40,27 @@ export const RESTAURANT_ARRIVAL: ArrivalBeat[] = [
   },
 ]
 
+export const CARNIVAL_ARRIVAL: ArrivalBeat[] = [
+  {
+    id: 'gates',
+    src: '/images/carnival/carnival-gates.jpg',
+    kind: 'image',
+    durationMs: 2800,
+  },
+  {
+    id: 'plaza',
+    src: '/images/carnival/carnival-plaza.jpg',
+    kind: 'image',
+    durationMs: 2600,
+  },
+  {
+    id: 'midway',
+    src: '/images/carnival/carnival-midway.jpg',
+    kind: 'image',
+    durationMs: 2800,
+  },
+]
+
 export const CINEMA_ARRIVAL: ArrivalBeat[] = [
   {
     id: 'tickets',

@@ -539,8 +539,18 @@ select.input option {
   animation: arrivalKenBurns 3.4s ease-out forwards;
 }
 
+@keyframes carnivalKenBurns {
+  from { transform: scale(1.12) translate3d(1.4%, 1%, 0); }
+  to { transform: scale(1.03) translate3d(-0.6%, -0.4%, 0); }
+}
+
+.carnival-still {
+  animation: carnivalKenBurns 14s ease-in-out infinite alternate;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .arrival-media {
+  .arrival-media,
+  .carnival-still {
     animation: none;
   }
   .date-room-bg.date-room-seated::before,
