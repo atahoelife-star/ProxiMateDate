@@ -83,7 +83,7 @@ export const RIDES: RideAttraction[] = [
     kicker: 'Ferris wheel',
     blurb: 'A full gondola orbit: up through the bulbs, the top lights, then down over handlers and queues.',
     still: '/images/carnival/carnival-wheel.jpg',
-    durationMs: 228500,
+    durationMs: 216000,
     chatLine: 'The Lantern Wheel is turning. Handlers load the gondola.',
   },
   {
