@@ -692,14 +692,14 @@ select.input option {
   width: 0;
   height: 0;
   transform-style: preserve-3d;
-  animation: carouselSpin 14s linear infinite;
+  animation: carouselSpin 11s linear infinite;
 }
 .carnival-carousel-mount {
   position: absolute;
-  left: -42px;
-  top: -70px;
-  width: 84px;
-  height: 110px;
+  left: -48px;
+  top: -78px;
+  width: 96px;
+  height: 124px;
   transform-style: preserve-3d;
 }
 .carnival-mount-figure {
@@ -711,10 +711,10 @@ select.input option {
   box-shadow: 0 10px 22px rgba(0, 0, 0, 0.45);
   border: 1px solid rgba(201, 169, 98, 0.45);
 }
-.carnival-mount-horse { background-image: url('/images/carnival/carnival-carousel-ride.jpg'); }
-.carnival-mount-fox { background-image: url('/images/carnival/carnival-carousel.jpg'); background-position: 30% 60%; }
-.carnival-mount-stag { background-image: url('/images/carnival/carnival-carousel.jpg'); background-position: 70% 40%; }
-.carnival-bob { animation: horseBob 1.55s ease-in-out infinite; }
+.carnival-mount-horse { background-image: url('/images/carnival/carnival-carousel-high.jpg'); }
+.carnival-mount-fox { background-image: url('/images/carnival/carnival-carousel-fox.jpg'); background-position: 40% 55%; }
+.carnival-mount-stag { background-image: url('/images/carnival/carnival-carousel-stag.jpg'); background-position: 45% 40%; }
+.carnival-bob { animation: horseBob 1.35s ease-in-out infinite; }
 .carnival-bob-1 { animation-delay: 0.3s; }
 .carnival-bob-2 { animation-delay: 0.75s; }
 @keyframes carouselSpin {
@@ -722,7 +722,7 @@ select.input option {
 }
 @keyframes horseBob {
   0%, 100% { margin-top: 0; }
-  50% { margin-top: -16px; }
+  50% { margin-top: -22px; }
 }
 .carnival-queue-spin {
   background: radial-gradient(circle at 50% 55%, transparent 30%, rgba(15, 10, 13, 0.15) 70%);

@@ -222,7 +222,7 @@ function RideFilm({ show, onBack }: { show: RideShow; onBack: () => void }) {
               <div
                 key={`${kind}-${i}`}
                 className={`carnival-carousel-mount carnival-bob carnival-bob-${i % 3}`}
-                style={{ transform: `rotateY(${i * 60}deg) translateZ(168px)` }}
+                style={{ transform: `rotateY(${i * 60}deg) translateZ(188px)` }}
               >
                 <div className={`carnival-mount-figure carnival-mount-${kind}`} />
               </div>
