@@ -73,18 +73,16 @@ export function HomePage() {
             even when far apart
           </h1>
 
-          <p className="max-w-xl mx-auto text-lg text-[#EDE4D9]/90 mb-8">
+          <p className="max-w-xl mx-auto text-lg text-[#EDE4D9]/90 mb-7">
             Dinner across a table. A movie on the couch. Or just talk. Walk through the rooms first — no
             sign-in.
           </p>
 
-          <LandingDemo className="max-w-4xl mx-auto mb-8" />
-
           <LandingDemoCtas kind="try" />
 
-          <p className="mt-6 text-sm text-[#A8988A]">
-            Free Date Night is 30 minutes. No card to start.
-          </p>
+          <p className="mt-5 text-sm text-[#A8988A]">Free Date Night is 30 minutes. No card to start.</p>
+
+          <LandingDemo className="max-w-3xl mx-auto mt-8" />
         </div>
       </div>
 
