@@ -1,19 +1,33 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
-export function LandingDemoCtas({ size = 'lg' }: { size?: 'lg' | 'md' }) {
+export function LandingDemoCtas({
+  size = 'lg',
+  kind = 'try',
+}: {
+  size?: 'lg' | 'md'
+  kind?: 'try' | 'rooms'
+}) {
   const pad = size === 'lg' ? 'text-base px-10 py-4' : 'text-sm px-8 py-3'
   return (
     <div className="flex flex-col sm:flex-row gap-3 justify-center">
       <Link to="/date-night" className={`btn btn-gold ${pad}`}>
         Free Date Night
       </Link>
-      <Link to="/restaurant" className={`btn btn-outline ${pad}`}>
-        Dinner
-      </Link>
-      <Link to="/movie-night" className={`btn btn-outline ${pad}`}>
-        Movie
-      </Link>
+      {kind === 'try' ? (
+        <Link to="/get-started" className={`btn btn-outline ${pad}`}>
+          Get Started
+        </Link>
+      ) : (
+        <>
+          <Link to="/restaurant" className={`btn btn-outline ${pad}`}>
+            Dinner
+          </Link>
+          <Link to="/movie-night" className={`btn btn-outline ${pad}`}>
+            Movie
+          </Link>
+        </>
+      )}
     </div>
   )
 }
